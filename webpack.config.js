@@ -6,7 +6,7 @@ var path = require("path");
 
 module.exports = {
     entry:{
-        main:'./main',//path.resolve(__dirname,"main.js"),
+        main:path.resolve(__dirname,"main.js"),
         vendors: []
     },
     output:{
@@ -21,7 +21,7 @@ module.exports = {
         stats: { colors: true },
         proxy: {
             '/api/*': {
-                target:"http://192.168.0.3:5100",//'http://35.161.236.80:5100',
+                target:'http://35.161.236.80:5100',
                 changeOrigin: true
             }
         }
