@@ -1,6 +1,6 @@
 from flask import Flask
 from config import config
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 db = None
 def create_app(config_name):
