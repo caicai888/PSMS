@@ -20,8 +20,8 @@ def get_users():
         for user in users:
             role = ''
             role_list = db.session.query(UserRole).filter_by(user_id=user.id).first()
-            for role_id in eval(role_list.role_id):
-                role += db.session.query(Role).filter_by(id=role_id).first().name + ','
+            for role_id in role_list.role_id.split(','):
+                role += db.session.query(Role).filter_by(id=int(role_id)).first().name + ','
             data = {
                 "id": user.id,
                 "name": user.name,
