@@ -328,7 +328,6 @@ def updateOffer():
         else:
             return json.dumps({"code": 400, "message": "offer is None"})
 
-<<<<<<< HEAD
 #bind list
 @offers.route("/api/offer_bind", methods=["POST","GET"])
 def offerBind():
