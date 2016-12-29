@@ -352,8 +352,8 @@ def offerBind():
 def bindShow(offer_id):
     advertiser_facebook = Advertisers.query.filter_by(offer_id=int(offer_id), type="facebook").first()
     if advertiser_facebook:
-        advertise_series_facebook = advertiser_facebook.advertise_series.split(",")
-        advertise_groups_facebook = advertiser_facebook.advertise_groups.split(",")
+        advertise_series_facebook = advertiser_facebook.advertise_series
+        advertise_groups_facebook = advertiser_facebook.advertise_groups
         type_facebook = advertiser_facebook.type
         result_facebook = {
             "facebook_id": advertiser_facebook.id,
@@ -366,8 +366,8 @@ def bindShow(offer_id):
 
     advertiser_adwords = Advertisers.query.filter_by(offer_id=int(offer_id), type="adwords").first()
     if advertiser_adwords:
-        advertise_series_adwords = advertiser_adwords.advertise_series.split(",")
-        advertise_groups_adwords = advertiser_adwords.advertise_groups.split(",")
+        advertise_series_adwords = advertiser_adwords.advertise_series
+        advertise_groups_adwords = advertiser_adwords.advertise_groups
         type_adwords = advertiser_adwords.type
         result_adwords = {
             "adwords_id": advertiser_adwords.id,
