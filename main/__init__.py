@@ -18,5 +18,7 @@ def create_app(config_name):
     app.register_blueprint(customers_blueprint)
     from offers import offers as offers_blueprint
     app.register_blueprint(offers_blueprint)
+    from facebookData import facebookDate as facebook_blueprint
+    app.register_blueprint(facebook_blueprint)
 
     return app
