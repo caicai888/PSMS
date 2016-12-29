@@ -266,3 +266,39 @@ class TimePrice(db.Model):
 
     def __repr__(self):
         return '<TimePrice {}>'.format(self.id)
+
+class Token(db.Model):
+    __tablename__ = 'token'
+    id = db.Column(db.Integer, primary_key=True)
+    account = db.Column(db.String(100), nullable=False)
+    accessToken = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, account, accessToken):
+        self.account = account
+        self.accessToken = accessToken
+
+    def __repr__(self):
+        return '<Token {}>'.format(self.id)
+
+class Advertisers(db.Model):
+    __tablename__ = 'advertisers'
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(10000), nullable=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    type = db.Column(db.String(100), default="facebook")
+    advertise_series = db.Column(db.String(100), nullable=False)
+    advertise_groups = db.Column(db.String(100), nullable=False)
+    createdTime = db.Column(db.String(100), nullable=False)
+    updateTime = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, token, offer_id, type="facebook", advertise_series=None, advertise_groups=None,createdTime=None,updateTime=None):
+        self.token = token
+        self.offer_id = offer_id
+        self.type = type
+        self.advertise_series = advertise_series
+        self.advertise_groups = advertise_groups
+        self.createdTime = createdTime
+        self.updateTime = updateTime
+
+    def __repr__(self):
+        return '<Advertisers {}>'.format(self.id)

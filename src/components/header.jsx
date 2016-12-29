@@ -1,18 +1,51 @@
 import React from "react";
+import {ajax} from "../lib/ajax";
 require("../js/bootstrap.min");
 var Header = React.createClass({
+    loginOut(){
+        ajax("get","/api/user/logout").then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+                $(".userEmail").html("");
+                $(".userId").html("");
+                location.hash="/login";
+                $(".isShow").hide();
+            }else {
+                $(".ajax_error").html(data.message);
+                $(".modal").modal("toggle");
+            }
+        });
+    },
     componentDidMount(){
-        $("#nav_nav>ul>li").on("click",function () {
+        if(location.hash!=""&&location.hash!="#/login"){
+            ajax("post","/api/user/verify_session").then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    $(".userEmail").html(data.results.email);
+                    $(".userId").html(data.results.id);
+                    $(".isShow").show();
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $(".modal").modal("toggle");
+                    $(".modal").on("hidden.bs.modal",function () {
+                        location.hash="/login";
+                        $(".isShow").hide();
+                    })
+                }
+            });
+        }
+        $("#nav_nav>ul.ul_active>li").on("click",function () {
             $(this).addClass("active").siblings().removeClass("active");
         });
         var hash = location.hash;
-        $("#nav_nav>ul>li").each(function () {
+        $("#nav_nav>ul.ul_active>li").each(function () {
             if(hash.indexOf($(this).attr("data-hash"))>-1){
                 $("#nav_nav>ul>li").removeClass("active");
                 $(this).addClass("active");
                 return;
             }
         });
+
     },
     render:function () {
         return <nav className="navbar navbar-default" role="navigation">
@@ -24,12 +57,24 @@ var Header = React.createClass({
                         <span className="icon-bar"> </span>
                         <span className="icon-bar"> </span>
                     </button>
-                    <a className="navbar-brand" href="#/">PSMS</a>
+                    <a className="navbar-brand" href="#/welcome">PSMS</a>
                 </div>
 
-                <div className="collapse navbar-collapse" id="nav_nav">
-                    <ul className="nav navbar-nav">
-                        <li data-hash="customer" className="dropdown active">
+                <div className="collapse nav_right navbar-collapse" id="nav_nav">
+                    <ul className="nav ul_active navbar-nav isShow">
+                        <li data-hash="manager" className="dropdown">
+                            <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Manager <span className="caret"></span></a>
+                            <ul className="dropdown-menu" role="menu">
+                                <li><a href="#/create_manager">Create Manager</a></li>
+                                <li className="divider"> </li>
+                                <li><a href="#/manager_list">Manager List</a></li>
+                                <li className="divider"> </li>
+                                <li><a href="#/create_group_manager">Create Group</a></li>
+                                <li className="divider"> </li>
+                                <li><a href="#/group_list_manager">Group List</a></li>
+                            </ul>
+                        </li>
+                        <li data-hash="customer" className="dropdown">
                             <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Advertiser <span className="caret"></span></a>
                             <ul className="dropdown-menu" role="menu">
                                 <li><a href="#/create_customer">Create Customer</a></li>
@@ -48,19 +93,9 @@ var Header = React.createClass({
                         <li><a href="#/about">About</a></li>
                         <li><a href="#/list">List</a></li>
                     </ul>
-                    {/*<ul className="nav navbar-nav navbar-right">
-                        <li><a href="#">Link</a></li>
-                        <li className="dropdown">
-                            <a href="#" className="dropdown-toggle" data-toggle="dropdown">Dropdown <span className="caret"></span></a>
-                            <ul className="dropdown-menu" role="menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li className="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </li>
-                    </ul>*/}
+                    <ul className="nav navbar-nav navbar-right isShow">
+                        <li><a onClick={this.loginOut} href="javascript:void(0)">Email：<span className="userEmail"></span>&nbsp;|&nbsp;UserId：<span className="userId"></span>&nbsp;|&nbsp;已登录！</a> </li>
+                    </ul>
                 </div>
             </div>
         </nav>

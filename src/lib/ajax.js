@@ -16,9 +16,9 @@ var ajax = function (method,url,data) {
             },
             error:function (e) {
                 reject(e);
-                $(".ajax_error").html("请求错误！");
+                $(".ajax_error").html(e.status+"---"+e.statusText);
                 $(".mask").hide();
-                $(".modal").modal("toggle");
+                $(".modal").modal("show");
             }
         });
     });

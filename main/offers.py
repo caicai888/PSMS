@@ -3,7 +3,7 @@ from main.has_permission import *
 from flask import Blueprint, request, safe_join, Response, send_file, make_response
 
 from main import db
-from models import Offer, History, User, Customers, Country, TimePrice
+from models import Offer, History, User, Customers, Country, TimePrice, Advertisers
 import json
 import os
 import datetime, time
@@ -13,9 +13,9 @@ from sqlalchemy import desc
 
 offers = Blueprint('offers', __name__)
 
-@offers.route('/api/getlogin',methods=["GET","POST"])
-def getlogin():
-    return render_template("token.html")
+@offers.route('/', methods=["GET","POST"])
+def index():
+    return render_template("index.html")
 
 @offers.route('/api/customer_select', methods=['POST', 'GET'])
 def customerSelect():
@@ -113,7 +113,7 @@ def createOffer():
                 db.session.add(history)
                 db.session.commit()
                 db.create_all()
-            return json.dumps({"code": 200, "message": "success"})
+            return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
         except Exception as e:
             print e
             return json.dumps({"code": 500, "message": "fail"})
@@ -227,6 +227,22 @@ def offerDetail(id):
     }
     return json.dumps(response)
 
+#更新offer的状态
+@offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
+def updateStatus(offer_id):
+    offer = Offer.query.filter_by(id=int(offer_id)).first()
+    if offer.status == "active":
+        offer.status = "inactive"
+        db.session.add(offer)
+        db.session.commit()
+        return json.dumps({"code": 200, "message":"success"})
+    elif offer.status == "inactive":
+        offer.status = "active"
+        db.session.add(offer)
+        db.session.commit()
+        return json.dumps({"code": 200, "message": "success"})
+    else:
+        return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
 def updateOffer():
@@ -312,6 +328,83 @@ def updateOffer():
         else:
             return json.dumps({"code": 400, "message": "offer is None"})
 
+#bind list
+@offers.route("/api/offer_bind", methods=["POST","GET"])
+def offerBind():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+        updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+        token = "EAACvVZBcdZCr8BAFSLVOFo6HN8Vh36c5rIxV0uHrpwyDdZBgUVLDfonfMbdhe0IfaL48keNApjxZBjPGvmMK69j2aw5IhNZBfJl48zdeVCwS54CdPVyZCn7g0lIUPSvkFkoOYD3LmlF50R4hwljZC58lZAyzMAIEdDp7ZAjyQEW35OUzKBNyK30xu"
+
+        advertisers = Advertisers(token,int(data["offer_id"]), type=data["type"], advertise_series=data["advertise_series"], advertise_groups=data["advertise_groups"], createdTime=createdTime, updateTime=updateTime)
+        try:
+            db.session.add(advertisers)
+            db.session.commit()
+            db.create_all()
+            return json.dumps({"code": 200, "message":"success"})
+        except Exception as e:
+            print e
+            return json.dumps({"code": 500, "message": "fail"})
+
+#show bind
+@offers.route("/api/bind_show/<offer_id>", methods=["POST","GET"])
+def bindShow(offer_id):
+    advertiser_facebook = Advertisers.query.filter_by(offer_id=int(offer_id), type="facebook").first()
+    if advertiser_facebook:
+        advertise_series_facebook = advertiser_facebook.advertise_series.split(",")
+        advertise_groups_facebook = advertiser_facebook.advertise_groups.split(",")
+        type_facebook = advertiser_facebook.type
+        result_facebook = {
+            "facebook_id": advertiser_facebook.id,
+            "advertise_series": advertise_series_facebook,
+            "advertise_groups": advertise_groups_facebook,
+            "type": type_facebook
+        }
+    else:
+        result_facebook={}
+
+    advertiser_adwords = Advertisers.query.filter_by(offer_id=int(offer_id), type="adwords").first()
+    if advertiser_adwords:
+        advertise_series_adwords = advertiser_adwords.advertise_series.split(",")
+        advertise_groups_adwords = advertiser_adwords.advertise_groups.split(",")
+        type_adwords = advertiser_adwords.type
+        result_adwords = {
+            "adwords_id": advertiser_adwords.id,
+            "advertise_series": advertise_series_adwords,
+            "advertise_groups": advertise_groups_adwords,
+            "type": type_adwords
+        }
+    else:
+        result_adwords = {}
+
+    response = {
+        "facebook": result_facebook,
+        "adwords": result_adwords,
+        "code": 200,
+        "message": "success"
+    }
+    return json.dumps(response)
+
+#update bind
+@offers.route("/api/bind_update", methods=["POST","GET"])
+def bindUpdate():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        advertise = Advertisers.query.filter_by(id=int(data["ad_id"])).first()
+        print advertise
+        updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            advertise.advertise_series = data["advertise_series"]
+            advertise.advertise_groups = data["advertise_groups"]
+            advertise.type = data["type"]
+            advertise.updateTime = updateTime
+            db.session.add(advertise)
+            db.session.commit()
+            return json.dumps({"code":200,"message":"success"})
+        except Exception as e:
+            print e
+            return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route("/api/history", methods=["POST", "GET"])
 def historty():

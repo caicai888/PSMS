@@ -1,9 +1,9 @@
 import React from "react";
-import CreateOffer from "../components/create_offer";
+import OfferDetailDetail from "./offer_detail_detail";
 
 var OfferDetail = React.createClass({
     componentDidMount(){
-        $("#home").find("*").attr("disabled",true)
+
     },
     render:function () {
         return (
@@ -25,7 +25,7 @@ var OfferDetail = React.createClass({
                                 </div>
                             </div>
                         </div>
-                        <CreateOffer />
+                        <OfferDetailDetail id={this.props.params.id} />
                     </div>
                     <div className="tab-pane fade" id="bind_list">
                         <div className="row">

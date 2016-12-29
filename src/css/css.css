@@ -93,13 +93,14 @@ html,body{
 }
 
 
-.mask{
+.mask,.price-calendar{
     display: none;
     position: fixed;
     top:0;
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 100;
     background: rgba(0,0,0,0.8);
 }
 .mask img{
@@ -176,13 +177,21 @@ table tr td{
     color: #fff;
     border-color: #2e6da4;
 }
-#create_offer .col-sm-3{
+#create_offer .col-sm-3.text-right{
     line-height: 34px;
 }
 #create_offer>div{
     margin-bottom: 10px;
 }
-#offer_list .isTrue{
+#offer_list td div{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #999;
+    margin-top: 3px;
+}
+#offer_list td div.isTrue{
     display: inline-block;
     width: 15px;
     height: 15px;
@@ -197,6 +206,7 @@ table tr td{
     cursor: pointer;
     display: inline-block;
     margin-right: 15px;
+    width: 24px;
 }
 #home {
     margin-top: 10px;
@@ -293,4 +303,74 @@ table tr td{
         width: 50%;
         float: left;
     }
+}
+.input-group-addon{
+    cursor: pointer;
+}
+.offer_detail_detail{
+    line-height: 34px;
+}
+
+#login{
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    background: url("../img/bg.jpg") no-repeat center center;
+    background-size: cover;
+    position: absolute;
+    top:0px;
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    overflow: hidden;
+}
+.login{
+    padding: 30px;
+    border-radius: 5px;
+    background: rgba(0,0,0,0.2);
+}
+.login_title{
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 20px;
+    color: #fff;
+}
+.userInfo{
+    line-height: 25px;
+}
+.userInfo p{
+    margin: 0;
+    padding: 0;
+}
+.userInfo a{
+    display: block;
+}
+.userInfo a p:last-child{
+    float: left;
+    line-height: 50px;
+}
+.welcome{
+    position: absolute;
+    top:0px;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    font-size: 30px;
+    text-align: center;
+}
+.isShow{
+    display: none;
+}
+.group_table{
+    text-align: center;
+}
+.form-horizontal .checkbox, .form-horizontal .checkbox-inline, .form-horizontal .radio, .form-horizontal .radio-inline{
+    padding-top: 3px;
+}
+#table_html input{
+    vertical-align: middle;
+    margin: 0;
+}
+#table_html label{
+    margin-bottom: 0;
 }

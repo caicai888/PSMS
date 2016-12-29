@@ -22,6 +22,7 @@ var CreateCustomer = React.createClass({
     },
     componentDidMount(){
         if(this.props.params.id){
+            sessionStorage.setItem("count","1");
             ajax("get","/api/customers/query/"+this.props.params.id).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){

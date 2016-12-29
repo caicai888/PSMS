@@ -16,7 +16,7 @@ var CustomerList = React.createClass({
     search_table(e){
         clearTimeout(time);
         var _this = this;
-        var val = $(e.target).val();
+        var val = $(e.target).val()  || $(e.target).prev().val();
         time = setTimeout(function () {
             if(val){
                 var newResult = [];
@@ -78,7 +78,7 @@ var CustomerList = React.createClass({
                         <div className="input-group">
                             <div style={{cursor:"pointer"}} onClick={_this.export_table} className="input-group-addon">Export</div>
                             <input onKeyUp={_this.search_table}  className="form-control" type="email" placeholder="Search..." />
-                            <div style={{cursor:"pointer"}} onKeyUp={_this.search_table} className="input-group-addon">Search</div>
+                            <div style={{cursor:"pointer"}} onClick={_this.search_table} className="input-group-addon">Search</div>
                         </div>
                     </div>
                 </div>

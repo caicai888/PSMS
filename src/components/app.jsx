@@ -1,32 +1,49 @@
 import React from "react";
+import {ajax} from "../lib/ajax";
+
 var App = React.createClass({
     getInitialState(){
         return {
             opacity:1.0
         }
     },
+    componentWillUpdate(){
+        if(location.hash!=""&&location.hash!="#/login"){
+            ajax("post","/api/user/verify_session").then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    $(".userEmail").html(data.results.email);
+                    $(".userId").html(data.results.id);
+                    $(".isShow").show();
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $(".modal").modal("show");
+                    $(".userEmail").html("");
+                    $(".userId").html("");
+                    $(".modal").on("hidden.bs.modal",function () {
+                        location.hash="login";
+                        $(".isShow").hide();
+                    })
+                }
+            });
+        }
+        console.log('componentWillUpdate----------')
+    },
+    componentWillUnmount(){
+        console.log('componentWillUnmount--------')
+    },
     componentWillMount(){
-        console.log("在渲染前调用,在客户端也在服务端。"+ this.state.opacity)
+        console.log("componentWillMount----------")
     },
     componentWillReceiveProps(){
-        console.log("点击切换路由可以写这里");
+        if(sessionStorage.getItem("count")){
+            location.reload();
+            sessionStorage.removeItem("count")
+        }
+        console.log("componentWillReceiveProps----------------------------");
     },
     componentDidMount(){
-        return;
-        this.props.router.setRouteLeaveHook(
-            this.props.route,
-            this.routerWillLeave
-        )
-        this.timer = setInterval(function () {
-            var opacity = this.state.opacity;
-            opacity -=0.05;
-            if(opacity<0.1){
-                opacity = 1.0;
-            }
-            this.setState({
-                opacity:opacity
-            })
-        }.bind(this),100);
+        console.log('componentDidMount-----------')
     },
     render:function () {
         return <div className="container-fluid">{this.props.children}</div>
