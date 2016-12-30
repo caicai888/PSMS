@@ -271,7 +271,7 @@ class Token(db.Model):
     __tablename__ = 'token'
     id = db.Column(db.Integer, primary_key=True)
     account = db.Column(db.String(100), nullable=False)
-    accessToken = db.Column(db.String(100), nullable=False)
+    accessToken = db.Column(db.String(10000), nullable=False)
 
     def __init__(self, account, accessToken):
         self.account = account
