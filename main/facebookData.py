@@ -300,7 +300,6 @@ def faceReport():
         time_ranges = []
         for day in all_date[::-1]:
             time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-
         if dimension == "geo":
             impressions_list = []
             cost_list = []
@@ -1177,8 +1176,26 @@ def faceReport():
                 "head": ["Date","Geo","Revenue","Profit","Cost","Impressions","Clicks","Conversions","CTR","CVR","CPC","CPA"]
             }
 
+        elif dimension == "date":
+            data_geo_table = {}
+        #     for t in time_ranges:
+        #         for i in advertise_groups:
+        #             url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
+        #             params = {
+        #                 "access_token": accessToken,
+        #                 "level": "adset",
+        #                 "fields": ["impressions"],
+        #                 "time_ranges": str(t)
+        #             }
+        #             result = requests.get(url=url, params=params)
+        #             data = result.json()["data"]
+                    # if data != []:
+
+
         return json.dumps({
+            "code": 200,
             "data_geo": data_geo,
             "data_day": data_day,
-            "data_geo_table": data_geo_table
+            "data_geo_table": data_geo_table,
+            "message": "success"
         })
