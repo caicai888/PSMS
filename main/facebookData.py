@@ -187,7 +187,7 @@ def faceReport():
                 for j in data:
                     count_cpc += float(j["cpc"])
             count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
-            count_cpi = '%0.2f'% (count_cost / count_conversions)
+            count_cpi = '%0.2f'% (count_cost / count_conversions) if count_conversions != 0 else 0
             revenue = count_conversions * 1.5
             profit = revenue - count_cost
             data_geo = {
@@ -669,7 +669,7 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url,params=params)
-                    data = result.json()
+                    data = result.json()["data"]
                     if data != []:
                         costs_count.append(data)
 
@@ -680,7 +680,7 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url, params=params)
-                    data = result.json()
+                    data = result.json()["data"]
                     if data != []:
                         clicks_count.append(data)
 
@@ -702,7 +702,7 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url, params=params)
-                    data = result.json()
+                    data = result.json()["data"]
                     if data != []:
                         cpc_count.append(data)
 
@@ -713,24 +713,26 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url, params=params)
-                    data = result.json()
-                    if data["actions"] != []:
-                        for action in data["actions"]:
-                            if "offsite_conversion" in action["action_type"]:
-                                conversions = action["value"]
-                                date_start = action["date_start"]
-                                con_data = {
-                                    "conversions": int(conversions),
-                                    "date_start": date_start
-                                }
-                            elif "link_click" in action["action_type"]:
-                                conversions = action["value"]
-                                date_start = action["date_start"]
-                                con_data = {
-                                    "conversions": int(conversions),
-                                    "date_start": date_start
-                                }
-                            conversions_count_list += [con_data]
+                    data = result.json()["data"]
+                    print data
+                    if data != []:
+                        if data["actions"] != []:
+                            for action in data["actions"]:
+                                if "offsite_conversion" in action["action_type"]:
+                                    conversions = action["value"]
+                                    date_start = action["date_start"]
+                                    con_data = {
+                                        "conversions": int(conversions),
+                                        "date_start": date_start
+                                    }
+                                elif "link_click" in action["action_type"]:
+                                    conversions = action["value"]
+                                    date_start = action["date_start"]
+                                    con_data = {
+                                        "conversions": int(conversions),
+                                        "date_start": date_start
+                                    }
+                                conversions_count_list += [con_data]
 
             impressions_count_list = []
             costs_count_list = []
