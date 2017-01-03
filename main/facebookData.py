@@ -90,7 +90,7 @@ def faceReport():
         start_date = data["start_date"]
         end_date = data["end_date"]
         dimension = data["dimension"]
-        offer = Offer.query.filter_by(id=offerId)
+        offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
         accessToken = advertiser.token
@@ -312,8 +312,8 @@ def faceReport():
             ctr_list = []
             cpc_list = []
             cvr_list = []
-            cpi_list = [],
-            revenue_list = [],
+            cpi_list = []
+            revenue_list = []
             profit_list = []
             for i in advertise_groups:
                 url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
@@ -470,23 +470,21 @@ def faceReport():
             for l in range(len(conversions_list)):
                 if conversions_list[l].get("date_start") == cost_list[l].get("date_start") and conversions_list[l].get("country") == cost_list[l].get("country"):
                     cpi = '%0.2f' % (float(cost_list[l].get("spend")) / float(conversions_list[l].get("conversions")) * 100) if conversions_list[l].get("conversions") != 0 else 0
-                    cpi_list += [
-                        {
-                            "country": conversions_list[l].get("country"),
-                            "cpi": cpi,
-                            "date_start": conversions_list[l].get("date_start"),
-                            "date_stop": conversions_list[l].get("date_stop")
-                        }
-                    ]
+                    cpi_dict = {
+                        "country": conversions_list[l].get("country"),
+                        "cpi": cpi,
+                        "date_start": conversions_list[l].get("date_start"),
+                        "date_stop": conversions_list[l].get("date_stop")
+                    }
+
                 else:
-                    cpi_list += [
-                        {
-                            "country": conversions_list[l].get("country"),
-                            "cpi": 0,
-                            "date_start": conversions_list[l].get("date_start"),
-                            "date_stop": conversions_list[l].get("date_stop")
-                        }
-                    ]
+                    cpi_dict = {
+                        "country": conversions_list[l].get("country"),
+                        "cpi": 0,
+                        "date_start": conversions_list[l].get("date_start"),
+                        "date_stop": conversions_list[l].get("date_stop")
+                    }
+                cpi_list += [cpi_dict]
 
             for r in range(len(conversions_list)):
                 country = conversions_list[r].get("country")
