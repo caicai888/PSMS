@@ -873,8 +873,8 @@ def faceReport():
 
         return json.dumps({
             "code": 200,
-            # "data_geo": data_geo,
-            # "data_day": data_day,
+            "data_geo": data_geo,
+            "data_day": data_day,
             "data_geo_table": data_geo_table,
             "data_date_table": data_date_table,
             "message": "success"
