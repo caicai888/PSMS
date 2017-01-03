@@ -669,7 +669,7 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url,params=params)
-                    data = result.json()["data"]
+                    data = result.json()
                     if data != []:
                         costs_count.append(data)
 
@@ -680,7 +680,7 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url, params=params)
-                    data = result.json()["data"]
+                    data = result.json()
                     if data != []:
                         clicks_count.append(data)
 
@@ -702,7 +702,7 @@ def faceReport():
                         "time_range": str(t)
                     }
                     result = requests.get(url=url, params=params)
-                    data = result.json()["data"]
+                    data = result.json()
                     if data != []:
                         cpc_count.append(data)
 
@@ -714,24 +714,26 @@ def faceReport():
                     }
                     result = requests.get(url=url, params=params)
                     data = result.json()["data"]
-                    print data
+
                     if data != []:
-                        if data["actions"] != []:
-                            for action in data["actions"]:
+                        if data[0]["actions"] != []:
+                            for action in data[0]["actions"]:
+                                print action
                                 if "offsite_conversion" in action["action_type"]:
                                     conversions = action["value"]
-                                    date_start = action["date_start"]
+                                    date_start = data[0]["date_start"]
                                     con_data = {
                                         "conversions": int(conversions),
                                         "date_start": date_start
                                     }
-                                elif "link_click" in action["action_type"]:
-                                    conversions = action["value"]
-                                    date_start = action["date_start"]
-                                    con_data = {
-                                        "conversions": int(conversions),
-                                        "date_start": date_start
-                                    }
+                                else:
+                                    if "link_click" in action["action_type"]:
+                                        conversions = action["value"]
+                                        date_start =data[0]["date_start"]
+                                        con_data = {
+                                            "conversions": int(conversions),
+                                            "date_start": date_start
+                                        }
                                 conversions_count_list += [con_data]
 
             impressions_count_list = []
@@ -763,7 +765,7 @@ def faceReport():
                         "clicks": int(t_clicks["data"][0].get("clicks")),
                         "date_start": t_clicks["data"][0].get("date_start")
                     }
-                clicks_count_list += [clicks_data]
+                    clicks_count_list += [clicks_data]
 
             for t_cpc in cpc_count:
                 if t_cpc["data"] != []:
@@ -771,7 +773,7 @@ def faceReport():
                         "cpc": t_cpc["data"][0].get("cpc"),
                         "date_start": t_cpc["data"][0].get("date_start")
                     }
-                cpc_count_list += [cpc_data]
+                    cpc_count_list += [cpc_data]
 
             for t_ctr in ctr_count:
                 if t_ctr["data"] != []:
@@ -779,7 +781,7 @@ def faceReport():
                         "ctr": t_ctr["data"][0].get("ctr"),
                         "date_start": t_ctr["data"][0].get("date_start ")
                     }
-                ctr_count_list += [ctr_data]
+                    ctr_count_list += [ctr_data]
 
             if len(conversions_count_list) >= len(clicks_count_list):
                 len_difference = len(conversions_count_list)-len(clicks_count_list)
