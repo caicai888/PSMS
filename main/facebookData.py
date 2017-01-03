@@ -103,201 +103,201 @@ def faceReport():
         count_conversions = 0
         count_ctr = 0
         count_cpc = 0
-        # if "geo" in dimension:
-        #     for i in advertise_groups:
-        #         url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["impressions"],
-        #             "breakdowns": ["country"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_impressions += int(j["impressions"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["spend"],
-        #             "breakdowns": ["country"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_cost += float(j["spend"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["clicks"],
-        #             "breakdowns": ["country"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_clicks += float(j["clicks"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["actions"],
-        #             "breakdowns": ["country"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             actions = j.get("actions",[])
-        #             for action in actions:
-        #                 if "offsite_conversion" in action["action_type"]:
-        #                     conversions = action["value"]
-        #                     count_conversions += int(conversions)
-        #                 elif "link_click" in action["action_type"]:
-        #                     conversions = action["value"]
-        #                     count_conversions += int(conversions)
-        #                 else:
-        #                     conversions = 0
-        #                     count_conversions += conversions
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["ctr"],
-        #             "breakdowns": ["country"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_ctr += float(j["ctr"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["cpc"],
-        #             "breakdowns": ["country"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_cpc += float(j["cpc"])
-        #     count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
-        #     count_cpi = '%0.2f'% (count_cost / count_conversions)
-        #     revenue = count_conversions * 1.5
-        #     profit = revenue - count_cost
-        #     data_geo = {
-        #         "count_impressions": count_impressions,
-        #         "count_cost": count_cost,
-        #         "count_clicks": count_clicks,
-        #         "count_conversions": count_conversions,
-        #         "count_ctr": count_ctr,
-        #         "count_cvr": count_cvr,
-        #         "count_cpc": count_cpc,
-        #         "count_cpi": count_cpi,
-        #         "revenue": revenue,
-        #         "profit": profit
-        #     }
-        #     data_day = {}
-        # elif "date" in dimension and len(dimension)==1:
-        #     #按着day维度的总数据
-        #     for i in advertise_groups:
-        #         url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["impressions"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_impressions += int(j["impressions"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["spend"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_cost += float(j["spend"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["clicks"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_clicks += float(j["clicks"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["actions"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             actions = j.get("actions",[])
-        #             for action in actions:
-        #                 if "offsite_conversion" in action["action_type"]:
-        #                     conversions = action["value"]
-        #                     count_conversions += int(conversions)
-        #                 elif "link_click" in action["action_type"]:
-        #                     conversions = action["value"]
-        #                     count_conversions += int(conversions)
-        #                 else:
-        #                     conversions = 0
-        #                     count_conversions += conversions
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["ctr"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_ctr += float(j["ctr"])
-        #
-        #         params = {
-        #             "access_token": accessToken,
-        #             "level": "adset",
-        #             "fields": ["cpc"],
-        #             "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        #         }
-        #         result = requests.get(url=url, params=params)
-        #         data = result.json()["data"]
-        #         for j in data:
-        #             count_cpc += float(j["cpc"])
-        #     count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
-        #     count_cpi = '%0.2f'% (count_cost / count_conversions)
-        #     revenue = count_conversions * 1.5
-        #     profit = revenue - count_cost
-        #     data_day = {
-        #         "count_impressions": count_impressions,
-        #         "count_cost": count_cost,
-        #         "count_clicks": count_clicks,
-        #         "count_conversions": count_conversions,
-        #         "count_ctr": count_ctr,
-        #         "count_cvr": count_cvr,
-        #         "count_cpc": count_cpc,
-        #         "count_cpi": count_cpi,
-        #         "revenue": revenue,
-        #         "profit": profit
-        #     }
-        #     data_geo ={}
+        if "geo" in dimension:
+            for i in advertise_groups:
+                url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["impressions"],
+                    "breakdowns": ["country"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_impressions += int(j["impressions"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["spend"],
+                    "breakdowns": ["country"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_cost += float(j["spend"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["clicks"],
+                    "breakdowns": ["country"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_clicks += float(j["clicks"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["actions"],
+                    "breakdowns": ["country"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    actions = j.get("actions",[])
+                    for action in actions:
+                        if "offsite_conversion" in action["action_type"]:
+                            conversions = action["value"]
+                            count_conversions += int(conversions)
+                        elif "link_click" in action["action_type"]:
+                            conversions = action["value"]
+                            count_conversions += int(conversions)
+                        else:
+                            conversions = 0
+                            count_conversions += conversions
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["ctr"],
+                    "breakdowns": ["country"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_ctr += float(j["ctr"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["cpc"],
+                    "breakdowns": ["country"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_cpc += float(j["cpc"])
+            count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
+            count_cpi = '%0.2f'% (count_cost / count_conversions)
+            revenue = count_conversions * 1.5
+            profit = revenue - count_cost
+            data_geo = {
+                "count_impressions": count_impressions,
+                "count_cost": count_cost,
+                "count_clicks": count_clicks,
+                "count_conversions": count_conversions,
+                "count_ctr": count_ctr,
+                "count_cvr": count_cvr,
+                "count_cpc": count_cpc,
+                "count_cpi": count_cpi,
+                "revenue": revenue,
+                "profit": profit
+            }
+            data_day = {}
+        elif "date" in dimension and len(dimension)==1:
+            #按着day维度的总数据
+            for i in advertise_groups:
+                url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["impressions"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_impressions += int(j["impressions"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["spend"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_cost += float(j["spend"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["clicks"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_clicks += float(j["clicks"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["actions"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    actions = j.get("actions",[])
+                    for action in actions:
+                        if "offsite_conversion" in action["action_type"]:
+                            conversions = action["value"]
+                            count_conversions += int(conversions)
+                        elif "link_click" in action["action_type"]:
+                            conversions = action["value"]
+                            count_conversions += int(conversions)
+                        else:
+                            conversions = 0
+                            count_conversions += conversions
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["ctr"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_ctr += float(j["ctr"])
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["cpc"],
+                    "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    count_cpc += float(j["cpc"])
+            count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
+            count_cpi = '%0.2f'% (count_cost / count_conversions)
+            revenue = count_conversions * 1.5
+            profit = revenue - count_cost
+            data_day = {
+                "count_impressions": count_impressions,
+                "count_cost": count_cost,
+                "count_clicks": count_clicks,
+                "count_conversions": count_conversions,
+                "count_ctr": count_ctr,
+                "count_cvr": count_cvr,
+                "count_cpc": count_cpc,
+                "count_cpi": count_cpi,
+                "revenue": revenue,
+                "profit": profit
+            }
+            data_geo ={}
 
 
         all_date = ["2016-08-26","2016-08-27","2016-08-28","2016-08-29","2016-08-30","2016-08-31","2016-09-01","2016-09-02","2016-09-03","2016-09-04","2016-09-05","2016-09-06","2016-09-07","2016-09-08","2016-09-09","2016-09-10"]
