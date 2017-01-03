@@ -3,11 +3,12 @@ from __future__ import division
 from main.has_permission import *
 from flask import Blueprint, request
 from main import db
-from models import Offer, Token, Advertisers
+from models import Offer, Token, Advertisers, TimePrice, Country
 import json
 import os
 import datetime, time
 import requests
+from collections import Counter
 
 facebookDate = Blueprint('facebookDate', __name__)
 
@@ -89,6 +90,8 @@ def faceReport():
         start_date = data["start_date"]
         end_date = data["end_date"]
         dimension = data["dimension"]
+        offer = Offer.query.filter_by(id=offerId)
+        price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
         accessToken = advertiser.token
         accessToken = "EAAHgEYXO0BABAO8dhDyFvLiFnIuBpaYDYp6bcSRtkJQg5cpFy7BCJiL9xyQrRkVpheDhP4EGZCgKzBqKeGh9y0Fdd7PPZBzHnT0Q7hvyEWxTpKgJXyB3EkZBZA01OC6wx7f9NdX9popYJksnTNT2ZCpiFHX8gqIncF9vvGGEQtAZDZD"
@@ -100,7 +103,7 @@ def faceReport():
         count_conversions = 0
         count_ctr = 0
         count_cpc = 0
-        if dimension == "geo":
+        if "geo" in dimension:
             for i in advertise_groups:
                 url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
                 params = {
@@ -200,8 +203,8 @@ def faceReport():
                 "profit": profit
             }
             data_day = {}
-        elif dimension == "date":
-            #按着day维护的总数据
+        elif "date" in dimension and len(dimension)==1:
+            #按着day维度的总数据
             for i in advertise_groups:
                 url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
                 params = {
@@ -296,11 +299,12 @@ def faceReport():
             }
             data_geo ={}
 
+
         all_date = ["2016-08-26","2016-08-27","2016-08-28","2016-08-29","2016-08-30","2016-08-31","2016-09-01","2016-09-02","2016-09-03","2016-09-04","2016-09-05","2016-09-06","2016-09-07","2016-09-08","2016-09-09","2016-09-10"]
         time_ranges = []
         for day in all_date[::-1]:
             time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-        if dimension == "geo":
+        if "geo" in dimension:
             impressions_list = []
             cost_list = []
             clicks_list = []
@@ -358,7 +362,6 @@ def faceReport():
                 }
                 result = requests.get(url=url, params=params)
                 data = result.json()["data"]
-
                 for j in data:
                     actions = j.get("actions",[])
                     for action in actions:
@@ -398,770 +401,132 @@ def faceReport():
                 data = result.json()["data"]
                 for j in data:
                     cpc_list.append(j)
-            # count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
-            # count_cpi = '%0.2f'% (count_cost / count_conversions)
-            # revenue = count_conversions * 1.5
+
+            if len(conversions_list) >= len(clicks_list):
+                len_difference = len(conversions_list) - len(clicks_list)
+                for i in range(len_difference):
+                    clicks_list += [
+                        {
+                            "country": conversions_list[-1].get("country"),
+                            "clicks": 0,
+                            "date_start": conversions_list[-1].get("date_start"),
+                            "date_stop": conversions_list[-1].get("date_stop")
+                        }
+                    ]
+            else:
+                len_difference = len(clicks_list) - len(conversions_list)
+                for i in range(len_difference):
+                    conversions_list += [
+                        {
+                            "country": clicks_list[-1].get("country"),
+                            "conversions": 0,
+                            "date_start": clicks_list[-1].get("date_start"),
+                            "date_stop": clicks_list[-1].get("date_stop")
+                        }
+                    ]
+            for l in range(len(conversions_list)):
+                if conversions_list[l].get("date_start") == clicks_list[l].get("date_start") and conversions_list[l].get("country") == clicks_list:
+                    cvr = '%0.2f' % (int(conversions_list[l].get("conversions")) / int(clicks_list[l].get("clicks")) * 100) if int(clicks_list[l].get("clicks")) != 0 else 0
+                    cvr_list += [
+                        {
+                            "country": conversions_list[l].get("country"),
+                            "cvr": cvr,
+                            "date_start": conversions_list[l].get("date_start"),
+                            "date_stop": conversions_list[l].get("date_stop")
+                        }
+                    ]
+                else:
+                    cvr_list += [
+                        {
+                            "country": conversions_list[l].get("country"),
+                            "cvr": 0,
+                            "date_start": conversions_list[l].get("date_start"),
+                            "date_stop": conversions_list[l].get("date_stop")
+                        }
+                    ]
+            if len(conversions_list) > len(cost_list):
+                len_difference = len(conversions_list) - len(cost_list)
+                for i in range(len_difference):
+                    cost_list += [
+                        {
+                            "country": conversions_list[-1].get("country"),
+                            "spend": 0,
+                            "date_start": conversions_list[-1].get("date_start"),
+                            "date_stop": conversions_list[-1].get("date_stop")
+                        }
+                    ]
+            else:
+                len_difference = len(cost_list) - len(conversions_list)
+                for i in range(len_difference):
+                    conversions_list += [
+                        {
+                            "country": cost_list[-1].get("country"),
+                            "conversions": 0,
+                            "date_start": cost_list[-1].get("date_start"),
+                            "date_stop": cost_list[-1].get("date_stop")
+                        }
+                    ]
+
+            for l in range(len(conversions_list)):
+                if conversions_list[l].get("date_start") == cost_list[l].get("date_start") and conversions_list[l].get("country") == cost_list[l].get("country"):
+                    cpi = '%0.2f' % (float(cost_list[l].get("spend")) / float(conversions_list[l].get("conversions")) * 100) if conversions_list[l].get("conversions") != 0 else 0
+                    cpi_list += [
+                        {
+                            "country": conversions_list[l].get("country"),
+                            "cpi": cpi,
+                            "date_start": conversions_list[l].get("date_start"),
+                            "date_stop": conversions_list[l].get("date_stop")
+                        }
+                    ]
+                else:
+                    cpi_list += [
+                        {
+                            "country": conversions_list[l].get("country"),
+                            "cpi": 0,
+                            "date_start": conversions_list[l].get("date_start"),
+                            "date_stop": conversions_list[l].get("date_stop")
+                        }
+                    ]
+
+            for r in range(len(conversions_list)):
+                country = conversions_list[r].get("country")
+                date = conversions_list[r].get("date_start")
+                conversion = float(conversions_list[r].get("conversions"))
+                countries = Country.query.filter_by(shorthand=country).first()
+                country_id = countries.id
+                time_price = TimePrice.query.filter_by(country_id=country_id,date=date).first()
+                if time_price:
+                    price = time_price.price
+                else:
+                    price = price_default
+                revenue_list += [
+                    {
+                        "country": country,
+                        "revenue": float(conversion*price),
+                        "date_start": date,
+                        "date_stop": date
+                    }
+                ]
+
             # profit = revenue - count_cost
-            cpi_list = [
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "cpi": 0
-                },
-                {
-                    "country": "GR",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "cpi": 0.13
-                },
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "cpi": 0
-                },
-                {
-                    "country": "AR",
-                    "date_stop": "2016-09-07",
-                    "date_start": "2016-09-07",
-                    "cpi": 0.004
-                },
-                {
-                    "country": "AR",
-                    "date_stop": "2016-09-06",
-                    "date_start": "2016-09-06",
-                    "cpi": 0.004
-                },
-                {
-                    "country": "AI",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.07
-                },
-                {
-                    "country": "AR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.003
-                },
-                {
-                    "country": "BD",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.06
-                },
-                {
-                    "country": "CK",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.01
-                },
-                {
-                    "country": "CV",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.02
-                },
-                {
-                    "country": "FM",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0
-                },
-                {
-                    "country": "KG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.04
-                },
-                {
-                    "country": "LR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.08
-                },
-                {
-                    "country": "LY",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.03
-                },
-                {
-                    "country": "MF",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0
-                },
-                {
-                    "country": "MR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.04
-                },
-                {
-                    "country": "NA",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.05
-                },
-                {
-                    "country": "RS",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.22
-                },
-                {
-                    "country": "SC",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.08
-                },
-                {
-                    "country": "TG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.09
-                },
-                {
-                    "country": "TM",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0
-                },
-                {
-                    "country": "TN",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.04
-                },
-                {
-                    "country": "UG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.11
-                },
-                {
-                    "country": "YE",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cpi": 0.02
-                },
-                {
-                    "country": "AI",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cpi": 0.02
-                },
-                {
-                    "country": "BD",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cpi": 0.07
-                },
-                {
-                    "country": "CK",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cpi": 0
-                },
-                {
-                    "country": "CV",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cpi": 0.12
-                }
-            ]
-            conversions_list = [
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "conversions": 6
-                },
-                {
-                    "country": "GR",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "conversions": "17"
-                },
-                {
-                    "conversions": 0,
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08"
-                },
-                {
-                    "conversions": 1628,
-                    "country": "AR",
-                    "date_stop": "2016-09-07",
-                    "date_start": "2016-09-07"
-                },
-                {
-                    "conversions": 2050,
-                    "country": "AR",
-                    "date_stop": "2016-09-06",
-                    "date_start": "2016-09-06"
-                },
-                {
-                    "conversions": 1,
-                    "country": "AI",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 1348,
-                    "country": "AR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 35,
-                    "country": "BD",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 1,
-                    "country": "CK",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 6,
-                    "country": "CV",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 6,
-                    "country": "KG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 4,
-                    "country": "LR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 12,
-                    "country": "LY",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 5,
-                    "country": "MR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 14,
-                    "country": "NA",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 1,
-                    "country": "RS",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 2,
-                    "country": "TG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 27,
-                    "country": "TN",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 3,
-                    "country": "UG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 6,
-                    "country": "YE",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "conversions": 7,
-                    "country": "AI",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-                {
-                    "conversions": 36,
-                    "country": "BD",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-                {
-                    "conversions": 1,
-                    "country": "CV",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-            ]
-            revenue_list = [
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "revenue": 9
-                },
-                {
-                    "country": "GR",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "revenue": 25.5
-                },
-                {
-                    "revenue": 0,
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08"
-                },
-                {
-                    "revenue": 3672,
-                    "country": "AR",
-                    "date_stop": "2016-09-07",
-                    "date_start": "2016-09-07"
-                },
-                {
-                    "revenue": 3075,
-                    "country": "AR",
-                    "date_stop": "2016-09-06",
-                    "date_start": "2016-09-06"
-                },
-                {
-                    "revenue": 1.5,
-                    "country": "AI",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 2022,
-                    "country": "AR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 52.5,
-                    "country": "BD",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 1.5,
-                    "country": "CK",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 9,
-                    "country": "CV",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 9,
-                    "country": "KG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 6,
-                    "country": "LR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 18,
-                    "country": "LY",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 7.5,
-                    "country": "MR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 21,
-                    "country": "NA",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 1.5,
-                    "country": "RS",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 3,
-                    "country": "TG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 40.5,
-                    "country": "TN",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 4.5,
-                    "country": "UG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 9,
-                    "country": "YE",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "revenue": 10.5,
-                    "country": "AI",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-                {
-                    "revenue": 54,
-                    "country": "BD",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-                {
-                    "revenue": 1.5,
-                    "country": "CV",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-            ]
-            profit_list = [
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "profit": 9
-                },
-                {
-                    "country": "GR",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "profit": 25.5
-                },
-                {
-                    "profit": 0,
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08"
-                },
-                {
-                    "profit": 3672,
-                    "country": "AR",
-                    "date_stop": "2016-09-07",
-                    "date_start": "2016-09-07"
-                },
-                {
-                    "profit": 3075,
-                    "country": "AR",
-                    "date_stop": "2016-09-06",
-                    "date_start": "2016-09-06"
-                },
-                {
-                    "profit": 1.5,
-                    "country": "AI",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 2022,
-                    "country": "AR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 52.5,
-                    "country": "BD",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 1.5,
-                    "country": "CK",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 9,
-                    "country": "CV",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 9,
-                    "country": "KG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 6,
-                    "country": "LR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 18,
-                    "country": "LY",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 7.5,
-                    "country": "MR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 21,
-                    "country": "NA",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 1.5,
-                    "country": "RS",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 3,
-                    "country": "TG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 40.5,
-                    "country": "TN",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 4.5,
-                    "country": "UG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 9,
-                    "country": "YE",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05"
-                },
-                {
-                    "profit": 10.5,
-                    "country": "AI",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-                {
-                    "profit": 54,
-                    "country": "BD",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-                {
-                    "profit": 1.5,
-                    "country": "CV",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04"
-                },
-            ]
-            cvr_list = [
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "cvr": "0"
-                },
-                {
-                    "country": "GR",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "cvr": "24"
-                },
-                {
-                    "country": "ES",
-                    "date_stop": "2016-09-08",
-                    "date_start": "2016-09-08",
-                    "cvr": "10"
-                },
-                {
-                    "country": "AR",
-                    "date_stop": "2016-09-07",
-                    "date_start": "2016-09-07",
-                    "cvr": "1648"
-                },
-                {
-                    "country": "AR",
-                    "date_stop": "2016-09-06",
-                    "date_start": "2016-09-06",
-                    "cvr": "2085"
-                },
-                {
-                    "country": "AI",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "1"
-                },
-                {
-                    "country": "AR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "1367"
-                },
-                {
-                    "country": "BD",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "64"
-                },
-                {
-                    "country": "CK",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "1"
-                },
-                {
-                    "country": "CV",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "8"
-                },
-                {
-                    "country": "FM",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "0"
-                },
-                {
-                    "country": "KG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "6"
-                },
-                {
-                    "country": "LR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "7"
-                },
-                {
-                    "country": "LY",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "19"
-                },
-                {
-                    "country": "MF",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "0"
-                },
-                {
-                    "country": "MR",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "6"
-                },
-                {
-                    "country": "NA",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "16"
-                },
-                {
-                    "country": "RS",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "3"
-                },
-                {
-                    "country": "SC",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "0"
-                },
-                {
-                    "country": "TG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "3"
-                },
-                {
-                    "country": "TM",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "0"
-                },
-                {
-                    "country": "TN",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "44"
-                },
-                {
-                    "country": "UG",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "3"
-                },
-                {
-                    "country": "YE",
-                    "date_stop": "2016-09-05",
-                    "date_start": "2016-09-05",
-                    "cvr": "11"
-                },
-                {
-                    "country": "AI",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cvr": "7"
-                },
-                {
-                    "country": "BD",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cvr": "63"
-                },
-                {
-                    "country": "CK",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cvr": "0"
-                },
-                {
-                    "country": "CV",
-                    "date_stop": "2016-09-04",
-                    "date_start": "2016-09-04",
-                    "cvr": "2"
-                }
-            ]
+            for p in range(len(revenue_list)):
+                if revenue_list[p].get("country") == cost_list[p].get("country") and revenue_list[p].get("date_start") == cost_list[p].get("date_start"):
+                    profit = {
+                        "country": revenue_list[p].get("country"),
+                        "profit": float(revenue_list[p].get("revenue"))-float(cost_list[p].get("spend")),
+                        "date_start": revenue_list[p].get("date_start"),
+                        "date_stop": revenue_list[p].get("date_stop")
+                    }
+
+                else:
+                    profit = {
+                        "country": revenue_list[p].get("country"),
+                        "profit": 0,
+                        "date_start": revenue_list[p].get("date_start"),
+                        "date_stop": revenue_list[p].get("date_stop")
+                    }
+                profit_list += [profit]
+
             data_geo_table = {
                 "impressions_list": impressions_list,
                 "cost_list": cost_list,
@@ -1175,27 +540,342 @@ def faceReport():
                 "profit_list": profit_list,
                 "head": ["Date","Geo","Revenue","Profit","Cost","Impressions","Clicks","Conversions","CTR","CVR","CPC","CPA"]
             }
+            data_date_table = {}
 
-        elif dimension == "date":
+        elif "date" in dimension:
             data_geo_table = {}
-        #     for t in time_ranges:
-        #         for i in advertise_groups:
-        #             url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
-        #             params = {
-        #                 "access_token": accessToken,
-        #                 "level": "adset",
-        #                 "fields": ["impressions"],
-        #                 "time_ranges": str(t)
-        #             }
-        #             result = requests.get(url=url, params=params)
-        #             data = result.json()["data"]
-                    # if data != []:
+            impressions_count = []
+            costs_count = []
+            clicks_count = []
+            ctr_count = []
+            cpc_count = []
+            conversions_list = []
+            cost_list = []
+            revenue_list = []
+            profit_list = []
+            conversions_count_list = []
+
+            for i in advertise_groups:
+                url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["actions"],
+                    "breakdowns": ["country"],
+                    "time_ranges": str(time_ranges)
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    actions = j.get("actions", [])
+                    for action in actions:
+                        if "offsite_conversion" in action["action_type"]:
+                            conversions = int(action["value"])
+                        elif "link_click" in action["action_type"]:
+                            conversions = int(action["value"])
+                        else:
+                            conversions = 0
+                        conver_data = {
+                            "country": j["country"],
+                            "date_stop": j["date_stop"],
+                            "date_start": j["date_start"],
+                            "conversions": conversions
+                        }
+                        conversions_list += [conver_data]
+                for r in range(len(conversions_list)):
+                    country = conversions_list[r].get("country")
+                    date = conversions_list[r].get("date_start")
+                    conversion = float(conversions_list[r].get("conversions"))
+                    countries = Country.query.filter_by(shorthand=country).first()
+                    country_id = countries.id
+                    time_price = TimePrice.query.filter_by(country_id=country_id, date=date).first()
+                    if time_price:
+                        price = time_price.price
+                    else:
+                        price = price_default
+                    revenue_list += [
+                        {
+                            "country": country,
+                            "revenue": float(conversion * price),
+                            "date_start": date,
+                            "date_stop": date
+                        }
+                    ]
+
+                params = {
+                    "access_token": accessToken,
+                    "level": "adset",
+                    "fields": ["spend"],
+                    "breakdowns": ["country"],
+                    "time_ranges": str(time_ranges)
+                }
+                result = requests.get(url=url, params=params)
+                data = result.json()["data"]
+                for j in data:
+                    cost_list.append(j)
+
+                if len(revenue_list) >= len(cost_list):
+                    len_difference = len(revenue_list) - len(cost_list)
+                    for le in range(len_difference):
+                        cost_list += [{
+                            "country": revenue_list[-1].get("country"),
+                            "spend": 0,
+                            "date_start": revenue_list[-1].get("date_start"),
+                            "date_stop": revenue_list[-1].get("date_stop")
+                        }]
+                else:
+                    len_difference = len(cost_list) - len(revenue_list)
+                    for le in range(len_difference):
+                        revenue_list += [{
+                            "country": cost_list[-1].get("country"),
+                            "spend": 0,
+                            "date_start": cost_list[-1].get("date_start"),
+                            "date_stop": cost_list[-1].get("date_stop")
+                        }]
+
+                for r in range(len(revenue_list)):
+                    if revenue_list[r].get("date_start") == cost_list[r].get("date_start"):
+                        profit_list += [
+                            {
+                                "profit": float(revenue_list[r].get("revenue"))-float(cost_list[r].get("spend")),
+                                "date_start": revenue_list[r].get("date_start")
+                            }
+                        ]
+                    else:
+                        profit_list += [
+                            {
+                                "profit": 0,
+                                "date_start": revenue_list[r].get("date_start")
+                            }
+                        ]
+
+
+            for t in time_ranges:
+                for i in advertise_groups:
+                    url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
+                    params = {
+                        "access_token": accessToken,
+                        "level": "adset",
+                        "fields": ["impressions"],
+                        "time_range": str(t)
+                    }
+                    result = requests.get(url=url, params=params)
+                    data = result.json()
+                    if data != []:
+                        impressions_count.append(data)
+
+                    params = {
+                        "access_token": accessToken,
+                        "level": "adset",
+                        "fields": ["spend"],
+                        "time_range": str(t)
+                    }
+                    result = requests.get(url=url,params=params)
+                    data = result.json()
+                    if data != []:
+                        costs_count.append(data)
+
+                    params = {
+                        "access_token": accessToken,
+                        "level": "adset",
+                        "fields": ["clicks"],
+                        "time_range": str(t)
+                    }
+                    result = requests.get(url=url, params=params)
+                    data = result.json()
+                    if data != []:
+                        clicks_count.append(data)
+
+                    params = {
+                        "access_token": accessToken,
+                        "level": "adset",
+                        "fields": ["ctr"],
+                        "time_range": str(t)
+                    }
+                    result = requests.get(url=url, params=params)
+                    data = result.json()
+                    if data != []:
+                        ctr_count.append(data)
+
+                    params = {
+                        "access_token": accessToken,
+                        "level": "adset",
+                        "fields": ["cpc"],
+                        "time_range": str(t)
+                    }
+                    result = requests.get(url=url, params=params)
+                    data = result.json()
+                    if data != []:
+                        cpc_count.append(data)
+
+                    params = {
+                        "access_token": accessToken,
+                        "level": "adset",
+                        "fields": ["actions"],
+                        "time_range": str(t)
+                    }
+                    result = requests.get(url=url, params=params)
+                    data = result.json()
+                    if data["actions"] != []:
+                        for action in data["actions"]:
+                            if "offsite_conversion" in action["action_type"]:
+                                conversions = action["value"]
+                                date_start = action["date_start"]
+                                con_data = {
+                                    "conversions": int(conversions),
+                                    "date_start": date_start
+                                }
+                            elif "link_click" in action["action_type"]:
+                                conversions = action["value"]
+                                date_start = action["date_start"]
+                                con_data = {
+                                    "conversions": int(conversions),
+                                    "date_start": date_start
+                                }
+                            conversions_count_list += [con_data]
+
+            impressions_count_list = []
+            costs_count_list = []
+            clicks_count_list = []
+            cpc_count_list = []
+            ctr_count_list = []
+            cvr_count_list = []
+            cpi_count_list = []
+            for t_impression in impressions_count:
+                if t_impression["data"] != []:
+                    impression_data = {
+                        "impressions":t_impression["data"][0].get("impressions"),
+                        "date_start": t_impression["data"][0].get("date_start")
+                    }
+                    impressions_count_list+=[impression_data]
+
+            for t_cost in costs_count:
+                if t_cost["data"] != []:
+                    costs_data = {
+                        "spend": float(t_cost["data"][0].get("spend")),
+                        "date_start": t_cost["data"][0].get("date_start")
+                    }
+                    costs_count_list += [costs_data]
+
+            for t_clicks in clicks_count:
+                if t_clicks["data"] != []:
+                    clicks_data = {
+                        "clicks": int(t_clicks["data"][0].get("clicks")),
+                        "date_start": t_clicks["data"][0].get("date_start")
+                    }
+                clicks_count_list += [clicks_data]
+
+            for t_cpc in cpc_count:
+                if t_cpc["data"] != []:
+                    cpc_data = {
+                        "cpc": t_cpc["data"][0].get("cpc"),
+                        "date_start": t_cpc["data"][0].get("date_start")
+                    }
+                cpc_count_list += [cpc_data]
+
+            for t_ctr in ctr_count:
+                if t_ctr["data"] != []:
+                    ctr_data = {
+                        "ctr": t_ctr["data"][0].get("ctr"),
+                        "date_start": t_ctr["data"][0].get("date_start ")
+                    }
+                ctr_count_list += [ctr_data]
+
+            if len(conversions_count_list) >= len(clicks_count_list):
+                len_difference = len(conversions_count_list)-len(clicks_count_list)
+                for i in range(len_difference):
+                    clicks_count_list += [
+                        {
+                            "clicks": 0,
+                            "date_start": conversions_count_list[-1].get("date_start")
+                        }
+                    ]
+            else:
+                len_difference = len(clicks_count_list)-len(conversions_count_list)
+                for i in range(len_difference):
+                    conversions_count_list += [
+                        {
+                            "conversions": 0,
+                            "date_start": clicks_count_list[-1].get("date_start")
+                        }
+                    ]
+            for l in range(len(conversions_count_list)):
+                if conversions_count_list[l].get("date_start") == clicks_count_list[l].get("date_start"):
+                    cvr = '%0.2f' % (conversions_count_list[l].get("conversions") / clicks_count_list[l].get("clicks") * 100) if clicks_count_list[l].get("clicks") !=0 else 0
+                    cvr_count_list += [
+                        {
+                            "cvr": cvr,
+                            "date_start": conversions_count_list[l].get("date_start")
+                        }
+                    ]
+                else:
+                    cvr_count_list += [
+                        {
+                            "cvr": 0,
+                            "date_start": conversions_count_list[l].get("date_start")
+                        }
+                    ]
+
+            if len(conversions_count_list) > len(costs_count_list):
+                len_difference = len(conversions_count_list) - len(costs_count_list)
+                for i in range(len_difference):
+                    costs_count_list += [
+                        {
+                            "spend": 0,
+                            "date_start": conversions_count_list[-1].get("date_start")
+                        }
+                    ]
+            else:
+                len_difference = len(costs_count_list) - len(conversions_count_list)
+                for i in range(len_difference):
+                    conversions_count_list += [
+                        {
+                            "conversions": 0,
+                            "date_start": costs_count_list[-1].get("date_start")
+                        }
+                    ]
+
+            for l in range(len(conversions_count_list)):
+                if conversions_count_list[l].get("date_start") == costs_count_list[l].get("date_start"):
+                    cpi = '%0.2f' % (costs_count_list[l].get("spend") / float(conversions_count_list[l].get("conversions")) * 100) if conversions_count_list[l].get("conversions") !=0 else 0
+                    cpi_count_list += [
+                        {
+                            "cpi": cpi,
+                            "date_start": conversions_count_list[l].get("date_start")
+                        }
+                    ]
+                else:
+                    cpi_count_list += [
+                        {
+                            "cpi": 0,
+                            "date_start": conversions_count_list[l].get("date_start")
+                        }
+                    ]
+
+            data_date_table = {
+                "impressions_list": impressions_count_list,
+                "cost_list": costs_count_list,
+                "clicks_list": clicks_count_list,
+                "conversions_list":conversions_count_list,
+                "ctr_list": ctr_count_list,
+                "cvr_list": cvr_count_list,
+                "cpc_list": cpc_count_list,
+                "cpi_list": cpi_count_list,
+                "revenue_list": revenue_list,
+                "profit_list": [],
+                "head": ["Date","Revenue","Profit","Cost","Impressions","Clicks","Conversions","CTR","CVR","CPC","CPA"]
+            }
+            data_geo_table ={}
+
+            # impressions_count_list = [{"impressions":"400","date_start":"2016-09-08"},{"impressions":"500","date_start":"2016-09-08"},{"impressions":"300","date_start":"2016-09-09"}]
+
 
 
         return json.dumps({
             "code": 200,
-            "data_geo": data_geo,
-            "data_day": data_day,
+            # "data_geo": data_geo,
+            # "data_day": data_day,
             "data_geo_table": data_geo_table,
+            "data_date_table": data_date_table,
             "message": "success"
         })
