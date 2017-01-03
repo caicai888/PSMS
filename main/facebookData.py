@@ -282,7 +282,7 @@ def faceReport():
                 for j in data:
                     count_cpc += float(j["cpc"])
             count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
-            count_cpi = '%0.2f'% (count_cost / count_conversions)
+            count_cpi = '%0.2f'% (count_cost / count_conversions) if count_conversions != 0 else 0
             revenue = count_conversions * 1.5
             profit = revenue - count_cost
             data_day = {
