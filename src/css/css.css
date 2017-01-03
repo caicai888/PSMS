@@ -374,3 +374,9 @@ table tr td{
 #table_html label{
     margin-bottom: 0;
 }
+.none{
+    display: none!important;
+}
+.block{
+    display: block!important;
+}

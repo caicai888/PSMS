@@ -62,6 +62,7 @@ var Header = React.createClass({
 
                 <div className="collapse nav_right navbar-collapse" id="nav_nav">
                     <ul className="nav ul_active navbar-nav isShow">
+                        <li data-hash="dashboard"><a href="#/dashboard">Dashboard</a></li>
                         <li data-hash="manager" className="dropdown">
                             <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Manager <span className="caret"></span></a>
                             <ul className="dropdown-menu" role="menu">

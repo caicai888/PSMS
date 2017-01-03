@@ -14,6 +14,19 @@ var OfferList = React.createClass({
     export_table(){
         tableExport("export_table",'ReportTable', 'csv');
     },
+    status(e){
+        let offer_id = e.target.dataset.offer_id;
+        let _this = this;
+        ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+               _this.componentDidMount();
+            }else {
+                $(".ajax_error").html(data.message);
+                $(".modal").modal("toggle");
+            }
+        });
+    },
     search_table(e){
         clearTimeout(time);
         var _this = this;
@@ -85,7 +98,7 @@ var OfferList = React.createClass({
                                 _this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
                                                 <td>
-                                                    <div className={ele.status=='active'?'isTrue':''}></div>
+                                                    <div onClick={_this.status} data-offer_id={ele.offer_id} className={ele.status=='active'?'isTrue':''}></div>
                                                 </td>
                                                 <td><a href={"#/offer_detail/"+ele.offer_id}>{ele.offer_id}</a></td>
                                                 <td>{ele.app_name}</td>

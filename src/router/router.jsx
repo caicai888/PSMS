@@ -21,11 +21,16 @@ import ManagerList from "../components/manager_list";
 import CreateGroup from "../components/create_group";
 import GroupList from "../components/group_list";
 
+import Dashboard from "../components/dashboard";
+
+
 var Routers = <Router history={hashHistory}>
                 <Route path="/"  component={App}>
                     <IndexRedirect to="/login" />
 
                     <Route path="/welcome" component={Welcome}/>
+
+                    <Route path="/dashboard" component={Dashboard}/>
 
                     <Route path="/create_manager(/:id)" component={CreateManager}/>
                     <Route path="/manager_list" component={ManagerList}/>
