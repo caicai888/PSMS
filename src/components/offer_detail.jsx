@@ -46,6 +46,9 @@ var OfferDetail = React.createClass({
     edit(){
         $("#create_customer .disable").removeAttr("disabled");
     },
+    componentDidUpdate(){
+      $(".none").remove();
+    },
     componentDidMount(){
         var _this = this;
         if(this.props.params.three){
@@ -302,15 +305,15 @@ var OfferDetail = React.createClass({
                                                 <p>{ele.count_cost}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>Impressions($)</p>
+                                                <p>Impressions</p>
                                                 <p>{ele.count_impressions}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>Clicks($)</p>
+                                                <p>Clicks</p>
                                                 <p>{ele.count_clicks}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>Conversions($)</p>
+                                                <p>Conversions</p>
                                                 <p>{ele.count_conversions}</p>
                                             </div>
                                             <div className="box_20">
@@ -322,11 +325,11 @@ var OfferDetail = React.createClass({
                                                 <p>{ele.count_ctr}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CPC($)</p>
+                                                <p>CPC</p>
                                                 <p>{ele.count_cpc}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CPA($)</p>
+                                                <p>CPI</p>
                                                 <p>{ele.count_cpi}</p>
                                             </div>
                                         </div>

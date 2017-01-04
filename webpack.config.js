@@ -21,7 +21,7 @@ module.exports = {
         stats: { colors: true },
         proxy: {
             '/api/*': {
-                target:'http://35.161.236.80:5100',////'http://192.168.0.3:5100',//
+                target:'http://35.161.236.80:5555',////'http://192.168.0.3:5100',//
                 changeOrigin: true
             }
         }
