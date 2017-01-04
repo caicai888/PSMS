@@ -188,8 +188,8 @@ def faceReport():
                     count_cpc += float(j["cpc"])
             count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
             count_cpi = '%0.2f'% (count_cost / count_conversions) if count_conversions != 0 else 0
-            revenue = count_conversions * 1.5
-            profit = revenue - count_cost
+            revenue = 0
+            profit = 0
             data_geo = {
                 "count_impressions": str(count_impressions),
                 "count_cost": '%0.2f'%(count_cost),
@@ -282,8 +282,8 @@ def faceReport():
                     count_cpc += float(j["cpc"])
             count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
             count_cpi = '%0.2f'% (count_cost / count_conversions) if count_conversions != 0 else 0
-            revenue = count_conversions * 1.5
-            profit = revenue - count_cost
+            revenue = 0
+            profit = 0
             data_geo = {
                 "count_impressions": str(count_impressions),
                 "count_cost": '%0.2f'%(count_cost),
@@ -365,17 +365,18 @@ def faceReport():
                     for action in actions:
                         if "offsite_conversion" in action["action_type"]:
                             conversions = int(action["value"])
-                        elif "link_click" in action["action_type"]:
-                            conversions = int(action["value"])
                         else:
-                            conversions = 0
-                        conver_data = {
-                            "country": j["country"],
-                            "date_stop": j["date_stop"],
-                            "date_start": j["date_start"],
-                            "conversions": conversions
-                        }
-                        conversions_list += [conver_data]
+                            if "link_click" in action["action_type"]:
+                                conversions = int(action["value"])
+
+                    conver_data = {
+                        "country": j["country"],
+                        "date_stop": j["date_stop"],
+                        "date_start": j["date_start"],
+                        "conversions": conversions
+                    }
+                    conversions_list += [conver_data]
+
                 params = {
                     "access_token": accessToken,
                     "level": "adset",
@@ -401,25 +402,27 @@ def faceReport():
                     cpc_list.append(j)
 
             if len(conversions_list) >= len(clicks_list):
+                count = len(clicks_list)
                 len_difference = len(conversions_list) - len(clicks_list)
                 for i in range(len_difference):
                     clicks_list += [
                         {
-                            "country": conversions_list[-1].get("country"),
+                            "country": conversions_list[count+i].get("country"),
                             "clicks": 0,
-                            "date_start": conversions_list[-1].get("date_start"),
-                            "date_stop": conversions_list[-1].get("date_stop")
+                            "date_start": conversions_list[count+i].get("date_start"),
+                            "date_stop": conversions_list[count+i].get("date_stop")
                         }
                     ]
             else:
+                count = len(conversions_list)
                 len_difference = len(clicks_list) - len(conversions_list)
                 for i in range(len_difference):
                     conversions_list += [
                         {
-                            "country": clicks_list[-1].get("country"),
+                            "country": clicks_list[count+i].get("country"),
                             "conversions": 0,
-                            "date_start": clicks_list[-1].get("date_start"),
-                            "date_stop": clicks_list[-1].get("date_stop")
+                            "date_start": clicks_list[count+i].get("date_start"),
+                            "date_stop": clicks_list[count+i].get("date_stop")
                         }
                     ]
             for l in range(len(conversions_list)):
@@ -504,7 +507,6 @@ def faceReport():
                     }
                 ]
 
-            # profit = revenue - count_cost
             for p in range(len(revenue_list)):
                 if revenue_list[p].get("country") == cost_list[p].get("country") and revenue_list[p].get("date_start") == cost_list[p].get("date_start"):
                     profit = {
@@ -523,6 +525,136 @@ def faceReport():
                     }
                 profit_list += [profit]
 
+            impressions_range = []
+            date_range = []
+            dx = dict()
+            for i in impressions_list:
+                dx.setdefault(i["date_start"], []).append(i["impressions"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            impressions_list_range = [{"date_start": k, "impressions": str(v)} for k, v in dx.items()]
+            impressions_list_range = sorted(impressions_list_range, key=lambda k: k['date_start'])
+            for i in impressions_list_range:
+                impressions_range.append(i["impressions"])
+                date_range.append(i["date_start"])
+
+            cost_range = []
+            dx = dict()
+            for i in cost_list:
+                dx.setdefault(i["date_start"], []).append(i["spend"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            cost_list_range = [{"date_start": k, "spend": str(v)} for k, v in dx.items()]
+            cost_list_range = sorted(cost_list_range, key=lambda k: k['date_start'])
+            for i in cost_list_range:
+                cost_range.append(i["spend"])
+
+            clicks_range = []
+            dx = dict()
+            for i in clicks_list:
+                dx.setdefault(i["date_start"], []).append(i["clicks"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            clicks_list_range = [{"date_start": k, "clicks": str(v)} for k, v in dx.items()]
+            clicks_list_range = sorted(clicks_list_range, key=lambda k: k['date_start'])
+            for i in clicks_list_range:
+                clicks_range.append(i["clicks"])
+
+            conversions_range = []
+            dx = dict()
+            for i in conversions_list:
+                dx.setdefault(i["date_start"], []).append(i["conversions"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            conversions_list_range = [{"date_start": k, "conversions": str(v)} for k, v in dx.items()]
+            conversions_list_range = sorted(conversions_list_range, key=lambda k: k['date_start'])
+            for i in conversions_list_range:
+                conversions_range.append(i["conversions"])
+
+            ctr_range = []
+            dx = dict()
+            for i in ctr_list:
+                dx.setdefault(i["date_start"], []).append(i["ctr"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            ctr_list_range = [{"date_start": k, "ctr": str(v)} for k, v in dx.items()]
+            ctr_list_range = sorted(ctr_list_range, key=lambda k: k['date_start'])
+            for i in ctr_list_range:
+                ctr_range.append('%0.2f'%(float(i["ctr"])))
+
+            cvr_range = []
+            dx = dict()
+            for i in cvr_list:
+                dx.setdefault(i["date_start"], []).append(i["cvr"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            cvr_list_range = [{"date_start": k, "cvr": str(v)} for k, v in dx.items()]
+            cvr_list_range = sorted(cvr_list_range, key=lambda k: k['date_start'])
+            for i in cvr_list_range:
+                cvr_range.append(i["cvr"])
+
+            cpc_range = []
+            dx = dict()
+            for i in cpc_list:
+                dx.setdefault(i["date_start"], []).append(i["cpc"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            cpc_list_range = [{"date_start": k, "cpc": str(v)} for k, v in dx.items()]
+            cpc_list_range = sorted(cpc_list_range, key=lambda k: k['date_start'])
+            for i in cpc_list_range:
+                cpc_range.append('%0.2f'%(float(i["cpc"])))
+
+            cpi_range = []
+            dx = dict()
+            for i in cpi_list:
+                dx.setdefault(i["date_start"], []).append(i["cpi"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            cpi_list_range = [{"date_start": k, "cpi": str(v)} for k, v in dx.items()]
+            cpi_list_range = sorted(cpi_list_range, key=lambda k: k['date_start'])
+            for i in cpi_list_range:
+                cpi_range.append(i["cpi"])
+
+            revenue_range = []
+            dx = dict()
+            for i in revenue_list:
+                dx.setdefault(i["date_start"], []).append(i["revenue"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            revenue_list_range = [{"date_start": k, "revenue": str(v)} for k, v in dx.items()]
+            revenue_list_range = sorted(revenue_list_range, key=lambda k: k['date_start'])
+            for i in revenue_list_range:
+                revenue_range.append(i["revenue"])
+
+            profit_range = []
+            dx = dict()
+            for i in profit_list:
+                dx.setdefault(i["date_start"], []).append(i["profit"])
+            for k in dx:
+                dx[k] = sum(float(i) for i in dx[k])
+            profit_list_range = [{"date_start": k, "profit": str(v)} for k, v in dx.items()]
+            profit_list_range = sorted(profit_list_range, key=lambda k: k['date_start'])
+            for i in profit_list_range:
+                profit_range.append(i["profit"])
+
+            data_range = {
+                "date": date_range,
+                "revenue": revenue_range,
+                "impressions": impressions_range,
+                "costs": cost_range,
+                "clicks": clicks_range,
+                "conversions": conversions_range,
+                "ctr": ctr_range,
+                "cvr": cvr_range,
+                "cpc": cpc_range,
+                "cpi": cpi_range,
+                "profit": profit_range
+            }
+            count_revenue = 0
+            for a in revenue_list:
+                count_revenue += float(a["revenue"])
+            data_geo["revenue"] = '%0.2f'%(count_revenue)
+            data_geo["profit"] = '%0.2f'%(float(count_revenue)-float(data_geo["count_cost"]))
             data_geo_table = {
                 "impressions_list": impressions_list,
                 "cost_list": cost_list,
