@@ -6,6 +6,7 @@ var Header = React.createClass({
         ajax("get","/api/user/logout").then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
+                debugger
                 $(".userEmail").html("");
                 $(".userId").html("");
                 location.hash="/login";
@@ -91,8 +92,8 @@ var Header = React.createClass({
                                 <li><a href="#/offer_list">Offer List</a></li>
                             </ul>
                         </li>
-                        <li><a href="#/about">About</a></li>
-                        <li><a href="#/list">List</a></li>
+                        {/*<li><a href="#/about">About</a></li>
+                        <li><a href="#/list">List</a></li>*/}
                     </ul>
                     <ul className="nav navbar-nav navbar-right isShow">
                         <li><a onClick={this.loginOut} href="javascript:void(0)">Email：<span className="userEmail"></span>&nbsp;|&nbsp;UserId：<span className="userId"></span>&nbsp;|&nbsp;已登录！</a> </li>

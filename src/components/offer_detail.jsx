@@ -48,6 +48,9 @@ var OfferDetail = React.createClass({
     },
     componentDidMount(){
         var _this = this;
+        if(this.props.params.three){
+            $("#myTab li:last a").tab("show");
+        }
         ajax("post","/api/bind_show/"+this.props.params.id).then(function (data) {
             var data = JSON.parse(data);
             if (data.code == "200") {
@@ -66,31 +69,42 @@ var OfferDetail = React.createClass({
         });
         _this.getData();
         $(".report_weidu li").on("click",function () {
+            let index = parseInt($(this).index()+1);
             if(!$(this).index()){
                 return;
             }
-            if($(this).hasClass("active")){
+            if($(this).hasClass("active") && index != $(".report_weidu li").length){
                 $(this).removeClass("active");
-            }else{
+            }else if(index != $(".report_weidu li").length){
                 $(this).addClass("active")
             }
             _this.getData();
         })
     },
     getData:function () {
-        var _this = this;
-        var reportData ={
+        let _this = this;
+        let dimension =[];
+        for(let ele of $(".report_weidu li.active")){
+            dimension.push($(ele).attr("data-key"));
+        }
+        let reportData ={
             "offer_id":this.props.params.id,
             "type":"facebook",
-            "start_date":'2016-08-26',//$(".reportRange").val().split(":")[0],
-            "end_date":'2016-09-10',//$(".reportRange").val().split(":")[1],
-            "dimension":$(".report_weidu li.active").length>1?"geo":"date"
+            "start_date":$(".reportRange").val().split(":")[0],
+            "end_date":$(".reportRange").val().split(":")[1],
+            "dimension":dimension
         };
         ajax("post","/api/report",JSON.stringify(reportData)).then(function (res) {
                 var data = JSON.parse(res);
+                var isEmptyObject = function(obj) {
+                    for (let key in obj) {
+                        return true;
+                    }
+                    return false;
+                };
                 if (data.code == "200") {
                     var data_geo = [data.data_geo];
-                    var data_geo_table =data.data_geo_table;
+                    var data_geo_table =isEmptyObject(data.data_geo_table)?data.data_geo_table:data.data_date_table;
                     _this.setState({
                         "data_geo":data_geo,
                         "data_geo_table_head":data_geo_table.head,
@@ -109,22 +123,21 @@ var OfferDetail = React.createClass({
                     $(".ajax_error").html(data.message);
                     $(".modal").modal("toggle");
                 }
-                return ;
-                _this.report_data = data.total;
-                _this.form = data.form;
-                _this.slots = data.slots;
-                var revenue=[];
-                if(data.data&&data.data.revenue){
-                    for(var i=0;i<data.data.revenue.length;i++){
-                        revenue.push(parseFloat(Number(data.data.revenue[i]).toFixed(2)));
+
+                var strToInt = function (array) {
+                    var newArr=[];
+                    for(var i=0;i<array.length;i++){
+                        newArr.push(parseFloat(Number(array[i]).toFixed(2)));
                     }
+                    return newArr;
                 }
+
                 var hightchats = {
                     title: {
                         text: ''
                     },
                     xAxis: {
-                        categories: data.data.date_range
+                        categories: data.data_range.date
                     },
                     yAxis: {
                         plotLines: [{
@@ -145,23 +158,43 @@ var OfferDetail = React.createClass({
                     series: [{
                         name: 'Revenue',
                         visible:true,
-                        data:revenue || []
+                        data:data.data_range && strToInt(data.data_range.revenue) || []
                     }, {
-                        name: 'Gross Clicks',
+                        name: 'Profit',
                         visible:false,
-                        data: data.data&&data.data.gross_clicks || []
+                        data: data.data_range && strToInt(data.data_range.profit) || []
                     }, {
-                        name: 'Unique Clicks',
+                        name: 'Cost',
                         visible:false,
-                        data: data.data&&data.data.unique_clicks || []
+                        data: data.data_range && strToInt(data.data_range.costs) || []
+                    }, {
+                        name: 'Impressions',
+                        visible:false,
+                        data: data.data_range && strToInt(data.data_range.impressions) || []
+                    }, {
+                        name: 'Clicks',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.clicks) || []
                     }, {
                         name: 'Conversions',
                         visible:false,
-                        data: data.data&&data.data.Conversions || []
+                        data:data.data_range && strToInt(data.data_range.conversions) || []
+                    }, {
+                        name: 'CTR',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.ctr) || []
                     }, {
                         name: 'CVR',
                         visible:false,
-                        data:data.data&&data.data.CVR_list || []
+                        data:data.data_range && strToInt(data.data_range.cvr) || []
+                    }, {
+                        name: 'CPC',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.cpc) || []
+                    }, {
+                        name: 'CPA',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.cpi) || []
                     }]
                 };
                 $(".report_zhexian ul li").on("click",function () {
@@ -182,11 +215,9 @@ var OfferDetail = React.createClass({
         return (
             <div>
                 <ul id="myTab" className="nav nav-tabs">
-                    <li className="active"><a href="#offer_detail" data-toggle="tab">Offer Detail</a>
-                    </li>
+                    <li className="active"><a href="#offer_detail" data-toggle="tab">Offer Detail</a></li>
                     <li><a href="#bind_list" data-toggle="tab">Bind List</a></li>
-                    <li><a href="#report"  data-toggle="tab">Report</a>
-                    </li>
+                    <li><a href="#report"  data-toggle="tab">Report</a></li>
                 </ul>
                 <div id="myTabContent" className="tab-content" style={{marginTop:"10px"}}>
                     <div className="tab-pane fade in active" id="offer_detail">
@@ -242,10 +273,10 @@ var OfferDetail = React.createClass({
                             </div>
                             <div className="col-md-4">
                                 <ul className="box-center report_weidu">
-                                    <li className="active">Day</li>
+                                    <li data-key="date" className="active">Day</li>
                                     <li data-key="geo">Geo</li>
                                     <li data-key="source">Source</li>
-                                    <li style={{display:"none"}} data-key="source">选择日期用这个（最笨的办法）</li>
+                                    <li style={{display:"none"}}>选择日期用这个（最笨的办法）</li>
                                 </ul>
                             </div>
                             {/*<div className="col-md-2 pull-right allSlot">
@@ -330,7 +361,7 @@ var OfferDetail = React.createClass({
                             <div className="col-xs-12 date_detail">
                                 <div className="col-xs-6" style={{lineHeight:"34px"}}>Details</div>
                                 <div className="col-xs-6 text-right">
-                                    <button className="btn btn-primary">Export</button>
+                                    <button onClick={_this.export_table} className="btn btn-primary">Export</button>
                                 </div>
                             </div>
                         </div>
@@ -347,9 +378,9 @@ var OfferDetail = React.createClass({
                                 </thead>
                                 <tbody>
                                 {
-                                    _this.state.data_geo_table_conversions_list.map(function (ele,index,array) {
+                                    _this.state.data_geo_table_impressions_list.map(function (ele,index,array) {
                                         return <tr key={index}>
-                                                    <td>{ele.date_stop}</td>
+                                                    <td>{ele.date_start}</td>
                                                     <td className={ele.country?"block":"none"}>{ele.country}</td>
                                                     <td>{ _this.state.data_geo_table_revenue_list[index].revenue }</td>
                                                     <td>{ _this.state.data_geo_table_profit_list[index].profit }</td>

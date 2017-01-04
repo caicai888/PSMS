@@ -50,7 +50,21 @@ var OfferList = React.createClass({
         var _this = this ;
         ajax("get","/api/offer_show").then(function (data) {
             var data = JSON.parse(data);
+            var strToarr = function (arr) {
+                var newArr =[];
+                for(var i=0;i<arr.length;i++){
+                    var indexOf =arr[i].indexOf("'")+1;
+                    var lastIndexOf = arr[i].lastIndexOf("'");
+                    newArr.push(arr[i].substring(indexOf,lastIndexOf));
+                }
+                return newArr;
+            };
             if(data.code=="200"){
+                for(let index in data.result){
+                    let dataCountry =data.result[index].country.split(",");
+                    data.result[index].country =Array.from(strToarr(dataCountry)).join(",");
+                }
+                console.log(data.result)
                 _this.setState({
                     result:data.result,
                     result_search:data.result
@@ -110,7 +124,7 @@ var OfferList = React.createClass({
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
                                                 <td>
-                                                    <img src="./src/img/zx.jpg"/> <a href={"#/create_offer/"+ele.offer_id} className="btn btn-primary">Edit</a>
+                                                    <a href={"#/offer_detail/"+ele.offer_id+"/report"}><img src="./src/img/zx.jpg"/></a> <a href={"#/create_offer/"+ele.offer_id} className="btn btn-primary">Edit</a>
                                                 </td>
                                                 <td>{ele.updateTime}</td>
                                             </tr>
