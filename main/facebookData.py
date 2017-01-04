@@ -90,6 +90,8 @@ def faceReport():
         start_date = data["start_date"]
         end_date = data["end_date"]
         dimension = data["dimension"]
+        start_date = "2016-08-26"
+        end_date = "2016-09-10"
         offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
