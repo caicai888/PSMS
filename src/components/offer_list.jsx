@@ -14,6 +14,19 @@ var OfferList = React.createClass({
     export_table(){
         tableExport("export_table",'ReportTable', 'csv');
     },
+    status(e){
+        let offer_id = e.target.dataset.offer_id;
+        let _this = this;
+        ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+               _this.componentDidMount();
+            }else {
+                $(".ajax_error").html(data.message);
+                $(".modal").modal("toggle");
+            }
+        });
+    },
     search_table(e){
         clearTimeout(time);
         var _this = this;
@@ -37,7 +50,21 @@ var OfferList = React.createClass({
         var _this = this ;
         ajax("get","/api/offer_show").then(function (data) {
             var data = JSON.parse(data);
+            var strToarr = function (arr) {
+                var newArr =[];
+                for(var i=0;i<arr.length;i++){
+                    var indexOf =arr[i].indexOf("'")+1;
+                    var lastIndexOf = arr[i].lastIndexOf("'");
+                    newArr.push(arr[i].substring(indexOf,lastIndexOf));
+                }
+                return newArr;
+            };
             if(data.code=="200"){
+                for(let index in data.result){
+                    let dataCountry =data.result[index].country.split(",");
+                    data.result[index].country =Array.from(strToarr(dataCountry)).join(",");
+                }
+                console.log(data.result)
                 _this.setState({
                     result:data.result,
                     result_search:data.result
@@ -85,7 +112,7 @@ var OfferList = React.createClass({
                                 _this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
                                                 <td>
-                                                    <div className={ele.status=='active'?'isTrue':''}></div>
+                                                    <div onClick={_this.status} data-offer_id={ele.offer_id} className={ele.status=='active'?'isTrue':''}></div>
                                                 </td>
                                                 <td><a href={"#/offer_detail/"+ele.offer_id}>{ele.offer_id}</a></td>
                                                 <td>{ele.app_name}</td>
@@ -97,7 +124,7 @@ var OfferList = React.createClass({
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
                                                 <td>
-                                                    <img src="./src/img/zx.jpg"/> <a href={"#/create_offer/"+ele.offer_id} className="btn btn-primary">Edit</a>
+                                                    <a href={"#/offer_detail/"+ele.offer_id+"/report"}><img src="./src/img/zx.jpg"/></a> <a href={"#/create_offer/"+ele.offer_id} className="btn btn-primary">Edit</a>
                                                 </td>
                                                 <td>{ele.updateTime}</td>
                                             </tr>

@@ -59,6 +59,7 @@ var CreateOffer = React.createClass({
             ajax("post",url,JSON.stringify(data)).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
+                    debugger
                     location.hash = "offer_list";
                 }else {
                     $(".ajax_error").html(data.message);
@@ -190,6 +191,7 @@ var CreateOffer = React.createClass({
             }).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
+                    //去除list的ｕ
                     var strToarr = function (arr,newArr) {
                         for(var i=0;i<arr.length;i++){
                             var indexOf =arr[i].indexOf("'")+1;
@@ -240,6 +242,12 @@ var CreateOffer = React.createClass({
             });
         });
 
+        /*邮件报告*/
+        var html ="";
+        for (var i=0;i<24;i++){
+            html +=`<option value="${i<10?"0"+i:i}:00">${i<10?"0"+i:i}:00</option><option value="${i<10?"0"+i:i}:30">${i<10?"0"+i:i}:30</option>`
+        }
+        $("#email_report").html(html);
     },
     render:function () {
         var _this = this;
@@ -530,7 +538,9 @@ var CreateOffer = React.createClass({
                             邮件报告
                         </div>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="email_time"/>
+                            <select type="text" id="email_report" className="form-control" data-key="email_time">
+
+                            </select>
                         </div>
                     </div>
                     <div className="col-sm-10">

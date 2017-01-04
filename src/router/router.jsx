@@ -21,11 +21,16 @@ import ManagerList from "../components/manager_list";
 import CreateGroup from "../components/create_group";
 import GroupList from "../components/group_list";
 
+import Dashboard from "../components/dashboard";
+
+
 var Routers = <Router history={hashHistory}>
                 <Route path="/"  component={App}>
                     <IndexRedirect to="/login" />
 
                     <Route path="/welcome" component={Welcome}/>
+
+                    <Route path="/dashboard" component={Dashboard}/>
 
                     <Route path="/create_manager(/:id)" component={CreateManager}/>
                     <Route path="/manager_list" component={ManagerList}/>
@@ -40,7 +45,7 @@ var Routers = <Router history={hashHistory}>
 
                     <Route path="/create_offer(/:id)" component={CreateOffer}/>
                     <Route path="/offer_list" component={OfferList}/>
-                    <Route path="/offer_detail/:id" component={OfferDetail}/>
+                    <Route path="/offer_detail/:id(/:three)" component={OfferDetail}/>
 
                     <Route path="list(/:name)" component={List}/>
                     <Route path="about" component={About}/>

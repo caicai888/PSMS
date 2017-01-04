@@ -294,6 +294,7 @@ table tr td{
 }
 .dashboard_data .box_20 p:nth-child(2){
     font-size: 24px;
+    margin-bottom: 0px;
 }
 .dashboard_data .box_20 span.yellow{
     color:#f3d042;
@@ -373,4 +374,10 @@ table tr td{
 }
 #table_html label{
     margin-bottom: 0;
+}
+.none{
+    display: none!important;
+}
+.block{
+    display: block!important;
 }

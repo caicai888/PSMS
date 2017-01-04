@@ -1,131 +1,337 @@
 import React from "react";
+import {ajax} from "../lib/ajax";
+import {valid,setForm,getForm} from "../lib/form";
 import OfferDetailDetail from "./offer_detail_detail";
+import {DateSingle,Daterange} from "./daterange";
+require("highcharts");
+require("../js/FileSaver");
+var tableExport = require("../js/tableExport");
 
 var OfferDetail = React.createClass({
+    getInitialState() {
+        return {
+            "isYes":false, /*判断bind_list是update-save*/
+            "data_geo":[],
+                "data_geo_table_head":[],
+            "data_geo_table_clicks_list":[],
+                "data_geo_table_conversions_list":[],
+            "data_geo_table_cost_list":[],
+                "data_geo_table_cpc_list":[],
+            "data_geo_table_cpi_list":[],
+                "data_geo_table_ctr_list":[],
+            "data_geo_table_cvr_list":[],
+            "data_geo_table_profit_list":[],
+                "data_geo_table_revenue_list":[],
+            "data_geo_table_impressions_list":[]
+        };
+    },
+    export_table(){
+        tableExport("export_table",'ReportTable', 'csv');
+    },
+    submit(){
+        if(valid("#create_customer","data-required")) {
+            var data = setForm("#create_customer", "data-key");
+            var url= this.state.isYes?"/api/bind_update":"/api/offer_bind";
+            ajax("post",url, JSON.stringify(data)).then(function (data) {
+                var data = JSON.parse(data);
+                if (data.code == "200") {
+                    $("#create_customer .disable").attr("disabled",true);
+                } else {
+                    $(".ajax_error").html(data.message);
+                    $(".modal").modal("toggle");
+                }
+            });
+        }
+    },
+    edit(){
+        $("#create_customer .disable").removeAttr("disabled");
+    },
     componentDidMount(){
+        var _this = this;
+        if(this.props.params.three){
+            $("#myTab li:last a").tab("show");
+        }
+        ajax("post","/api/bind_show/"+this.props.params.id).then(function (data) {
+            var data = JSON.parse(data);
+            if (data.code == "200") {
+                if(data.facebook.facebook_id){
+                    _this.setState({
+                        isYes:true
+                    });
+                    $("#create_customer .disable").attr("disabled",true);
+                    $(".ad_id").val(data.facebook.facebook_id);
+                    getForm("#create_customer", data.facebook)
+                }
+            } else {
+                $(".ajax_error").html(data.message);
+                $(".modal").modal("toggle");
+            }
+        });
+        _this.getData();
+        $(".report_weidu li").on("click",function () {
+            let index = parseInt($(this).index()+1);
+            if(!$(this).index()){
+                return;
+            }
+            if($(this).hasClass("active") && index != $(".report_weidu li").length){
+                $(this).removeClass("active");
+            }else if(index != $(".report_weidu li").length){
+                $(this).addClass("active")
+            }
+            _this.getData();
+        })
+    },
+    getData:function () {
+        let _this = this;
+        let dimension =[];
+        for(let ele of $(".report_weidu li.active")){
+            dimension.push($(ele).attr("data-key"));
+        }
+        let reportData ={
+            "offer_id":this.props.params.id,
+            "type":"facebook",
+            "start_date":$(".reportRange").val().split(":")[0],
+            "end_date":$(".reportRange").val().split(":")[1],
+            "dimension":dimension
+        };
+        ajax("post","/api/report",JSON.stringify(reportData)).then(function (res) {
+                var data = JSON.parse(res);
+                var isEmptyObject = function(obj) {
+                    for (let key in obj) {
+                        return true;
+                    }
+                    return false;
+                };
+                if (data.code == "200") {
+                    var data_geo = [data.data_geo];
+                    var data_geo_table =isEmptyObject(data.data_geo_table)?data.data_geo_table:data.data_date_table;
+                    _this.setState({
+                        "data_geo":data_geo,
+                        "data_geo_table_head":data_geo_table.head,
+                            "data_geo_table_clicks_list":data_geo_table.clicks_list,
+                        "data_geo_table_conversions_list":data_geo_table.conversions_list,
+                            "data_geo_table_cost_list":data_geo_table.cost_list,
+                        "data_geo_table_cpc_list":data_geo_table.cpc_list,
+                            "data_geo_table_cpi_list":data_geo_table.cpi_list,
+                        "data_geo_table_ctr_list":data_geo_table.ctr_list,
+                            "data_geo_table_cvr_list":data_geo_table.cvr_list,
+                            "data_geo_table_profit_list":data_geo_table.profit_list,
+                        "data_geo_table_revenue_list":data_geo_table.revenue_list,
+                        "data_geo_table_impressions_list":data_geo_table.impressions_list
+                    });
+                } else {
+                    $(".ajax_error").html(data.message);
+                    $(".modal").modal("toggle");
+                }
+
+                var strToInt = function (array) {
+                    var newArr=[];
+                    for(var i=0;i<array.length;i++){
+                        newArr.push(parseFloat(Number(array[i]).toFixed(2)));
+                    }
+                    return newArr;
+                }
+
+                var hightchats = {
+                    title: {
+                        text: ''
+                    },
+                    xAxis: {
+                        categories: data.data_range.date
+                    },
+                    yAxis: {
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }],
+                        labels: {
+                            enabled: true
+                        }
+                    },
+                    credits: {
+                        enabled: false // 禁用版权信息
+                    },
+                    legend: {
+                        enabled:false
+                    },
+                    series: [{
+                        name: 'Revenue',
+                        visible:true,
+                        data:data.data_range && strToInt(data.data_range.revenue) || []
+                    }, {
+                        name: 'Profit',
+                        visible:false,
+                        data: data.data_range && strToInt(data.data_range.profit) || []
+                    }, {
+                        name: 'Cost',
+                        visible:false,
+                        data: data.data_range && strToInt(data.data_range.costs) || []
+                    }, {
+                        name: 'Impressions',
+                        visible:false,
+                        data: data.data_range && strToInt(data.data_range.impressions) || []
+                    }, {
+                        name: 'Clicks',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.clicks) || []
+                    }, {
+                        name: 'Conversions',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.conversions) || []
+                    }, {
+                        name: 'CTR',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.ctr) || []
+                    }, {
+                        name: 'CVR',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.cvr) || []
+                    }, {
+                        name: 'CPC',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.cpc) || []
+                    }, {
+                        name: 'CPA',
+                        visible:false,
+                        data:data.data_range && strToInt(data.data_range.cpi) || []
+                    }]
+                };
+                $(".report_zhexian ul li").on("click",function () {
+                    var _index = $(this).index();
+                    $(this).addClass("active").siblings().removeClass("active");
+                    hightchats.series.forEach(function (obj,index) {
+                        hightchats.series[index].visible = false;
+                    });
+                    hightchats.series[_index].visible =true;
+                    $('#report_zhexian').highcharts(hightchats);
+                })
+                $('#report_zhexian').highcharts(hightchats);
+        })
 
     },
     render:function () {
+        var _this = this;
         return (
             <div>
                 <ul id="myTab" className="nav nav-tabs">
-                    <li className="active"><a href="#offer_detail" data-toggle="tab">Offer Detail</a>
-                    </li>
+                    <li className="active"><a href="#offer_detail" data-toggle="tab">Offer Detail</a></li>
                     <li><a href="#bind_list" data-toggle="tab">Bind List</a></li>
-                    <li><a href="#report"  data-toggle="tab">Report</a>
-                    </li>
+                    <li><a href="#report"  data-toggle="tab">Report</a></li>
                 </ul>
                 <div id="myTabContent" className="tab-content" style={{marginTop:"10px"}}>
                     <div className="tab-pane fade in active" id="offer_detail">
-                        <div className="row" style={{marginBottom:"10px"}}>
-                            <div className="col-sm-10 ">
-                                <div className="col-sm-3 text-right">ID</div>
-                                <div className="col-sm-9">
-                                    1000
-                                </div>
-                            </div>
-                        </div>
                         <OfferDetailDetail id={this.props.params.id} />
                     </div>
                     <div className="tab-pane fade" id="bind_list">
-                        <div className="row">
-                            <div className="col-sm-10">
-                                <div className="col-sm-3 text-right">
-                                    Facebook
-                                </div>
-                                <div className="col-sm-9">
-                                    <textarea className="form-control">
+                        <form id="create_customer" className="form-horizontal" role="form" noValidate="noValidate">
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right">
+                                        Facebook 广告系列
+                                    </div>
+                                    <div className="col-sm-9">
+                                    <textarea className="form-control disable" data-required="true" data-key="advertise_series">
 
                                     </textarea>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-10">
-                                <div className="col-sm-3 text-right">
-                                    Adwords
-                                </div>
-                                <div className="col-sm-9">
-                                    <textarea className="form-control">
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right">
+                                        Facebook　广告组
+                                    </div>
+                                    <div className="col-sm-9">
+                                    <textarea className="form-control disable" data-required="true" data-key="advertise_groups">
 
                                     </textarea>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-10">
-                                <div className="col-sm-3 text-right"></div>
-                                <div className="col-sm-9">
-                                    <a className="btn btn-primary" style={{marginRight:"20px"}}>Save</a>
-                                    <a className="btn btn-warning">Cancel</a>
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right"></div>
+                                    <div className="col-sm-9">
+                                        <input type="hidden" data-key="type" value='facebook'/>
+                                        <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
+                                        <input type="hidden" data-key="ad_id" className="ad_id"/>
+                                        <button  onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
+                                        <button onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
+
                     </div>
                     <div className="tab-pane fade" id="report">
                         <div className="row">
                             <div className="col-md-3">
-                                <div id="reportRange">
-                                    <span>December 13, 2016 - December 19, 2016</span>
-                                </div>
+                                <input type="hidden" className="reportRange"/>
+                                <Daterange id="reportRange" />
                             </div>
                             <div className="col-md-4">
                                 <ul className="box-center report_weidu">
-                                    <li data-key="" className="active">Day</li>
-                                    <li data-key="country">Country</li>
-                                    <li data-key="slot">Slot</li>
-                                    <li data-key="campaign">Campaign</li>
+                                    <li data-key="date" className="active">Day</li>
+                                    <li data-key="geo">Geo</li>
+                                    <li data-key="source">Source</li>
+                                    <li style={{display:"none"}}>选择日期用这个（最笨的办法）</li>
                                 </ul>
                             </div>
-                            <div className="col-md-2 pull-right allSlot">
+                            {/*<div className="col-md-2 pull-right allSlot">
                                 <select className="form-control">
                                     <option value="all_slot">All Slot</option>
                                 </select>
-                            </div>
+                            </div>*/}
                         </div>
                         <div className="row dashboard_data">
-                            <div className="col-md-12">
-                                <div className="box_20">
-                                    <p>Revenue($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>Profit($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>Cost($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>Impressions($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>Clicks($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>Conversions($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>CTR($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>CVR($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>CPC($)</p>
-                                    <p>739.42</p>
-                                </div>
-                                <div className="box_20">
-                                    <p>CPA($)</p>
-                                    <p>739.42</p>
-                                </div>
-                            </div>
+                            {
+                                this.state.data_geo.map(function (ele,index,array) {
+                                    return <div className="col-md-12" key={index}>
+                                            <div className="box_20">
+                                                <p>Revenue($)</p>
+                                                <p>{ele.revenue}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>Profit($)</p>
+                                                <p>{ele.profit}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>Cost($)</p>
+                                                <p>{ele.count_cost}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>Impressions($)</p>
+                                                <p>{ele.count_impressions}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>Clicks($)</p>
+                                                <p>{ele.count_clicks}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>Conversions($)</p>
+                                                <p>{ele.count_conversions}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>CTR($)</p>
+                                                <p>{ele.count_cost}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>CVR($)</p>
+                                                <p>{ele.count_ctr}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>CPC($)</p>
+                                                <p>{ele.count_cpc}</p>
+                                            </div>
+                                            <div className="box_20">
+                                                <p>CPA($)</p>
+                                                <p>{ele.count_cpi}</p>
+                                            </div>
+                                        </div>
+                                })
+                            }
                         </div>
                         <div className="row report_report">
                             <div className="col-md-12">
@@ -151,43 +357,44 @@ var OfferDetail = React.createClass({
                                 </div>
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row" style={{marginTop:"15px"}}>
                             <div className="col-xs-12 date_detail">
-                                <div className="col-xs-6">Details</div>
+                                <div className="col-xs-6" style={{lineHeight:"34px"}}>Details</div>
                                 <div className="col-xs-6 text-right">
-                                    <button className="btn btn-primary">Export</button>
+                                    <button onClick={_this.export_table} className="btn btn-primary">Export</button>
                                 </div>
                             </div>
                         </div>
-                        <div className="table-responsive" style={{marginTop:"10px"}}>
-                            <table className="table table-bordered">
+                        <div className="table-responsive" style={{marginTop:"15px"}}>
+                            <table id="export_table" className="table table-bordered">
                                 <thead>
-                                <tr>
-                                    <th>Revenue</th>
-                                    <th>Profit</th>
-                                    <th>Cost</th>
-                                    <th>Impressions</th>
-                                    <th>Clicks</th>
-                                    <th>Conversions</th>
-                                    <th>CTR</th>
-                                    <th>CVR</th>
-                                    <th>CPC</th>
-                                    <th>CPA</th>
-                                </tr>
+                                    <tr>
+                                    {
+                                        _this.state.data_geo_table_head.map(function (ele,index,array) {
+                                            return <th key={index}>{ele}</th>
+                                        })
+                                    }
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>Revenue</td>
-                                    <td>Profit</td>
-                                    <td>Cost</td>
-                                    <td>Impressions</td>
-                                    <td>Clicks</td>
-                                    <td>Conversions</td>
-                                    <td>CTR</td>
-                                    <td>CVR</td>
-                                    <td>CPC</td>
-                                    <td>CPA</td>
-                                </tr>
+                                {
+                                    _this.state.data_geo_table_impressions_list.map(function (ele,index,array) {
+                                        return <tr key={index}>
+                                                    <td>{ele.date_start}</td>
+                                                    <td className={ele.country?"block":"none"}>{ele.country}</td>
+                                                    <td>{ _this.state.data_geo_table_revenue_list[index].revenue }</td>
+                                                    <td>{ _this.state.data_geo_table_profit_list[index].profit }</td>
+                                                    <td>{ _this.state.data_geo_table_cost_list[index].spend }</td>
+                                                    <td>{ _this.state.data_geo_table_impressions_list[index].impressions }</td>
+                                                    <td>{ _this.state.data_geo_table_clicks_list[index].clicks }</td>
+                                                    <td>{ _this.state.data_geo_table_conversions_list[index].conversions }</td>
+                                                    <td>{ _this.state.data_geo_table_ctr_list[index].ctr }</td>
+                                                    <td>{ _this.state.data_geo_table_cvr_list[index].cvr }</td>
+                                                    <td>{ _this.state.data_geo_table_cpc_list[index].cpc }</td>
+                                                    <td>{ _this.state.data_geo_table_cpi_list[index].cpi }</td>
+                                                </tr>
+                                    })
+                                }
                                 </tbody>
                             </table>
                         </div>

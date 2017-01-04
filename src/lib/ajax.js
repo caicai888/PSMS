@@ -11,7 +11,9 @@ var ajax = function (method,url,data) {
             },
             data:data,
             success:function (data) {
-                $(".mask").hide();
+                $(document).ajaxStop(function () {
+                    $(".mask").hide();
+                });
                 resolve(data);
             },
             error:function (e) {

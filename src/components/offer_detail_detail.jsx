@@ -85,6 +85,15 @@ var OfferDetailDetail = React.createClass({
         return (
             <form id="create_offer" className="form-horizontal offer_detail_detail" role="form" noValidate="noValidate">
                 <div id="create_offer" className="row">
+
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            ID
+                        </div>
+                        <div className="col-sm-3" >
+                            {this.props.id}
+                        </div>
+                    </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
                             客户名称
