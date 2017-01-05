@@ -724,7 +724,7 @@ def updateContryTime():
 @offers.route('/<path>')
 def today(path):
     # base_dir = os.path.abspath(__file__)
-    base_dir = os.path.join(os.path.dirname('index.html'), os.path.pardir)
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
     print "+++++"*20
     print base_dir
     print path
