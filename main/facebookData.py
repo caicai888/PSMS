@@ -17,13 +17,14 @@ def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
     token = Token.query.filter().first()
     accessToken = token.accessToken
+    accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
     bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","163581607335752"]
     adaccounts = []
     for i in bm_id:
         url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
         params_account = {
-            "access_token": accessToken
+            "access_token": str(accessToken)
         }
         result = requests.get(url=url_bm,params=params_account)
         data = result.json()["data"]
