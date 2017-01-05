@@ -19,7 +19,7 @@ def dashboard():
     accessToken = token.accessToken
     accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
-    bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","163581607335752"]
+    bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","1635816073357528"]
     adaccounts = []
     for i in bm_id:
         url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
