@@ -46,7 +46,6 @@ def create_user():
         db.session.add(user)
         db.session.commit()
         userid = db.session.query(User).filter_by(email=data["email"]).first().id
-        session["user_id"] = userid
 
         # 存用户权限表
         user_permission = UserPermissions(userid, data['permission_ids'])
