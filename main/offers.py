@@ -281,7 +281,7 @@ def updateOffer():
                 if data["email_time"] != "":
                     email_time = "2016-12-19 " + data["email_time"] + ":00"
                     print "----"*20
-                    print email_time
+                    email_time = time.strptime(email_time, '%Y-%m-%d %H:%M:%S') - datetime.timedelta(hours=8)
                     emailTime = float(time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S')))
                     print emailTime
                     print "***"*20
