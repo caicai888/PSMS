@@ -711,19 +711,19 @@ def updateContryTime():
     return json.dumps({"code": 200, "message": "success"})
 
 
-@offers.route('/static/<path:filename>')
-def static_file_for_console(filename):
-    filename = safe_join("../static", filename)
-    if not os.path.isabs(filename):
-        filename = os.path.join(offers.root_path, filename)
-    if not os.path.isfile(filename):
-        return Response(), 404
-    return send_file(filename, conditional=True)
-
-
-@offers.route('/<path>')
-def today(path):
-    base_dir = os.path.dirname(__file__)
-    resp = make_response(open(os.path.join(base_dir, path)))
-    resp.headers["Content-type"] = "application/json;charset=UTF-8"
-    return resp
+# @offers.route('/static/<path:filename>')
+# def static_file_for_console(filename):
+#     filename = safe_join("../static", filename)
+#     if not os.path.isabs(filename):
+#         filename = os.path.join(offers.root_path, filename)
+#     if not os.path.isfile(filename):
+#         return Response(), 404
+#     return send_file(filename, conditional=True)
+#
+#
+# @offers.route('/<path>')
+# def today(path):
+#     base_dir = os.path.dirname(__file__)
+#     resp = make_response(open(os.path.join(base_dir, path)))
+#     resp.headers["Content-type"] = "application/json;charset=UTF-8"
+#     return resp

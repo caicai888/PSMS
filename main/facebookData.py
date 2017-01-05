@@ -32,7 +32,10 @@ def dashboard():
     adaccounts = ['act_1062495723848502', 'act_1045963462146679', 'act_922385891231477', 'act_922385854564814', 'act_922385827898150', 'act_922385781231488', 'act_922385757898157', 'act_706139999567828', 'act_706651862849975', 'act_706651859516642', 'act_706657382849423', 'act_706142526234242', 'act_1135210999910307', 'act_910834729053260', 'act_910834539053279', 'act_910834585719941', 'act_910834692386597', 'act_910834502386616', 'act_686548158193679', 'act_1130318147066259', 'act_1130318150399592', 'act_674827266032435', 'act_1135211003243640', 'act_1135211006576973', 'act_1135210996576974', 'act_1020089538089121', 'act_1020089511422457', 'act_1020089478089127']
     impressions_count = 0
     conversions_count = 0
+    spend_count = 0
     clicks_count = 0
+    cpc_count = 0
+    ctr_count = 0
     for ad in adaccounts:
         url = "https://graph.facebook.com/v2.8/"+str(ad)+"/insights"
         filed_lists = ["impressions","spend","clicks","cpc","ctr","actions"]
@@ -56,60 +59,60 @@ def dashboard():
         }
         result_conversions = requests.get(url=url, params=params_conversions)
         data_conversions = result_conversions.json()["data"]
-        for action in data_conversions["actions"]:
-            if "offsite_conversion" in action["action_type"]:
-                conversions_count += int(action["value"])
-            elif "link_click" in action["action_type"]:
-                conversions_count += int(action["value"])
-            else:
-                conversions_count += 0
-        # for i in filed_lists:
-        #     params_impressions = {
-        #         "access_token": accessToken,
-        #         "level": "account",
-        #         "fields": [i],
-        #         "time_range": str(time_range)
-        #     }
-        #     result_impressions = requests.get(url=url, params=params_impressions)
-        #     data_impressions = result_impressions.json()["data"]
-        #     print data_impressions
-            # if data_impressions:
-            #     value = data_impressions[0].get(i)
-            #     if i == "actions":
-            #         i = "conversions"
-            #         for action in data_impressions[0].get("actions"):
-            #             if "offsite_conversion" in action["action_type"]:
-            #                 conversions = action["value"]
-            #             elif "link_click" in action["action_type"]:
-            #                 conversions = action["value"]
-            #             else:
-            #                 conversions = 0
-            #         value = conversions
-            #
-            #     data = {
-            #         i:value
-            #     }
-            #     result += [data]
-            #     print result
-            #     print "-----"*20
-            #     print conversions
-            #
-            #     clicks = int(data_impressions[2].get("clicks"))
-            #     if int(clicks) != int(0):
-            #         cvr = '%0.2f'%(int(conversions) / int(clicks) * 100 )
-            #     else:
-            #         cvr = 0
-            #     data_cvr = {
-            #         "cvr": cvr
-            #     }
-            #     result += [data_cvr]
-                # if int(conversions) != 0:
-                #     cpi = '%0.2f'%(float(result[1].get("spend"))/float(conversions))
-                # else:
-                #     cpi = 0
-                # data_cpi = {
-                #     "cpi": cpi
-                # }
+        if data_conversions != []:
+            print data_conversions
+            for action in data_conversions[0]["actions"]:
+                if "offsite_conversion" in action["action_type"]:
+                    conversions_count += int(action["value"])
+                elif "link_click" in action["action_type"]:
+                    conversions_count += int(action["value"])
+                else:
+                    conversions_count += 0
+
+        params_spend = {
+            "access_token": accessToken,
+            "level": "account",
+            "fields": ["spend"],
+            "time_range": str(time_range)
+        }
+        result_spend = requests.get(url=url, params=params_spend)
+        data_spend = result_spend.json()["data"]
+        for i in data_spend:
+            spend_count += float(i["spend"])
+
+        params_clicks = {
+            "access_token": accessToken,
+            "level": "account",
+            "fields": ["clicks"],
+            "time_range": str(time_range)
+        }
+        result_clicks = requests.get(url=url, params=params_clicks)
+        data_clicks = result_clicks.json()["data"]
+        for i in data_clicks:
+            clicks_count += int(i["clicks"])
+
+        params_cpc = {
+            "access_token": accessToken,
+            "level": "account",
+            "fields": ["cpc"],
+            "time_range": str(time_range)
+        }
+        result_cpc = requests.get(url=url, params=params_cpc)
+        data_cpc = result_cpc.json()["data"]
+        for i in data_cpc:
+            cpc_count += float(i["cpc"])
+
+        params_ctr = {
+            "access_token": accessToken,
+            "level": "account",
+            "fields": ["ctr"],
+            "time_range": str(time_range)
+        }
+        result_ctr = requests.get(url=url, params=params_ctr)
+        data_ctr = result_ctr.json()["data"]
+        for i in data_ctr:
+            ctr_count += float(i["ctr"])
+
                 # result += [data_cpi]
                 # revenue = float(conversions)*1.5
                 # data_revenue = {
@@ -122,11 +125,20 @@ def dashboard():
                 # }
                 # result += [data_profit]
                 # print "&&&&&&"*20
-    print impressions_count
+    result = {
+        "impressions": str(impressions_count),
+        "spend": '%0.2f'%(float(spend_count)),
+        "clicks": str(clicks_count),
+        "conversions": str(conversions_count),
+        "cpc": '%0.2f'%(float(cpc_count)),
+        "ctr": '%0.2f'%(float(ctr_count)),
+        "cpi": '%0.2f' % ((float(spend_count)) / float(conversions_count)),
+        "cvr": '%0.2f' %(float(conversions_count)/float(clicks_count))
+    }
     response = {
         "code": 200,
         "message": "success",
-        "result": impressions_count
+        "result": result
     }
     return json.dumps(response)
 
