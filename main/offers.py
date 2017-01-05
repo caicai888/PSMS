@@ -286,7 +286,7 @@ def updateOffer():
                     print "----"*20
                     email_time = datetime.datetime.strptime(email_time,'%Y-%m-%d %H:%M:%S') - datetime.timedelta(hours=8)
                     email_time = email_time.strftime('%Y-%m-%d %H:%M:%S')
-                    emailTime = float(time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S')))
+                    emailTime = time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S'))
                     print emailTime
                     print "***"*20
                     offer.email_time = emailTime

@@ -17,7 +17,6 @@ def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
     token = Token.query.filter().first()
     accessToken = token.accessToken
-    accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
     bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","1635816073357528"]
     adaccounts = []
@@ -134,13 +133,16 @@ def dashboard():
                     price = 0
                 else:
                     price = prices.price
-                if "offsite_conversion" in action["actions"][0].get("action_type"):
-                    conversions_revenue = int(action["actions"][0].get("value"))
-                elif "link_click" in action["actions"][0].get("action_type"):
-                    conversions_revenue = int(action["actions"][0].get("value"))
-                else:
-                    conversions_revenue = 0
-                revenue_count += (conversions_revenue*float(price))
+                print action
+                actions = action.get("actions", [])
+                for j in actions:
+                    if "offsite_conversion" in j["action_type"]:
+                        conversions_revenue = float(j["value"])
+                    elif "link_click" in j["action_type"]:
+                        conversions_revenue = float(j["value"])
+                    else:
+                        conversions_revenue = 0
+                    revenue_count += (conversions_revenue * float(price))
 
     result = {
         "impressions": str(impressions_count),
