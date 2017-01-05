@@ -62,9 +62,9 @@ def dashboard():
         if data_conversions != []:
             for action in data_conversions:
                 if "offsite_conversion" in action["actions"][0].get("action_type"):
-                    conversions_count += int(action["value"])
+                    conversions_count += int(action["actions"][0].get("value"))
                 elif "link_click" in action["actions"][0].get("action_type"):
-                    conversions_count += int(action["value"])
+                    conversions_count += int(action["actions"][0].get("value"))
                 else:
                     conversions_count += 0
 
@@ -135,9 +135,9 @@ def dashboard():
                 else:
                     price = prices.price
                 if "offsite_conversion" in action["actions"][0].get("action_type"):
-                    conversions_revenue = int(action["value"])
+                    conversions_revenue = int(action["actions"][0].get("value"))
                 elif "link_click" in action["actions"][0].get("action_type"):
-                    conversions_revenue = int(action["value"])
+                    conversions_revenue = int(action["actions"][0].get("value"))
                 else:
                     conversions_revenue = 0
                 revenue_count += (conversions_revenue*float(price))
