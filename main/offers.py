@@ -8,7 +8,6 @@ import json
 import os
 import datetime, time
 import xlrd
-import tempfile
 from sqlalchemy import desc
 
 offers = Blueprint('offers', __name__)
@@ -83,7 +82,9 @@ def createOffer():
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         email_time = "2016-12-19 " + data["email_time"] + ":00"
+        print email_time
         emailTime = float(time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S')))
+        print emailTime
 
         offer = Offer(int(data["user_id"]), int(data["customer_id"]), data["status"], data["contract_type"],
                       data["contract_num"], float(data["contract_scale"]), data["os"], data["package_name"],
@@ -163,7 +164,7 @@ def offerDetail(id):
     else:
         contract_scale = offer.contract_scale
     plate = offer.platform
-    emailTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(offer.email_time))[11:16]
+    emailTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(offer.email_time)))[11:16]
     result = {
         "customer_id": customer.company_name,
         "status": offer.status,
@@ -279,7 +280,11 @@ def updateOffer():
                 offer.remark = data["remark"].encode("utf-8") if data["remark"] != "" else offer.remark
                 if data["email_time"] != "":
                     email_time = "2016-12-19 " + data["email_time"] + ":00"
+                    print "----"*20
+                    print email_time
                     emailTime = float(time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S')))
+                    print emailTime
+                    print "***"*20
                     offer.email_time = emailTime
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
                 offer.email_tempalte = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_tempalte
