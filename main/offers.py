@@ -727,6 +727,7 @@ def today(path):
     print "+++++"*20
     print base_dir
     print path
+    base_dir = "/home/centos/code/PSMS/"
     resp = make_response(open(os.path.join(base_dir, path)))
     resp.headers["Content-type"] = "application/json;charset=UTF-8"
     return resp
