@@ -18,28 +18,27 @@ def dashboard():
     token = Token.query.filter().first()
     accessToken = token.accessToken
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
-    bm_id = ["1167706699949156","1746897442253097"]
+    bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","163581607335752"]
     adaccounts = []
-    # for i in bm_id:
-    #     url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
-    #     params_account = {
-    #         "access_token": accessToken
-    #     }
-    #     result = requests.get(url=url_bm,params=params_account)
-    #     data = result.json()["data"]
-    #     for j in data:
-    #         adaccounts.append(j["id"])
-    adaccounts = ['act_1062495723848502', 'act_1045963462146679', 'act_922385891231477', 'act_922385854564814', 'act_922385827898150', 'act_922385781231488', 'act_922385757898157', 'act_706139999567828', 'act_706651862849975', 'act_706651859516642', 'act_706657382849423', 'act_706142526234242', 'act_1135210999910307', 'act_910834729053260', 'act_910834539053279', 'act_910834585719941', 'act_910834692386597', 'act_910834502386616', 'act_686548158193679', 'act_1130318147066259', 'act_1130318150399592', 'act_674827266032435', 'act_1135211003243640', 'act_1135211006576973', 'act_1135210996576974', 'act_1020089538089121', 'act_1020089511422457', 'act_1020089478089127']
+    for i in bm_id:
+        url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
+        params_account = {
+            "access_token": accessToken
+        }
+        result = requests.get(url=url_bm,params=params_account)
+        data = result.json()["data"]
+        for j in data:
+            adaccounts.append(j["id"])
+
     impressions_count = 0
     conversions_count = 0
     spend_count = 0
     clicks_count = 0
     cpc_count = 0
     ctr_count = 0
+    revenue_count = 0
     for ad in adaccounts:
         url = "https://graph.facebook.com/v2.8/"+str(ad)+"/insights"
-        filed_lists = ["impressions","spend","clicks","cpc","ctr","actions"]
-        result = []
         params_impressions = {
             "access_token": accessToken,
             "level": "account",
@@ -60,11 +59,10 @@ def dashboard():
         result_conversions = requests.get(url=url, params=params_conversions)
         data_conversions = result_conversions.json()["data"]
         if data_conversions != []:
-            print data_conversions
-            for action in data_conversions[0]["actions"]:
-                if "offsite_conversion" in action["action_type"]:
+            for action in data_conversions:
+                if "offsite_conversion" in action["actions"][0].get("action_type"):
                     conversions_count += int(action["value"])
-                elif "link_click" in action["action_type"]:
+                elif "link_click" in action["actions"][0].get("action_type"):
                     conversions_count += int(action["value"])
                 else:
                     conversions_count += 0
@@ -113,18 +111,33 @@ def dashboard():
         for i in data_ctr:
             ctr_count += float(i["ctr"])
 
-                # result += [data_cpi]
-                # revenue = float(conversions)*1.5
-                # data_revenue = {
-                #     "revenue": str(revenue)
-                # }
-                # result += [data_revenue]
-                # profit = float(revenue) - float(result[1].get("spend"))
-                # data_profit = {
-                #     "profit": str(profit)
-                # }
-                # result += [data_profit]
-                # print "&&&&&&"*20
+        params_revenue = {
+            "access_token": accessToken,
+            "level": "account",
+            "fields": ["actions"],
+            "breakdowns": ["country"],
+            "time_range": str(time_range)
+        }
+        result_revenue = requests.get(url=url, params=params_revenue)
+        data_revenue = result_revenue.json()["data"]
+        if data_revenue != []:
+            for action in data_revenue:
+                country = action["country"]
+                date = action["date_start"]
+                date = "2016-10-03"
+                countries = Country.query.filter_by(shorthand=country).first()
+                country_id = countries.id
+                country_id = 197
+                prices = TimePrice.query.filter_by(country_id=country_id,date=date).first()
+                price = prices.price
+                if "offsite_conversion" in action["actions"][0].get("action_type"):
+                    conversions_revenue = int(action["value"])
+                elif "link_click" in action["actions"][0].get("action_type"):
+                    conversions_revenue = int(action["value"])
+                else:
+                    conversions_revenue = 0
+                revenue_count += (conversions_revenue*float(price))
+
     result = {
         "impressions": str(impressions_count),
         "spend": '%0.2f'%(float(spend_count)),
@@ -133,7 +146,9 @@ def dashboard():
         "cpc": '%0.2f'%(float(cpc_count)),
         "ctr": '%0.2f'%(float(ctr_count)),
         "cpi": '%0.2f' % ((float(spend_count)) / float(conversions_count)),
-        "cvr": '%0.2f' %(float(conversions_count)/float(clicks_count))
+        "cvr": '%0.2f' %(float(conversions_count)/float(clicks_count)),
+        "revenue": '%0.2f'%(revenue_count),
+        "profit": '%0.2f'%(float(revenue_count)-float(spend_count))
     }
     response = {
         "code": 200,
@@ -156,9 +171,7 @@ def faceReport():
         price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
         accessToken = advertiser.token
-        accessToken = "EAAHgEYXO0BABAO8dhDyFvLiFnIuBpaYDYp6bcSRtkJQg5cpFy7BCJiL9xyQrRkVpheDhP4EGZCgKzBqKeGh9y0Fdd7PPZBzHnT0Q7hvyEWxTpKgJXyB3EkZBZA01OC6wx7f9NdX9popYJksnTNT2ZCpiFHX8gqIncF9vvGGEQtAZDZD"
         advertise_groups = advertiser.advertise_groups.split(",")
-        advertise_groups = ["6050664418448","6050664365648","6050357178448"]
         count_impressions = 0
         count_cost = 0
         count_clicks = 0
@@ -360,7 +373,7 @@ def faceReport():
             }
 
 
-        all_date = ["2016-08-26","2016-08-27","2016-08-28","2016-08-29","2016-08-30","2016-08-31","2016-09-01","2016-09-02","2016-09-03","2016-09-04","2016-09-05","2016-09-06","2016-09-07","2016-09-08","2016-09-09","2016-09-10"]
+        all_date = ["2016-12-30","2016-12-31","2017-01-01","2017-01-02","2017-01-03","2017-01-04","2017-01-05"]
         time_ranges = []
         for day in all_date[::-1]:
             time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")

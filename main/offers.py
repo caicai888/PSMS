@@ -331,7 +331,7 @@ def offerBind():
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-        token = "EAACvVZBcdZCr8BAFSLVOFo6HN8Vh36c5rIxV0uHrpwyDdZBgUVLDfonfMbdhe0IfaL48keNApjxZBjPGvmMK69j2aw5IhNZBfJl48zdeVCwS54CdPVyZCn7g0lIUPSvkFkoOYD3LmlF50R4hwljZC58lZAyzMAIEdDp7ZAjyQEW35OUzKBNyK30xu"
+        token = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
 
         advertisers = Advertisers(token,int(data["offer_id"]), type=data["type"], advertise_series=data["advertise_series"], advertise_groups=data["advertise_groups"], createdTime=createdTime, updateTime=updateTime)
         try:
