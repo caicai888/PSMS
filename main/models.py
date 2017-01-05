@@ -255,7 +255,6 @@ class Country(db.Model):
 class TimePrice(db.Model):
     __tablename__ = 'timePrice'
     id = db.Column(db.Integer, primary_key=True)
-    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
     date = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
