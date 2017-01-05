@@ -721,9 +721,12 @@ def updateContryTime():
 #     return send_file(filename, conditional=True)
 #
 #
-# @offers.route('/<path>')
-# def today(path):
-#     base_dir = os.path.dirname(__file__)
-#     resp = make_response(open(os.path.join(base_dir, path)))
-#     resp.headers["Content-type"] = "application/json;charset=UTF-8"
-#     return resp
+@offers.route('/<path>')
+def today(path):
+    base_dir = os.path.dirname(__file__)
+    print "+++++"*20
+    print base_dir
+    print path
+    resp = make_response(open(os.path.join(base_dir, path)))
+    resp.headers["Content-type"] = "application/json;charset=UTF-8"
+    return resp
