@@ -260,8 +260,7 @@ class TimePrice(db.Model):
     date = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    def __init__(self, offer_id, country_id, date, price):
-        self.offer_id = offer_id
+    def __init__(self, country_id, date, price):
         self.country_id = country_id
         self.date = date
         self.price = price
