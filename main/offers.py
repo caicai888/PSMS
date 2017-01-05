@@ -164,7 +164,10 @@ def offerDetail(id):
     else:
         contract_scale = offer.contract_scale
     plate = offer.platform
+    print offer.email_time
+    print time.localtime(offer.email_time)
     emailTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(offer.email_time)))[11:16]
+    print "$$$"*20
     result = {
         "customer_id": customer.company_name,
         "status": offer.status,
