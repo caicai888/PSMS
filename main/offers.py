@@ -724,10 +724,9 @@ def updateContryTime():
 @offers.route('/<path>')
 def today(path):
     base_dir = os.path.dirname(__file__)
-    print "+++++"*20
-    print base_dir
     print path
-    base_dir = "/home/centos/code/PSMS/"
+    base_dir = "/home/centos/code/PSMS"
     resp = make_response(open(os.path.join(base_dir, path)))
+    print resp
     resp.headers["Content-type"] = "application/json;charset=UTF-8"
     return resp
