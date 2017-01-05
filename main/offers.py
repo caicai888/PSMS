@@ -725,9 +725,6 @@ def updateContryTime():
 def today(path):
     # base_dir = os.path.abspath(__file__)
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
-    print "+++++"*20
-    print base_dir
-    print path
     resp = make_response(open(os.path.join(base_dir, path)))
     resp.headers["Content-type"] = "application/json;charset=UTF-8"
     return resp
