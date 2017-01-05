@@ -59,13 +59,16 @@ def dashboard():
         result_conversions = requests.get(url=url, params=params_conversions)
         data_conversions = result_conversions.json()["data"]
         if data_conversions != []:
-            for action in data_conversions:
-                if "offsite_conversion" in action["actions"][0].get("action_type"):
-                    conversions_count += int(action["actions"][0].get("value"))
-                elif "link_click" in action["actions"][0].get("action_type"):
-                    conversions_count += int(action["actions"][0].get("value"))
-                else:
-                    conversions_count += 0
+            for j in data_conversions:
+                actions = j.get("actions", [])
+                for action in actions:
+                    if "offsite_conversion" in action["action_type"]:
+                        conversions = action["value"]
+                    elif "link_click" in action["action_type"]:
+                        conversions = action["value"]
+                    else:
+                        conversions = 0
+                    conversions_count += int(conversions)
 
         params_spend = {
             "access_token": accessToken,
@@ -133,7 +136,6 @@ def dashboard():
                     price = 0
                 else:
                     price = prices.price
-                print action
                 actions = action.get("actions", [])
                 for j in actions:
                     if "offsite_conversion" in j["action_type"]:

@@ -166,7 +166,7 @@ def offerDetail(id):
     plate = offer.platform
     print offer.email_time
     print time.localtime(offer.email_time)
-    emailTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(offer.email_time)))[11:16]
+    emailTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(offer.email_time))[11:16]
     print "$$$"*20
     result = {
         "customer_id": customer.company_name,
@@ -284,8 +284,9 @@ def updateOffer():
                 if data["email_time"] != "":
                     email_time = "2016-12-19 " + data["email_time"] + ":00"
                     print "----"*20
-                    email_time = datetime.datetime.strptime(email_time,'%Y-%m-%d %H:%M:%S') - datetime.timedelta(hours=8)
+                    # email_time = datetime.datetime.strptime(email_time,'%Y-%m-%d %H:%M:%S') - datetime.timedelta(hours=8)
                     email_time = email_time.strftime('%Y-%m-%d %H:%M:%S')
+                    print email_time
                     emailTime = time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S'))
                     print emailTime
                     print "***"*20
