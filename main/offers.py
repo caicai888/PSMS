@@ -13,10 +13,6 @@ from sqlalchemy import desc
 
 offers = Blueprint('offers', __name__)
 
-@offers.route('/', methods=["GET","POST"])
-def index():
-    return render_template("index.html")
-
 @offers.route('/api/customer_select', methods=['POST', 'GET'])
 def customerSelect():
     if request.method == "POST":

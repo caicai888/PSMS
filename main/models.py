@@ -255,11 +255,13 @@ class Country(db.Model):
 class TimePrice(db.Model):
     __tablename__ = 'timePrice'
     id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
     date = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    def __init__(self, country_id, date, price):
+    def __init__(self, offer_id, country_id, date, price):
+        self.offer_id = offer_id
         self.country_id = country_id
         self.date = date
         self.price = price
