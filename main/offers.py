@@ -726,7 +726,7 @@ def today(path):
     base_dir = os.path.dirname(__file__)
     print path
     base_dir = "/home/centos/code/PSMS"
-    resp = make_response(open(os.path.join(base_dir, path)))
+    resp = make_response(open("/home/centos/code/PSMS/index.html"))
     print resp
     resp.headers["Content-type"] = "application/json;charset=UTF-8"
     return resp
