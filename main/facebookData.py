@@ -18,18 +18,18 @@ def dashboard():
     token = Token.query.filter().first()
     accessToken = token.accessToken
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
-    bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","1635816073357528"]
-    adaccounts = []
-    for i in bm_id:
-        url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
-        params_account = {
-            "access_token": str(accessToken)
-        }
-        result = requests.get(url=url_bm,params=params_account)
-        data = result.json()["data"]
-        for j in data:
-            adaccounts.append(j["id"])
-
+    # bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","1635816073357528"]
+    # adaccounts = []
+    # for i in bm_id:
+    #     url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
+    #     params_account = {
+    #         "access_token": str(accessToken)
+    #     }
+    #     result = requests.get(url=url_bm,params=params_account)
+    #     data = result.json()["data"]
+    #     for j in data:
+    #         adaccounts.append(j["id"])
+    adaccounts = ["act_1135211003243640","act_1135211006576973","act_1135210996576974","act_686548161527012","act_1045964512146574","act_674827266032435","act_1135210999910307","act_686548158193679","act_922385757898157","act_922385781231488","act_922385827898150","act_922385891231477","act_922385854564814","act_683749138473581","act_1095229213908486","act_1062495723848502","act_706139999567828","act_706651862849975","act_706651859516642","act_706657382849423","act_706142526234242","act_910834692386597","act_684290161752812","act_1045964702146555","act_910834585719941","act_1045963462146679","act_675314802650348","act_957755384322537","act_1062495750515166","act_1130318150399592","act_910834729053260","act_910834539053279","act_910834502386616","act_1130318147066259",]
     impressions_count = 0
     conversions_count = 0
     spend_count = 0
