@@ -50,7 +50,7 @@ var OfferList = React.createClass({
         var _this = this ;
         ajax("get","/api/offer_show").then(function (data) {
             var data = JSON.parse(data);
-            var strToarr = function (arr) {
+            /*var strToarr = function (arr) {
                 var newArr =[];
                 for(var i=0;i<arr.length;i++){
                     var indexOf =arr[i].indexOf("'")+1;
@@ -58,13 +58,12 @@ var OfferList = React.createClass({
                     newArr.push(arr[i].substring(indexOf,lastIndexOf));
                 }
                 return newArr;
-            };
+            };*/
             if(data.code=="200"){
-                for(let index in data.result){
+                /*for(let index in data.result){
                     let dataCountry =data.result[index].country.split(",");
                     data.result[index].country =Array.from(strToarr(dataCountry)).join(",");
-                }
-                console.log(data.result)
+                }*/
                 _this.setState({
                     result:data.result,
                     result_search:data.result
