@@ -128,10 +128,11 @@ var CreateManager = React.createClass({
             $("#role_cb").html(role_cb);
         }
         $("#role_cb input").unbind("click").bind("click",function () {
-            if(!$(this).prop("checked")){
-                return;
+            var val="";
+            for (let i of $("#role_cb input:checked")){
+                val+=$(i).val()+","
             }
-            ajax("get","/api/role_permissions/"+$(this).val()).then(function (data) {
+            ajax("post","/api/role_permissions",JSON.stringify({role_ids:val.substring(0,val.length-1)})).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
                     _this.setState({

@@ -7,7 +7,7 @@ var path = require("path");
 module.exports = {
     entry:{
         main:path.resolve(__dirname,"main.js"),
-        vendors: ['jquery']
+        //vendors: ['jquery']
     },
     output:{
         path:"build",
@@ -43,6 +43,6 @@ module.exports = {
                 NODE_ENV: JSON.stringify('production')
             }
         }),//避免出现重复的模块
-        new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js')
+        //new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js')
     ]
 }

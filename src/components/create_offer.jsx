@@ -45,6 +45,9 @@ var CreateOffer = React.createClass({
     submit(){
         if(valid("#create_offer","data-required")){
             var data = setForm("#create_offer","data-key");
+            data.country=data.country.join(",");
+            data.platform=data.platform.join(",");
+
             var country_detail=[];
             $("#country_detail tr").map(function (ele,index,array) {
                 var country=$(this).find("td:first").html();
@@ -191,7 +194,7 @@ var CreateOffer = React.createClass({
             }).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
-                    //去除list的ｕ
+                    /*//去除list的ｕ
                     var strToarr = function (arr,newArr) {
                         for(var i=0;i<arr.length;i++){
                             var indexOf =arr[i].indexOf("'")+1;
@@ -205,10 +208,10 @@ var CreateOffer = React.createClass({
                     strToarr(dataPlatform,platform);
                     var country =[];
                     var dataCountry = data.result.country.split(",");
-                    strToarr(dataCountry,country);
+                    strToarr(dataCountry,country);*/
 
-                    data.result.platform = platform;
-                    data.result.country = country;
+                    data.result.platform = data.result.platform.split(",");
+                    data.result.country = data.result.country.split(",");
                     getForm("#create_offer",data.result);
                     _this.setState({
                         result:data.result.country_detail,
