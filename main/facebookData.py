@@ -173,8 +173,8 @@ def faceReport():
         start_date = data["start_date"]
         end_date = data["end_date"]
         dimension = data["dimension"]
-        start_date = "2016-12-30"
-        end_date = "2017-01-01"
+        start_date = "2017-01-05"
+        end_date = "2017-01-05"
         offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
@@ -389,7 +389,7 @@ def faceReport():
                 }
 
 
-            all_date = ["2016-12-30","2016-12-31","2017-01-01"]
+            all_date = ["2017-01-05"]
             time_ranges = []
             for day in all_date[::-1]:
                 time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
