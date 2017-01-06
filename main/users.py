@@ -258,3 +258,20 @@ def get_role_permissions(id):
         'results': {'permission_ids': permissions_list}
     }
     return json.dumps(data)
+
+# 查出几个角色对应的权限并取交集
+@users.route('/api/role_permissions', methods=['POST', 'GET'])
+def get_role_permissions_more():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        role_id_list = data["role_ids"].split(",")
+        permission_list = []
+        for role_id in role_id_list:
+            permissions = db.session.query(RolePermissions).filter_by(role_id=role_id).first()
+            permission_list += permissions.permissions_id.split(",")
+            data = {
+                'code': '200',
+                'message': 'success',
+                'results': {'permission_ids': ",".join(list(set(permission_list)))}
+            }
+            return json.dumps(data)
