@@ -81,19 +81,15 @@ def createOffer():
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-        email_time = "2016-12-19 " + data["email_time"] + ":00"
-        print email_time
-        emailTime = float(time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S')))
-        print emailTime
 
         offer = Offer(int(data["user_id"]), int(data["customer_id"]), data["status"], data["contract_type"],
-                      data["contract_num"], float(data["contract_scale"]), data["os"], data["package_name"],
+                      data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],
                       data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
                       data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),
-                      float(data["price"]), float(data["daily_budget"]), data["daily_type"],
-                      float(data["total_budget"]), data["total_type"], data["distribution"], data["authorized"],
+                      float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],
+                      float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],
                       data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),
-                      data["period"].encode('utf-8'), data["remark"].encode('utf-8'), emailTime,
+                      data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],
                       str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
         try:
             db.session.add(offer)
@@ -103,8 +99,8 @@ def createOffer():
             for i in data['country_detail']:
                 history = History(offer.id, int(data["user_id"]), "default", createdTime, status=data["status"],
                                   country=i["country"], country_price=i["price"], price=data["price"],
-                                  daily_budget=float(data["daily_budget"]), daily_type=data["daily_type"],
-                                  total_budget=float(data["total_budget"]), total_type=data["total_type"],
+                                  daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
+                                  total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
                                   KPI=data["KPI"], contract_type=data["contract_type"],
                                   contract_scale=float(data["contract_scale"]))
                 db.session.add(history)
@@ -164,10 +160,7 @@ def offerDetail(id):
     else:
         contract_scale = offer.contract_scale
     plate = offer.platform
-    print offer.email_time
-    print time.localtime(offer.email_time)
-    emailTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(offer.email_time))[11:16]
-    print "$$$"*20
+
     result = {
         "customer_id": customer.company_name,
         "status": offer.status,
@@ -198,7 +191,7 @@ def offerDetail(id):
         "settlement": offer.settlement,
         "period": offer.period,
         "remark": offer.remark,
-        "email_time": emailTime,
+        "email_time": offer.email_time,
         "email_users": offer.email_users,
         "email_tempalte": offer.email_tempalte
     }
@@ -281,16 +274,7 @@ def updateOffer():
                 offer.settlement = data['settlement'].encode('utf-8') if data["settlement"] != "" else offer.settlement
                 offer.period = data["period"].encode("utf-8") if data["period"] != "" else offer.period
                 offer.remark = data["remark"].encode("utf-8") if data["remark"] != "" else offer.remark
-                if data["email_time"] != "":
-                    email_time = "2016-12-19 " + data["email_time"] + ":00"
-                    print "----"*20
-                    # email_time = datetime.datetime.strptime(email_time,'%Y-%m-%d %H:%M:%S') - datetime.timedelta(hours=8)
-                    # email_time = email_time.strftime('%Y-%m-%d %H:%M:%S')
-                    print email_time
-                    emailTime = time.mktime(time.strptime(email_time, '%Y-%m-%d %H:%M:%S'))
-                    print emailTime
-                    print "***"*20
-                    offer.email_time = emailTime
+                offer.email_time = data["email_time"]
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
                 offer.email_tempalte = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_tempalte
                 db.session.add(offer)
@@ -321,8 +305,7 @@ def updateOffer():
                                       total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
                                       total_type=data["total_type"], KPI=data["KPI"],
                                       contract_type=data["contract_type"],
-                                      contract_scale=float(data["contract_scale"]) if data[
-                                                                                          "contract_scale"] != "" else 0)
+                                      contract_scale=float(data["contract_scale"]) if data["contract_scale"] != "" else 0)
                     db.session.add(history)
                     db.session.commit()
                     db.create_all()
