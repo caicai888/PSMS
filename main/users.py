@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, request, session
 import json
@@ -22,13 +22,14 @@ def get_users():
             role_list = db.session.query(UserRole).filter_by(user_id=user.id).first()
             for role_id in role_list.role_id.split(','):
                 role += db.session.query(Role).filter_by(id=int(role_id)).first().name + ','
+
             data = {
                 "id": user.id,
                 "name": user.name,
                 "email": user.email,
                 "role": role[:-1],
                 "phone": user.phone,
-                "last_datetime": str(user.last_datetime+datetime.timedelta(hours=8))
+                "last_datetime": str(user.last_datetime+ timedelta(hours=8))
             }
             result += [data]
         return json.dumps({"code": "200", "message": "success", "results": result})
@@ -122,7 +123,7 @@ def login_in():
                     'email': user.email,
                     'passwd': base64.decodestring(user.passwd),
                     'phone': user.phone,
-                    'last_datetime': str(datetime.now()+datetime.timedelta(hours=8))
+                    'last_datetime': str(datetime.now()+timedelta(hours=8))
                 }
                 user.last_datetime = str(datetime.now())
                 db.session.add(user)
@@ -204,7 +205,7 @@ def get_all_roles():
         data = {
             'id': role.id,
             'name': role.name,
-            'last_datetime': str(role.last_datetime+datetime.timedelta(hours=8))
+            'last_datetime': str(role.last_datetime+timedelta(hours=8))
         }
         msg_list += [data]
     msg_dict['code'] = '200'
