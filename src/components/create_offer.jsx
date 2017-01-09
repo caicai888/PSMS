@@ -28,7 +28,8 @@ var CreateOffer = React.createClass({
     },
     uploadFile:function () {
         var _this = this;
-        uploadFile("/api/country_time","post","import").then(function (data) {
+        var id =this.props.params.id?this.props.params.id:"create";
+        uploadFile("/api/country_time/"+id,"post","import").then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
                 $(".ajax_error").html(data.message);
