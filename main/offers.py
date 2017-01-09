@@ -43,7 +43,7 @@ def countrySelect():
         for i in countries:
             data = {
                 "id": i.shorthand,
-                "text": i.chinese
+                "text": i.chinese+"("+i.shorthand+")"
             }
             result += [data]
         response = {
