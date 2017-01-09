@@ -83,7 +83,7 @@ var CreateCustomer = React.createClass({
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-10">
                             <button onClick={this.submit} type="button" className="btn btn-primary">Create/Update</button>
-                            <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                            <a href="javascript:history.go(-1)" type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                         </div>
                     </div>
                 </form>

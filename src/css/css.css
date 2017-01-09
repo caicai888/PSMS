@@ -380,4 +380,5 @@ table tr td{
 }
 .block{
     display: block!important;
+    border-top: 0!important;
 }

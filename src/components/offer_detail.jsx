@@ -47,10 +47,11 @@ var OfferDetail = React.createClass({
         $("#create_customer .disable").removeAttr("disabled");
     },
     componentDidUpdate(){
-      $(".none").remove();
+
     },
     componentDidMount(){
         var _this = this;
+        $(".none").remove();
         if(this.props.params.three){
             $("#myTab li:last a").tab("show");
         }
@@ -97,7 +98,7 @@ var OfferDetail = React.createClass({
             "end_date":$(".reportRange").val().split(":")[1],
             "dimension":dimension
         };
-        ajax("post","/api/report",JSON.stringify(reportData)).then(function (res) { //googleads
+        ajax("post","/api/googleads",JSON.stringify(reportData)).then(function (res) { //googleads
                 var data = JSON.parse(res);
                 var isEmptyObject = function(obj) {
                     for (let key in obj) {
