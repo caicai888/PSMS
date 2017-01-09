@@ -118,12 +118,12 @@ class Offer(db.Model):
     contract_type = db.Column(db.String(100), default='cpa')  # 合同模式
     contract_num = db.Column(db.String(100), nullable=False)  # 合同编号
     contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
-    os = db.Column(db.String(100), nullable=False)  # 操作系统　
-    package_name = db.Column(db.String(100), nullable=False)  # 包名
-    app_name = db.Column(db.String(100), nullable=False)
-    app_type = db.Column(db.String(100), nullable=False)
-    preview_link = db.Column(db.String(100), nullable=False)
-    track_link = db.Column(db.String(100), nullable=False)
+    os = db.Column(db.String(100), nullable=True)  # 操作系统　
+    package_name = db.Column(db.String(100), nullable=True)  # 包名
+    app_name = db.Column(db.String(100), nullable=True)
+    app_type = db.Column(db.String(100), nullable=True)
+    preview_link = db.Column(db.String(100), nullable=True)
+    track_link = db.Column(db.String(100), nullable=True)
     material = db.Column(db.String(100), default="yes")
     startTime = db.Column(db.String(100), nullable=False)  # 投放开始时间
     endTime = db.Column(db.String(100), nullable=False)  # 投放结束时间
@@ -134,16 +134,16 @@ class Offer(db.Model):
     daily_type = db.Column(db.String(100), default='install')  # 最高日预算的类型
     total_budget = db.Column(db.Float, default=0)  # 最高总预算
     total_type = db.Column(db.String(100), default='cost')  # 最高总预算的类型
-    distribution = db.Column(db.String(100), nullable=False)  # 预算分配
-    authorized = db.Column(db.String(100), nullable=False)  # 授权账户
-    named_rule = db.Column(db.String(100), nullable=False)  # 命名规则
-    KPI = db.Column(db.String(100), nullable=False)  # kpi要求
-    settlement = db.Column(db.String(100), nullable=False)  # 结算标准
-    period = db.Column(db.String(100), nullable=False)  # 账期
-    remark = db.Column(db.String(100), nullable=False)  # 备注
-    email_time = db.Column(db.String(100), nullable=False)  # 邮件发送时间
-    email_users = db.Column(db.String(100), nullable=False)  # 邮件收件人
-    email_tempalte = db.Column(db.Integer, nullable=False)  # 报告模版
+    distribution = db.Column(db.String(100), nullable=True)  # 预算分配
+    authorized = db.Column(db.String(100), nullable=True)  # 授权账户
+    named_rule = db.Column(db.String(100), nullable=True)  # 命名规则
+    KPI = db.Column(db.String(100), nullable=True)  # kpi要求
+    settlement = db.Column(db.String(100), nullable=True)  # 结算标准
+    period = db.Column(db.String(100), nullable=True)  # 账期
+    remark = db.Column(db.String(100), nullable=True)  # 备注
+    email_time = db.Column(db.String(100), nullable=True)  # 邮件发送时间
+    email_users = db.Column(db.String(100), nullable=True)  # 邮件收件人
+    email_tempalte = db.Column(db.Integer, nullable=True)  # 报告模版
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
@@ -201,15 +201,15 @@ class History(db.Model):
     type = db.Column(db.String(100), default='default')
     status = db.Column(db.String(100), nullable=False)
     createdTime = db.Column(db.String(100), nullable=False)
-    country = db.Column(db.String(100), nullable=False)
-    country_price = db.Column(db.Float, nullable=False)
+    country = db.Column(db.String(100), nullable=True)
+    country_price = db.Column(db.Float, nullable=True)
     price = db.Column(db.Float, default=0)
     daily_budget = db.Column(db.Float, default=0)  # 最高日预算
     daily_type = db.Column(db.String(100), nullable=True)
     total_budget = db.Column(db.Float, default=0)
     total_type = db.Column(db.String(100), nullable=True)  # 最高总预算的类型
-    KPI = db.Column(db.String(100), nullable=False)  # kpi要求
-    contract_type = db.Column(db.String(100), nullable=False)  # 合同模式
+    KPI = db.Column(db.String(100), nullable=True)  # kpi要求
+    contract_type = db.Column(db.String(100), nullable=True)  # 合同模式
     contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
 
     def __init__(self, offer_id, user_id, type, createdTime, status=None, country=None, country_price=0, price=0,
@@ -255,11 +255,13 @@ class Country(db.Model):
 class TimePrice(db.Model):
     __tablename__ = 'timePrice'
     id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, nullable=False)
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
     date = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    def __init__(self, country_id, date, price):
+    def __init__(self, offer_id, country_id, date, price):
+        self.offer_id = offer_id
         self.country_id = country_id
         self.date = date
         self.price = price
@@ -286,8 +288,8 @@ class Advertisers(db.Model):
     token = db.Column(db.String(10000), nullable=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     type = db.Column(db.String(100), default="facebook")
-    advertise_series = db.Column(db.String(100), nullable=False)
-    advertise_groups = db.Column(db.String(100), nullable=False)
+    advertise_series = db.Column(db.String(100), nullable=True)
+    advertise_groups = db.Column(db.String(100), nullable=True)
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
 

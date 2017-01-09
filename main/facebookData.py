@@ -204,7 +204,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params)
+                    result = requests.get(url=url, params=params, timeout=300)
                     data = result.json()["data"]
                     for j in data:
                         count_impressions += int(j["impressions"])
@@ -216,7 +216,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params)
+                    result = requests.get(url=url, params=params, timeout=300)
                     data = result.json()["data"]
                     for j in data:
                         count_cost += float(j["spend"])
@@ -228,7 +228,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params)
+                    result = requests.get(url=url, params=params, timeout=300)
                     data = result.json()["data"]
                     for j in data:
                         count_clicks += float(j["clicks"])
@@ -240,7 +240,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params)
+                    result = requests.get(url=url, params=params, timeout=300)
                     data = result.json()["data"]
                     for j in data:
                         actions = j.get("actions",[])
