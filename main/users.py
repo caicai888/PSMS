@@ -55,7 +55,7 @@ def create_user():
         user_permission = UserRole(userid, data['role_ids'])
         db.session.add(user_permission)
         db.session.commit()
-        return json.dumps({"code": "200", "message": "success", "results": session["user_id"]})
+        return json.dumps({"code": "200", "message": "success"})
     return json.dumps({"code": "500", "message": "request method error"})
 
 

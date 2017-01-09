@@ -521,11 +521,10 @@ def historty():
             }
             return json.dumps(response)
 
-
 # 导入国家表
 @offers.route("/api/country")
 def country():
-    wb = xlrd.open_workbook("/Users/ning.chen/Downloads/1.xlsx")
+    wb = xlrd.open_workbook("/home/centos/1.xlsx")
 
     wb.sheet_names()
     sh = wb.sheet_by_name(u'Sheet1')
@@ -538,11 +537,9 @@ def country():
         count += 1
 
     print count
-
-
-# 导入国家对应的时间
-@offers.route("/api/country_time", methods=["POST", "GET"])
-def importCountry():
+#创建时导入国家对应时间价钱
+@offers.route("/api/country_time/create", methods=["POST", "GET"])
+def createCountryTime():
     if request.method == "POST":
         basedir = os.path.abspath(os.path.dirname(__file__))
         file_dir = os.path.join(basedir, 'upload')
@@ -556,8 +553,8 @@ def importCountry():
             data = xlrd.open_workbook(file_dir + "/" + new_filename)
         except Exception, e:
             print e
-        table = data.sheets()[0]
 
+        table = data.sheets()[0]
         nrows = table.nrows
         ncols = table.ncols
         data = []
@@ -567,6 +564,85 @@ def importCountry():
             for col in range(1, ncols):
                 timea.append(xlrd.xldate.xldate_as_datetime(table.row_values(0)[col], 1).strftime("%Y-%m-%d"))
                 date.append(table.row_values(rownum)[col])
+
+            result = {
+                "country": table.row_values(rownum)[0],
+                "date": date,
+                "time": timea
+            }
+            data += [result]
+
+        offerIds = []
+        offer_msg = Offer.query.all()
+
+        if offer_msg == []:
+            offer_id = 1
+        else:
+            for i in offer_msg:
+                offerIds.append(i.id)
+            offer_id = offerIds[-1] + 1
+
+        for i in data:
+            for j in range(len(i["time"])):
+                time_coun = i["time"][j]
+                try:
+                    price = '%0.2f' % (i["date"][j])
+                except Exception as e:
+                    print e
+                country = i['country']
+                coun = Country.query.filter_by(shorthand=country).first()
+
+                time_Price = TimePrice.query.filter_by(offer_id=int(offer_id), country_id=coun.id, date=time_coun).first()
+                if time_Price:
+                    time_Price.price = price
+                    db.session.add(time_Price)
+                    db.session.commit()
+                else:
+                    timePrice = TimePrice(int(offer_id), coun.id, time_coun, price)
+                    db.session.add(timePrice)
+                    db.session.commit()
+                    db.create_all()
+
+        response = {
+            "code": 200,
+            "data": data,
+            "message": "success"
+        }
+    else:
+        response = {
+            "code": 500,
+            "message": "fail"
+        }
+    return json.dumps(response)
+
+# 更新时导入国家对应的时间
+@offers.route("/api/country_time/<offerId>", methods=["POST", "GET"])
+def importCountry(offerId):
+    if request.method == "POST":
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        file_dir = os.path.join(basedir, 'upload')
+        if not os.path.exists(file_dir):
+            os.makedirs(file_dir)
+        unix_time = int(time.time())
+        f = request.files['file']
+        new_filename = str(unix_time) + '.xlsx'  # 修改了上传的文件名
+        f.save(os.path.join(file_dir, new_filename))  # 保存文件到upload目录
+        try:
+            data = xlrd.open_workbook(file_dir + "/" + new_filename)
+        except Exception, e:
+            print e
+
+        table = data.sheets()[0]
+        nrows = table.nrows
+        ncols = table.ncols
+        data = []
+        for rownum in range(1, nrows):
+            date = []
+            timea = []
+            for col in range(1, ncols):
+                timea.append(xlrd.xldate.xldate_as_datetime(table.row_values(0)[col], 1).strftime("%Y-%m-%d"))
+                date.append(table.row_values(rownum)[col])
+
             result = {
                 "country": table.row_values(rownum)[0],
                 "date": date,
@@ -577,13 +653,23 @@ def importCountry():
         for i in data:
             for j in range(len(i["time"])):
                 time_coun = i["time"][j]
-                price = '%0.2f' % (i["date"][j])
+                try:
+                    price = '%0.2f' % (i["date"][j])
+                except Exception as e:
+                    print e
                 country = i['country']
                 coun = Country.query.filter_by(shorthand=country).first()
-                timePrice = TimePrice(coun.id, time_coun, price)
-                db.session.add(timePrice)
-                db.session.commit()
-                db.create_all()
+
+                time_Price = TimePrice.query.filter_by(offer_id=int(offerId),country_id=coun.id,date=time_coun).first()
+                if time_Price:
+                    time_Price.price = price
+                    db.session.add(time_Price)
+                    db.session.commit()
+                else:
+                    timePrice = TimePrice(int(offerId),coun.id, time_coun, price)
+                    db.session.add(timePrice)
+                    db.session.commit()
+                    db.create_all()
 
         response = {
             "code": 200,
