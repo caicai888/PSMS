@@ -524,7 +524,7 @@ def historty():
 # 导入国家表
 @offers.route("/api/country")
 def country():
-    wb = xlrd.open_workbook("/Users/liyin/Downloads/1.xlsx")
+    wb = xlrd.open_workbook("/home/centos/1.xlsx")
 
     wb.sheet_names()
     sh = wb.sheet_by_name(u'Sheet1')
