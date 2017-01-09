@@ -17,15 +17,17 @@ var OfferList = React.createClass({
     status(e){
         let offer_id = e.target.dataset.offer_id;
         let _this = this;
-        ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
-            var data = JSON.parse(data);
-            if(data.code=="200"){
-               _this.componentDidMount();
-            }else {
-                $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
-            }
-        });
+        if(confirm("确认修改状态吗？")){
+            ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    _this.componentDidMount();
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $(".modal").modal("toggle");
+                }
+            });
+        }
     },
     search_table(e){
         clearTimeout(time);
