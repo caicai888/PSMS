@@ -12,13 +12,8 @@ var Dashboard = React.createClass({
         ajax("get","/api/dashboard").then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
-                let obj={}
-                for (let i of data.result){
-                    Object.assign(obj,i);
-                }
-                let arr = [obj];
                 _this.setState({
-                    result:arr
+                    result: [data.result]
                 })
             }else {
                 $(".ajax_error").html(data.message);

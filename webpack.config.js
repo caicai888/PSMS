@@ -7,7 +7,7 @@ var path = require("path");
 module.exports = {
     entry:{
         main:path.resolve(__dirname,"main.js"),
-        vendors: []
+        //vendors: []
     },
     output:{
         path:"build",
@@ -21,7 +21,7 @@ module.exports = {
         stats: { colors: true },
         proxy: {
             '/api/*': {
-                target:'http://35.161.236.80:5555',////'http://192.168.0.3:5100',//
+                target:'http://192.168.0.39:5555',//'http://192.168.0.39:5555', //'http://35.161.236.80:5555',////'http://192.168.0.3:5100',//
                 changeOrigin: true
             }
         }
@@ -49,6 +49,6 @@ module.exports = {
             $: 'jquery', //加载$全局
             jQuery: 'jquery' //加载$全局
         }),
-        new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js')
+        //new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js')
     ]
 }

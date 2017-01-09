@@ -17,15 +17,17 @@ var OfferList = React.createClass({
     status(e){
         let offer_id = e.target.dataset.offer_id;
         let _this = this;
-        ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
-            var data = JSON.parse(data);
-            if(data.code=="200"){
-               _this.componentDidMount();
-            }else {
-                $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
-            }
-        });
+        if(confirm("确认修改状态吗？")){
+            ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    _this.componentDidMount();
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $(".modal").modal("toggle");
+                }
+            });
+        }
     },
     search_table(e){
         clearTimeout(time);
@@ -50,7 +52,7 @@ var OfferList = React.createClass({
         var _this = this ;
         ajax("get","/api/offer_show").then(function (data) {
             var data = JSON.parse(data);
-            var strToarr = function (arr) {
+            /*var strToarr = function (arr) {
                 var newArr =[];
                 for(var i=0;i<arr.length;i++){
                     var indexOf =arr[i].indexOf("'")+1;
@@ -58,13 +60,12 @@ var OfferList = React.createClass({
                     newArr.push(arr[i].substring(indexOf,lastIndexOf));
                 }
                 return newArr;
-            };
+            };*/
             if(data.code=="200"){
-                for(let index in data.result){
+                /*for(let index in data.result){
                     let dataCountry =data.result[index].country.split(",");
                     data.result[index].country =Array.from(strToarr(dataCountry)).join(",");
-                }
-                console.log(data.result)
+                }*/
                 _this.setState({
                     result:data.result,
                     result_search:data.result
