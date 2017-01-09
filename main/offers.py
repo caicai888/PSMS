@@ -574,9 +574,13 @@ def createCountryTime():
 
         offerIds = []
         offer_msg = Offer.query.all()
-        for i in offer_msg:
-            offerIds.append(i.id)
-        offer_id = offerIds[-1] + 1
+
+        if offer_msg == []:
+            offer_id = 1
+        else:
+            for i in offer_msg:
+                offerIds.append(i.id)
+            offer_id = offerIds[-1] + 1
 
         for i in data:
             for j in range(len(i["time"])):
@@ -627,8 +631,8 @@ def importCountry(offerId):
             data = xlrd.open_workbook(file_dir + "/" + new_filename)
         except Exception, e:
             print e
-        table = data.sheets()[0]
 
+        table = data.sheets()[0]
         nrows = table.nrows
         ncols = table.ncols
         data = []
