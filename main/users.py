@@ -28,7 +28,7 @@ def get_users():
                 "email": user.email,
                 "role": role[:-1],
                 "phone": user.phone,
-                "last_datetime": str(user.last_datetime)
+                "last_datetime": str(user.last_datetime+datetime.timedelta(hours=8))
             }
             result += [data]
         return json.dumps({"code": "200", "message": "success", "results": result})
@@ -122,7 +122,7 @@ def login_in():
                     'email': user.email,
                     'passwd': base64.decodestring(user.passwd),
                     'phone': user.phone,
-                    'last_datetime': str(datetime.now())
+                    'last_datetime': str(datetime.now()+datetime.timedelta(hours=8))
                 }
                 user.last_datetime = str(datetime.now())
                 db.session.add(user)
@@ -204,7 +204,7 @@ def get_all_roles():
         data = {
             'id': role.id,
             'name': role.name,
-            'last_datetime': str(role.last_datetime)
+            'last_datetime': str(role.last_datetime+datetime.timedelta(hours=8))
         }
         msg_list += [data]
     msg_dict['code'] = '200'
