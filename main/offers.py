@@ -247,6 +247,7 @@ def updateOffer():
             try:
                 offer.updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
                 offer.status = data["status"] if data["status"] != "" else offer.status
+                offer.customer_id = data["customer_id"] if data["customer_id"] != "" else offer.customer_id
                 offer.user_id = int(data["user_id"]) if data['user_id'] != "" else offer.user_id
                 offer.contract_type = data["contract_type"] if data["contract_type"] != "" else offer.contract_type
                 offer.contract_scale = float(data["contract_scale"]) if data["contract_scale"] != "" else offer.contract_scale
