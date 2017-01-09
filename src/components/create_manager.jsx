@@ -168,7 +168,7 @@ var CreateManager = React.createClass({
                         </div>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="company_name" className="col-sm-2 control-label text-right">* Phone</label>
+                        <label htmlFor="company_name" className="col-sm-2 control-label text-right">Phone</label>
                         <div className="col-sm-10">
                             <input type="number"  data-key="phone"  name="name" className="form-control"   placeholder="Phone" />
                         </div>
@@ -202,7 +202,7 @@ var CreateManager = React.createClass({
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-10">
                             <button onClick={this.submit} type="button" className="btn btn-primary">Create/Update</button>
-                            <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                            <a href="javascript:history.go(-1)" type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                         </div>
                     </div>
                 </form>

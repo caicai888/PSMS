@@ -40,19 +40,39 @@ var Daterange = React.createClass({
 var DateSingle = React.createClass({
     componentDidMount(){
         var _this= this;
-        $('#'+this.props.id).daterangepicker({
+
+        var date = function (id,time) {
+            var id =id=="start_date"?"#end_date":"#start_date";
+            $(id).daterangepicker({
+                singleDatePicker: true,
+                locale: {
+                    format: "YYYY-MM-DD"
+                },
+                autoUpdateInput:false,
+                minDate:id =="#end_date"?time:false,
+                maxDate:id =="#start_date"?time:false,
+            },function(end) {
+                $(id).val(end.format("YYYY-MM-DD"));
+                date(id=="#end_date"?"end_date":"start_date",end.format("YYYY-MM-DD"))
+            })
+        }
+        /*$('#'+this.props.id).daterangepicker({
             singleDatePicker: true,
             locale: {
                 format: "YYYY-MM-DD"
             },
             autoUpdateInput:false
         },function(start) {
-           $('#'+_this.props.id).val(start.format("YYYY-MM-DD"))
-        });
+           $('#'+_this.props.id).val(start.format("YYYY-MM-DD"));
+           date(_this.props.id,start.format("YYYY-MM-DD"))
+        });*/
+        date("start_date",false);
+        date("end_date",false);
+        $('#'+_this.props.id).val(moment().subtract(_this.props.start, 'days').format("YYYY-MM-DD"));
     },
     render() {
         return (
-            <input id={this.props.id} data-key={this.props.keyword} type="text" className="form-control" readOnly="readOnly"/>
+            <input id={this.props.id} data-maxDate={this.props.maxDate} data-minDate={this.props.minDate} data-key={this.props.keyword} type="text" className="form-control" readOnly="readOnly"/>
         )
     }
 });

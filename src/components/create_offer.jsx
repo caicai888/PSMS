@@ -29,7 +29,7 @@ var CreateOffer = React.createClass({
     uploadFile:function () {
         var _this = this;
         uploadFile("/api/country_time","post","import").then(function (data) {
-            var data = JSON.stringify(data);
+            var data = JSON.parse(data);
             if(data.code==200){
                 $(".ajax_error").html(data.message);
                 $(".modal").modal("toggle");
@@ -244,7 +244,14 @@ var CreateOffer = React.createClass({
                 });
             });
         });
-
+        /*合作方式*/
+        $("#hzfs").on("change",function () {
+            if($(this).val()=="cpa"){
+                $("#bl").attr("readonly","true")
+            }else {
+                $("#bl").removeAttr("readonly")
+            }
+        })
         /*邮件报告*/
         var html ="";
         for (var i=0;i<24;i++){
@@ -281,7 +288,7 @@ var CreateOffer = React.createClass({
                             合作方式
                         </div>
                         <div className="col-sm-3">
-                            <select className="form-control" data-key="contract_type">
+                            <select id="hzfs" className="form-control" data-key="contract_type">
                                 <option value="服务费">服务费</option>
                                 <option value="cpa">cpa</option>
                             </select>
@@ -290,7 +297,7 @@ var CreateOffer = React.createClass({
                             比例
                         </div>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control"  data-key="contract_scale"/>
+                            <input id="bl" type="number" className="form-control"  data-key="contract_scale"/>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -298,7 +305,7 @@ var CreateOffer = React.createClass({
                             合同编号
                         </div>
                         <div className="col-sm-3">
-                            <input type="text" className="form-control"  data-key="contract_num"/>
+                            <input type="text" data-required="true" className="form-control"  data-key="contract_num"/>
                         </div>
                         <div className="col-sm-3 text-right">
                             销售
@@ -322,7 +329,7 @@ var CreateOffer = React.createClass({
                         </div>
                         <div className="col-sm-3">
                             <select className="form-control" data-key="os">
-                                <option value="ios">IOS</option>
+                                <option value="ios">iOS</option>
                                 <option value="android">Android</option>
                             </select>
                         </div>
@@ -384,13 +391,13 @@ var CreateOffer = React.createClass({
                             投放起始
                         </div>
                         <div className="col-sm-3">
-                            <DateSingle id="start_date" keyword="startTime"/>
+                            <DateSingle minDate="" maxDate="end_date" id="start_date" keyword="startTime"/>
                         </div>
                         <div className="col-sm-3 text-right">
                             投放截止
                         </div>
                         <div className="col-sm-3">
-                            <DateSingle id="end_date" keyword="endTime"/>
+                            <DateSingle maxDate="" minDate="start_date" id="end_date" keyword="endTime"/>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -416,7 +423,7 @@ var CreateOffer = React.createClass({
                             投放单价
                         </div>
                         <div className="col-sm-6">
-                            <input type="number" className="form-control" data-key="price"/>
+                            <input type="number" data-required="true" className="form-control" data-key="price"/>
                         </div>
                         <div className="col-sm-3" style={{position:"relative"}}>
                             <input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
@@ -571,7 +578,7 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-9">
                             <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
                             <button type="button" onClick={this.submit} className="btn btn-primary">Create/Update</button>
-                            <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"}  className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                            <a href="javascript:history.go(-1)"  className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                         </div>
                     </div>
                     <div className="price-calendar">
