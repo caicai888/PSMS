@@ -13,7 +13,7 @@ var CreateCustomer = React.createClass({
                     location.hash = "customer_list";
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }else {
@@ -29,7 +29,7 @@ var CreateCustomer = React.createClass({
                     getForm("#create_customer",data.results)
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }

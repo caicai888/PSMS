@@ -17,10 +17,10 @@ var App = React.createClass({
                     $(".isShow").show();
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("show");
+                    $("#modal").modal("show");
                     $(".userEmail").html("");
                     $(".userId").html("");
-                    $(".modal").on("hidden.bs.modal",function () {
+                    $("#modal").on("hidden.bs.modal",function () {
                         location.hash="login";
                         $(".isShow").hide();
                     })

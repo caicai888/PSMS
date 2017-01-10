@@ -43,7 +43,7 @@ var ManagerList = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
