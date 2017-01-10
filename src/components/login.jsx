@@ -14,7 +14,7 @@ var Login = React.createClass({
                     $(".userId").html(data.results.id);
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("show");
+                    $("#modal").modal("show");
                 }
             });
         }else {

@@ -40,7 +40,7 @@ var CustomerList = React.createClass({
                 var data = JSON.parse(data);
                 if(data.code=="200"){
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                     _this.state.result.splice(index,1);
                     _this.setState({
                         result:_this.state.result,
@@ -48,7 +48,7 @@ var CustomerList = React.createClass({
                     });
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }
@@ -64,7 +64,7 @@ var CustomerList = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },

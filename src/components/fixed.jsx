@@ -9,7 +9,7 @@ var Fixed = React.createClass({
                         <img src="./src/img/loading-2.gif"/>
                     </div>
                 </div>
-                <div className="modal fade" style={{marginTop:"20px"}}>
+                <div id="modal" className="modal fade" style={{marginTop:"20px"}}>
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">

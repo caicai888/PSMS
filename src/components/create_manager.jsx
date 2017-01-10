@@ -29,7 +29,7 @@ var CreateManager = React.createClass({
             data.role_ids=roleId.join(",");
             if(data.role_ids.length==0){
                 $(".ajax_error").html("必须选择一个组");
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
                 return;
             }
             var url = this.props.params.id?"/api/user/edit/"+this.props.params.id:"/api/user/create";
@@ -39,7 +39,7 @@ var CreateManager = React.createClass({
                     location.hash = "manager_list";
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }else {
@@ -60,7 +60,7 @@ var CreateManager = React.createClass({
                     getForm("#create_customer",data.results);
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }
@@ -72,7 +72,7 @@ var CreateManager = React.createClass({
                 });
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
         ajax("get","/api/permissions").then(function (data) {
@@ -83,7 +83,7 @@ var CreateManager = React.createClass({
                 });
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
 
@@ -141,7 +141,7 @@ var CreateManager = React.createClass({
                     });
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         })

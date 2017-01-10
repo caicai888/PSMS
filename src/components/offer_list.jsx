@@ -24,7 +24,7 @@ var OfferList = React.createClass({
                     _this.componentDidMount();
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }
@@ -72,7 +72,7 @@ var OfferList = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
@@ -112,8 +112,8 @@ var OfferList = React.createClass({
                             {
                                 _this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
-                                                <td data-offer_id={ele.offer_id}  onClick={_this.status}>
-                                                    <div className={ele.status=='active'?'isTrue':''}></div>
+                                                <td >
+                                                    <div data-offer_id={ele.offer_id}  onClick={_this.status} className={ele.status=='active'?'isTrue':''}></div>
                                                     <span style={{display:'none'}}>{ele.status=='active'?'Active':'Inactive'}</span>
                                                 </td>
                                                 <td><a href={"#/offer_detail/"+ele.offer_id}>{ele.offer_id}</a></td>
