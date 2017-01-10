@@ -14,7 +14,7 @@ facebookDate = Blueprint('facebookDate', __name__)
 
 @facebookDate.route('/api/dashboard')
 def dashboard():
-    yesterday = (datetime.datetime.now()-datetime.timedelta(hours=72)).strftime("%Y-%m-%d")
+    yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
     token = Token.query.filter().first()
     accessToken = token.accessToken
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
