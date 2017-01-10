@@ -37,9 +37,8 @@ def dashboard():
     cpc_count = 0
     ctr_count = 0
     revenue_count = 0
+    advertisers_group = ["23842526661210437"]
     for ad in advertisers_group:
-        print "++++++"*10
-        print ad["adset"]
         url = "https://graph.facebook.com/v2.8/"+str(ad["adset"])+"/insights"
         params_impressions = {
             "access_token": accessToken,
@@ -48,8 +47,6 @@ def dashboard():
             "time_range": str(time_range)
         }
         result_impressions = requests.get(url=url, params=params_impressions)
-        print result_impressions.json()
-        print "------"*10
         data_impressions = result_impressions.json()["data"]
         for i in data_impressions:
             impressions_count += int(i["impressions"])
@@ -1105,7 +1102,7 @@ def faceReport():
                             cvr_count_list += [
                                 {
                                     "cvr": str(0),
-                                    "date_start": conversions_count_list[l].get("date_start")
+                                    "date_start": date_start
                                 }
                             ]
 
