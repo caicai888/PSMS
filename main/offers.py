@@ -226,13 +226,45 @@ def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
     if offer.status == "active":
         offer.status = "inactive"
+        status = offer.status
         db.session.add(offer)
         db.session.commit()
+        history = History(offer.id, offer.user_id, "update",
+                          (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                              "%Y-%m-%d %H:%M:%S"),
+                          price=offer.price,
+                          status=status,
+                          daily_budget=offer.daily_budget,
+                          daily_type=offer.daily_type,
+                          total_budget=offer.total_budget,
+                          total_type=offer.total_type,
+                          KPI=offer.KPI,
+                          contract_type=offer.contract_type,
+                          contract_scale=offer.contract_scale)
+        db.session.add(history)
+        db.session.commit()
+        db.create_all()
         return json.dumps({"code": 200, "message":"success"})
     elif offer.status == "inactive":
         offer.status = "active"
+        status = offer.status
         db.session.add(offer)
         db.session.commit()
+        history = History(offer.id, offer.user_id, "update",
+                          (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                              "%Y-%m-%d %H:%M:%S"),
+                          price=offer.price,
+                          status=status,
+                          daily_budget=offer.daily_budget,
+                          daily_type=offer.daily_type,
+                          total_budget=offer.total_budget,
+                          total_type=offer.total_type,
+                          KPI=offer.KPI,
+                          contract_type=offer.contract_type,
+                          contract_scale=offer.contract_scale)
+        db.session.add(history)
+        db.session.commit()
+        db.create_all()
         return json.dumps({"code": 200, "message": "success"})
     else:
         return json.dumps({"code": 500, "message": "fail"})
