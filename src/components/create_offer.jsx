@@ -463,7 +463,7 @@ var CreateOffer = React.createClass({
                             </select>
                         </div>
                         <div className="col-sm-3">
-                            <input type="text" className="form-control" data-key="daily_budget"/>
+                            <input type="number" className="form-control" data-key="daily_budget"/>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -477,7 +477,7 @@ var CreateOffer = React.createClass({
                             </select>
                         </div>
                         <div className="col-sm-3">
-                            <input type="text" className="form-control" data-key="total_budget"/>
+                            <input type="number" className="form-control" data-key="total_budget"/>
                         </div>
                     </div>
                     <div className="col-sm-10">
