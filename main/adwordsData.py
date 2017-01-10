@@ -30,6 +30,10 @@ class GoogleAdsUtils(object):
         self.report_data = dict(impressions=dict(), clicks=dict(), conversions=dict(), profit=dict(),
                                 revenue=dict(),cpc=dict(), ctr=dict(), cost=dict(),
                                 cpi=dict(), cvr=dict(),)
+
+    def __repr__(self):
+        return None
+
     @staticmethod
     def date_range(start, stop, step):
         while start <= stop:
