@@ -453,8 +453,7 @@ def historty():
                         "country_price": country_price,
                         "createdTime": createdTime
                     }
-                    detail += [country_data]
-                result += [detail]
+                    result += [country_data]
             response = {
                 "code": 200,
                 "result": result
