@@ -8,7 +8,6 @@ import json
 import os
 import datetime, time
 import requests
-from collections import Counter
 
 facebookDate = Blueprint('facebookDate', __name__)
 
@@ -128,7 +127,6 @@ def dashboard():
             for action in data_revenue:
                 country = action["country"]
                 date = action["date_start"]
-                date = "2017-01-05"
                 countries = Country.query.filter_by(shorthand=country).first()
                 country_id = countries.id
                 offer = Offer.query.filter_by(id=int(ad["offer_id"])).first()
@@ -183,12 +181,11 @@ def dashboard():
 def faceReport():
     if request.method == "POST":
         data = request.get_json(force=True)
-        offerId = data["offer_id"]
+        offerId = int(data["offer_id"])
         start_date = data["start_date"]
         end_date = data["end_date"]
         dimension = data["dimension"]
-        start_date = "2017-01-05"
-        end_date = "2017-01-05"
+
         offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
@@ -204,7 +201,6 @@ def faceReport():
         accessToken = advertiser.token
         accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
         advertise_groups = advertiser.advertise_groups.split(",")
-        advertise_groups = ["23842549276340619","23842549276330619"]
         count_impressions = 0
         count_cost = 0
         count_clicks = 0
@@ -227,7 +223,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params, timeout=300)
+                    result = requests.get(url=url, params=params)
                     data = result.json()["data"]
                     for j in data:
                         count_impressions += int(j["impressions"])
@@ -239,7 +235,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params, timeout=300)
+                    result = requests.get(url=url, params=params)
                     data = result.json()["data"]
                     for j in data:
                         count_cost += float(j["spend"])
@@ -251,7 +247,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params, timeout=300)
+                    result = requests.get(url=url, params=params)
                     data = result.json()["data"]
                     for j in data:
                         count_clicks += float(j["clicks"])
@@ -263,7 +259,7 @@ def faceReport():
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
-                    result = requests.get(url=url, params=params, timeout=300)
+                    result = requests.get(url=url, params=params)
                     data = result.json()["data"]
                     for j in data:
                         actions = j.get("actions",[])
@@ -412,7 +408,16 @@ def faceReport():
                 }
 
 
-            all_date = ["2017-01-05"]
+            all_date = []
+            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+            date_timelta = datetime.timedelta(days=1)
+            all_date.append(start_date)
+            while date_timelta < (date2-date1):
+                all_date.append((date1+date_timelta).strftime("%Y-%m-%d"))
+                date_timelta += datetime.timedelta(days=1)
+            all_date.append(end_date)
+
             time_ranges = []
             for day in all_date[::-1]:
                 time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
@@ -607,11 +612,17 @@ def faceReport():
                     conversion = float(conversions_list[r].get("conversions"))
                     countries = Country.query.filter_by(shorthand=country).first()
                     country_id = countries.id
-                    time_price = TimePrice.query.filter_by(country_id=country_id,date=date).first()
+                    time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId, TimePrice.date <= date,TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
                     if time_price:
                         price = time_price.price
                     else:
-                        price = price_default
+                        prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(
+                            History.createdTime.desc()).first()
+                        if not prices_history:
+                            price = price_default
+                        else:
+                            price = prices_history.price
+
                     revenue_list += [
                         {
                             "country": country,
@@ -828,11 +839,15 @@ def faceReport():
                         conversion = float(conversions_list[r].get("conversions"))
                         countries = Country.query.filter_by(shorthand=country).first()
                         country_id = countries.id
-                        time_price = TimePrice.query.filter_by(country_id=country_id, date=date).first()
+                        time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId,TimePrice.date <= date, TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
                         if time_price:
                             price = time_price.price
                         else:
-                            price = price_default
+                            prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
+                            if not prices_history:
+                                price = price_default
+                            else:
+                                price = prices_history.price
                         revenue_list += [
                             {
                                 "country": country,
@@ -939,17 +954,29 @@ def faceReport():
                         if data != []:
                             if data[0]["actions"] != []:
                                 for action in data[0]["actions"]:
+                                    print "+++++"*10
+                                    print action
                                     if "offsite_conversion" in action["action_type"]:
+                                        print "#####"*10
                                         conversions = action["value"]
                                         date_start = data[0]["date_start"]
                                         con_data = {
                                             "conversions": int(conversions),
                                             "date_start": date_start
                                         }
+                                        print con_data
+                                        print "&&&&&"*10
                                     else:
                                         if "link_click" in action["action_type"]:
                                             conversions = action["value"]
                                             date_start =data[0]["date_start"]
+                                            con_data = {
+                                                "conversions": int(conversions),
+                                                "date_start": date_start
+                                            }
+                                        else:
+                                            conversions = 0
+                                            date_start = data[0]["date_start"]
                                             con_data = {
                                                 "conversions": int(conversions),
                                                 "date_start": date_start
