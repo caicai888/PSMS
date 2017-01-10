@@ -38,7 +38,7 @@ var OfferDetail = React.createClass({
                     $("#create_customer .disable").attr("disabled",true);
                 } else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }
@@ -68,7 +68,7 @@ var OfferDetail = React.createClass({
                 }
             } else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
         _this.getData();
@@ -125,7 +125,7 @@ var OfferDetail = React.createClass({
                     });
                 } else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
 
                 var strToInt = function (array) {

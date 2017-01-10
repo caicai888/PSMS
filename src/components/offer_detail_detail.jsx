@@ -1,3 +1,6 @@
+/**
+ * Created by sa on 17-1-10.
+ */
 import React from "react";
 import {ajax} from "../lib/ajax";
 import moment from "moment";
@@ -8,8 +11,29 @@ var OfferDetailDetail = React.createClass({
             result:[],
             country_detail:[],
             country:"",
-            date:""
+            date:"",
+            history_header:[],
+            history_body:[]
         };
+    },
+    history(e){
+        var _this = this;
+        ajax("post","/api/history",JSON.stringify({
+            flag:e.target.dataset.flag,
+            offer_id:_this.props.id
+        })).then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+                _this.setState({
+                    history_header:data.result.length>0?Object.keys(data.result[0]):[],
+                    history_body:data.result
+                })
+                $("#history_modal").modal("show");
+            }else {
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
+            }
+        });
     },
     price(e){
         var _this = this;
@@ -61,7 +85,7 @@ var OfferDetailDetail = React.createClass({
                 });
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
@@ -76,7 +100,7 @@ var OfferDetailDetail = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
@@ -102,7 +126,7 @@ var OfferDetailDetail = React.createClass({
                             {this.state.result.customer_id}
                         </div>
                         <div className="col-sm-3 text-right">
-                            Status
+                            <img src="./src/img/changeHIstory.jpg" data-flag="status" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> Status
                         </div>
                         <div className="col-sm-3">
                             {this.state.result.status}
@@ -110,7 +134,7 @@ var OfferDetailDetail = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            合作方式
+                            <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
                         </div>
                         <div className="col-sm-3">
                             {this.state.result.contract_type}
@@ -228,33 +252,38 @@ var OfferDetailDetail = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            投放单价
+                            <img src="./src/img/changeHIstory.jpg" data-flag="price" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 投放单价
                         </div>
                         <div className="col-sm-9">
                             {this.state.result.price}
                         </div>
                     </div>
                     <div className="col-sm-10">
-                        <div className="col-sm-3"> </div>
+                        <div className="col-sm-3 text-right">
+                            {
+                                this.state.country_detail.length>0?<img src="./src/img/changeHIstory.jpg" data-flag="country_detail" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/>:""
+
+                            }
+                        </div>
                         <div className="col-sm-9 table-responsive">
                             <table className="table table-bordered text-center" id="country_detail">
                                 <tbody>
-                                    {
-                                        this.state.country_detail.map(function (ele,index,array) {
-                                            return <tr key={index}>
-                                                <td>{ele.country}</td>
-                                                <td>{ele.price}</td>
-                                                <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer"}} src="./src/img/calender.jpg"/></td>
-                                            </tr>
-                                        })
-                                    }
+                                {
+                                    this.state.country_detail.map(function (ele,index,array) {
+                                        return <tr key={index}>
+                                            <td>{ele.country}</td>
+                                            <td>{ele.price}</td>
+                                            <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
+                                        </tr>
+                                    })
+                                }
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            最高日预算
+                            <img src="./src/img/changeHIstory.jpg" data-flag="daily_budget" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 最高日预算
                         </div>
                         <div className="col-sm-3">
                             {this.state.result.daily_type}
@@ -265,7 +294,7 @@ var OfferDetailDetail = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            最高总预算
+                            <img src="./src/img/changeHIstory.jpg" data-flag="total_butget" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 最高总预算
                         </div>
                         <div className="col-sm-3">
                             {this.state.result.total_type}
@@ -303,7 +332,7 @@ var OfferDetailDetail = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            KPI　要求
+                            <img src="./src/img/changeHIstory.jpg" data-flag="KPI" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> KPI　要求
                         </div>
                         <div className="col-sm-9">
                             {this.state.result.KPI}
@@ -374,6 +403,45 @@ var OfferDetailDetail = React.createClass({
                     <div className="price-calendar">
                         <div className="mask_mask box-center">
                             <div id="price-calendar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div className="modal fade" id="history_modal">
+                    <div className="modal-dialog modal-lg">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <a type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></a>
+                                <h4 className="modal-title">修改历史</h4>
+                            </div>
+                            <div className="modal-body table-responsive">
+                                <table className="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            {
+                                                this.state.history_header.map(function (ele,index,array) {
+                                                    return <th key={index}>{ele}</th>
+                                                })
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            _this.state.history_body.map(function (ele,index,array) {
+                                                return <tr key={index}>
+                                                            {
+                                                                _this.state.history_header.map(function (ele1,index1,array1) {
+                                                                    return <td key={index1}>{ele[ele1]}</td>
+                                                                })
+                                                            }
+                                                       </tr>
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="modal-footer">
+                                <a  className="btn btn-default" data-dismiss="modal">Close</a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -33,13 +33,13 @@ var CreateOffer = React.createClass({
             var data = JSON.parse(data);
             if(data.code==200){
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
                 $("#import").unbind().change(function () {
                     _this.uploadFile();
                 });
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         })
     },
@@ -67,7 +67,7 @@ var CreateOffer = React.createClass({
                     location.hash = "offer_list";
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }else {
@@ -95,7 +95,7 @@ var CreateOffer = React.createClass({
                 }
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         })
     },
@@ -150,7 +150,7 @@ var CreateOffer = React.createClass({
                 });
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
@@ -167,10 +167,11 @@ var CreateOffer = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
         if(this.props.params.id){
+            alert(1)
             sessionStorage.setItem("count","1");
             /*　ｓｅｌｅｃｔ之前为ａｊａｘ获取改为直接调取获取所有的　*/
             ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
@@ -181,7 +182,7 @@ var CreateOffer = React.createClass({
                     })
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
                 return ajax("post","/api/customer_select",JSON.stringify({name:""}));
             }).then(function (data) {
@@ -192,28 +193,12 @@ var CreateOffer = React.createClass({
                     })
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
                 return ajax("get","/api/offer_detail/"+_this.props.params.id);
             }).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
-                    /*//去除list的ｕ
-                    var strToarr = function (arr,newArr) {
-                        for(var i=0;i<arr.length;i++){
-                            var indexOf =arr[i].indexOf("'")+1;
-                            var lastIndexOf = arr[i].lastIndexOf("'");
-                            newArr.push(arr[i].substring(indexOf,lastIndexOf));
-                        }
-                    };
-                    //转换ｓｅｌｅｃｔ框
-                    var platform = [];
-                    var dataPlatform =data.result.platform.split(",");
-                    strToarr(dataPlatform,platform);
-                    var country =[];
-                    var dataCountry = data.result.country.split(",");
-                    strToarr(dataCountry,country);*/
-
                     data.result.platform = data.result.platform.split(",");
                     data.result.country = data.result.country.split(",");
                     getForm("#create_offer",data.result);
@@ -227,7 +212,7 @@ var CreateOffer = React.createClass({
                     });
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }
@@ -417,6 +402,9 @@ var CreateOffer = React.createClass({
                             投放地区
                         </div>
                         <div className="col-sm-9">
+                            {/*{
+                                <Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
+                            }*/}
                             {
                                 this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
                             }

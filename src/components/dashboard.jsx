@@ -18,7 +18,7 @@ var Dashboard = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
         ajax("get","/api/adwords/dashboard").then(function (data) {
@@ -29,7 +29,7 @@ var Dashboard = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },

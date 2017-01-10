@@ -24,7 +24,7 @@ var CreateGroup = React.createClass({
                     location.hash = "group_list_manager";
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }else {
@@ -44,7 +44,7 @@ var CreateGroup = React.createClass({
                     getForm("#create_customer",data.results);
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
+                    $("#modal").modal("toggle");
                 }
             });
         }
@@ -56,7 +56,7 @@ var CreateGroup = React.createClass({
                 })
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
