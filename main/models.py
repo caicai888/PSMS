@@ -119,30 +119,30 @@ class Offer(db.Model):
     contract_num = db.Column(db.String(100), nullable=False)  # 合同编号
     contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
     os = db.Column(db.String(100), nullable=True)  # 操作系统　
-    package_name = db.Column(db.String(100), nullable=True)  # 包名
-    app_name = db.Column(db.String(100), nullable=True)
-    app_type = db.Column(db.String(100), nullable=True)
-    preview_link = db.Column(db.String(100), nullable=True)
-    track_link = db.Column(db.String(100), nullable=True)
+    package_name = db.Column(db.String(1000), nullable=True)  # 包名
+    app_name = db.Column(db.String(1000), nullable=True)
+    app_type = db.Column(db.String(1000), nullable=True)
+    preview_link = db.Column(db.String(1000), nullable=True)
+    track_link = db.Column(db.String(1000), nullable=True)
     material = db.Column(db.String(100), default="yes")
     startTime = db.Column(db.String(100), nullable=False)  # 投放开始时间
     endTime = db.Column(db.String(100), nullable=False)  # 投放结束时间
     platform = db.Column(db.String(100), nullable=False)  # 投放平台
-    country = db.Column(db.String(100), nullable=False)  # 投放国家
+    country = db.Column(db.String(500), nullable=False)  # 投放国家
     price = db.Column(db.Float, default=0)  # 投放单价
     daily_budget = db.Column(db.Float, default=0)  # 最高日预算
     daily_type = db.Column(db.String(100), default='install')  # 最高日预算的类型
     total_budget = db.Column(db.Float, default=0)  # 最高总预算
     total_type = db.Column(db.String(100), default='cost')  # 最高总预算的类型
     distribution = db.Column(db.String(100), nullable=True)  # 预算分配
-    authorized = db.Column(db.String(100), nullable=True)  # 授权账户
-    named_rule = db.Column(db.String(100), nullable=True)  # 命名规则
-    KPI = db.Column(db.String(100), nullable=True)  # kpi要求
-    settlement = db.Column(db.String(100), nullable=True)  # 结算标准
-    period = db.Column(db.String(100), nullable=True)  # 账期
-    remark = db.Column(db.String(100), nullable=True)  # 备注
+    authorized = db.Column(db.String(500), nullable=True)  # 授权账户
+    named_rule = db.Column(db.String(1000), nullable=True)  # 命名规则
+    KPI = db.Column(db.String(1000), nullable=True)  # kpi要求
+    settlement = db.Column(db.String(1000), nullable=True)  # 结算标准
+    period = db.Column(db.String(1000), nullable=True)  # 账期
+    remark = db.Column(db.String(1000), nullable=True)  # 备注
     email_time = db.Column(db.String(100), nullable=True)  # 邮件发送时间
-    email_users = db.Column(db.String(100), nullable=True)  # 邮件收件人
+    email_users = db.Column(db.String(500), nullable=True)  # 邮件收件人
     email_tempalte = db.Column(db.Integer, nullable=True)  # 报告模版
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
