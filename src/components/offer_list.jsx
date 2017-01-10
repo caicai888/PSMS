@@ -112,8 +112,9 @@ var OfferList = React.createClass({
                             {
                                 _this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
-                                                <td>
-                                                    <div onClick={_this.status} data-offer_id={ele.offer_id} className={ele.status=='active'?'isTrue':''}></div>
+                                                <td data-offer_id={ele.offer_id}  onClick={_this.status}>
+                                                    <div className={ele.status=='active'?'isTrue':''}></div>
+                                                    <span style={{display:'none'}}>{ele.status=='active'?'Active':'Inactive'}</span>
                                                 </td>
                                                 <td><a href={"#/offer_detail/"+ele.offer_id}>{ele.offer_id}</a></td>
                                                 <td>{ele.app_name}</td>

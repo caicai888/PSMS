@@ -190,7 +190,8 @@ table tr td{
     height: 15px;
     border-radius: 50%;
     background: #999;
-    margin-top: 3px;
+    margin-top: -3px;
+    vertical-align: middle;
 }
 #offer_list td div.isTrue{
     display: inline-block;
@@ -198,7 +199,8 @@ table tr td{
     height: 15px;
     border-radius: 50%;
     background: #72ce0d;
-    margin-top: 3px;
+    margin-top: -2px;
+    vertical-align: middle;
 }
 #offer_list th{
     text-align: center;
