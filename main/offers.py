@@ -442,7 +442,6 @@ def historty():
             for i in history:
                 country.append(i.country)
             country = list(set(country))
-            print country
             for i in country:
                 detail = []
                 history_country = History.query.filter(History.offer_id == offer_id, History.country == i)
@@ -450,11 +449,12 @@ def historty():
                     createdTime = j.createdTime
                     country_price = j.country_price
                     country_data = {
+                        "country": i,
                         "country_price": country_price,
                         "createdTime": createdTime
                     }
                     detail += [country_data]
-                result += [{"country": i, "detail": detail}]
+                result += [detail]
             response = {
                 "code": 200,
                 "result": result
