@@ -1085,7 +1085,7 @@ def faceReport():
                                 }
                             ]
 
-                for l in range(len(conversions_count_list)):
+                for l in conversions_count_list:
                     date_start = l["date_start"]
                     for i in costs_count_list:
                         if date_start == i["date_start"]:
