@@ -3,7 +3,7 @@ from __future__ import division
 from main.has_permission import *
 from flask import Blueprint, request
 from main import db
-from models import Offer, Token, Advertisers, TimePrice, Country
+from models import Offer, Token, Advertisers, TimePrice, Country, History
 import json
 import os
 import datetime, time
@@ -18,18 +18,19 @@ def dashboard():
     token = Token.query.filter().first()
     accessToken = token.accessToken
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
-    # bm_id = ["1028817710518180","1757829464437163","1167706699949156","1746897442253097","1635816073357528"]
-    # adaccounts = []
-    # for i in bm_id:
-    #     url_bm = "https://graph.facebook.com/v2.8/"+str(i)+"/adaccounts"
-    #     params_account = {
-    #         "access_token": str(accessToken)
-    #     }
-    #     result = requests.get(url=url_bm,params=params_account)
-    #     data = result.json()["data"]
-    #     for j in data:
-    #         adaccounts.append(j["id"])
-    adaccounts = ["act_1135211003243640","act_1135211006576973","act_1135210996576974","act_686548161527012","act_1045964512146574","act_674827266032435","act_1135210999910307","act_686548158193679","act_922385757898157","act_922385781231488","act_922385827898150","act_922385891231477","act_922385854564814","act_683749138473581","act_1095229213908486","act_1062495723848502","act_706139999567828","act_706651862849975","act_706651859516642","act_706657382849423","act_706142526234242","act_910834692386597","act_684290161752812","act_1045964702146555","act_910834585719941","act_1045963462146679","act_675314802650348","act_957755384322537","act_1062495750515166","act_1130318150399592","act_910834729053260","act_910834539053279","act_910834502386616","act_1130318147066259",]
+
+    advertisers = Advertisers.query.filter(Advertisers.type=="facebook").all()
+    advertisers_group = []
+    for i in advertisers:
+        advertise_group = i.advertise_groups
+        offer_id = i.offer_id
+        for j in advertise_group.split(','):
+            group_result = {
+                "offer_id": offer_id,
+                "adset": j
+            }
+            advertisers_group += [group_result]
+
     impressions_count = 0
     conversions_count = 0
     spend_count = 0
@@ -37,11 +38,11 @@ def dashboard():
     cpc_count = 0
     ctr_count = 0
     revenue_count = 0
-    for ad in adaccounts:
-        url = "https://graph.facebook.com/v2.8/"+str(ad)+"/insights"
+    for ad in advertisers_group:
+        url = "https://graph.facebook.com/v2.8/"+str(ad["adset"])+"/insights"
         params_impressions = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["impressions"],
             "time_range": str(time_range)
         }
@@ -52,7 +53,7 @@ def dashboard():
 
         params_conversions = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["actions"],
             "time_range": str(time_range)
         }
@@ -72,7 +73,7 @@ def dashboard():
 
         params_spend = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["spend"],
             "time_range": str(time_range)
         }
@@ -83,7 +84,7 @@ def dashboard():
 
         params_clicks = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["clicks"],
             "time_range": str(time_range)
         }
@@ -94,7 +95,7 @@ def dashboard():
 
         params_cpc = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["cpc"],
             "time_range": str(time_range)
         }
@@ -105,7 +106,7 @@ def dashboard():
 
         params_ctr = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["ctr"],
             "time_range": str(time_range)
         }
@@ -116,7 +117,7 @@ def dashboard():
 
         params_revenue = {
             "access_token": accessToken,
-            "level": "account",
+            "level": "adset",
             "fields": ["actions"],
             "breakdowns": ["country"],
             "time_range": str(time_range)
@@ -127,13 +128,18 @@ def dashboard():
             for action in data_revenue:
                 country = action["country"]
                 date = action["date_start"]
-                date = "2016-10-03"
+                date = "2017-01-05"
                 countries = Country.query.filter_by(shorthand=country).first()
                 country_id = countries.id
-                country_id = 197
-                prices = TimePrice.query.filter_by(country_id=country_id,date=date).first()
+                offer = Offer.query.filter_by(id=int(ad["offer_id"])).first()
+                startTime = offer.startTime
+                prices = TimePrice.query.filter(TimePrice.country_id==country_id,TimePrice.offer_id == int(ad["offer_id"]),TimePrice.date <= date,TimePrice.date>=startTime).order_by(TimePrice.date.desc()).first()
                 if not prices:
-                    price = 0
+                    prices_history = History.query.filter(History.country==country, History.offer_id==ad["offer_id"]).order_by(History.createdTime.desc()).first()
+                    if not prices_history:
+                        price = offer.price
+                    else:
+                        price = prices_history.price
                 else:
                     price = prices.price
                 actions = action.get("actions", [])
@@ -146,6 +152,14 @@ def dashboard():
                         conversions_revenue = 0
                     revenue_count += (conversions_revenue * float(price))
 
+    if float(conversions_count) != 0:
+        cpi = '%0.2f' % ((float(spend_count)) / float(conversions_count))
+    else:
+        cpi = 0
+    if float(clicks_count) != 0:
+        cvr = '%0.2f' %(float(conversions_count)/float(clicks_count))
+    else:
+        cvr = 0
     result = {
         "impressions": str(impressions_count),
         "spend": '%0.2f'%(float(spend_count)),
@@ -153,8 +167,8 @@ def dashboard():
         "conversions": str(conversions_count),
         "cpc": '%0.2f'%(float(cpc_count)),
         "ctr": '%0.2f'%(float(ctr_count)),
-        "cpi": '%0.2f' % ((float(spend_count)) / float(conversions_count)),
-        "cvr": '%0.2f' %(float(conversions_count)/float(clicks_count)),
+        "cpi": str(cpi),
+        "cvr": str(cvr),
         "revenue": '%0.2f'%(revenue_count),
         "profit": '%0.2f'%(float(revenue_count)-float(spend_count))
     }
@@ -178,6 +192,15 @@ def faceReport():
         offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
+        if not advertiser:
+            return json.dumps({
+                "code":500,
+                "message":"not bind ads",
+                "data_geo": {},
+                "data_geo_table": {},
+                "data_date_table": {},
+                "data_range": {},
+            })
         accessToken = advertiser.token
         accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
         advertise_groups = advertiser.advertise_groups.split(",")
