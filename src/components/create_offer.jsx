@@ -159,7 +159,23 @@ var CreateOffer = React.createClass({
     },
     componentDidMount(){
         var _this = this;
-        ajax("get","/api/user_select").then(function (data) {
+        var customerPromise = ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+                _this.setState({
+                    tfdq:data.result
+                })
+            }else {
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
+            }
+            if(_this.props.params.id){
+                return ajax("post","/api/customer_select",JSON.stringify({name:""}));
+            }else {
+                return ajax("get","/api/user_select");
+            }
+        });
+        customerPromise.then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
                 _this.setState({
@@ -171,21 +187,9 @@ var CreateOffer = React.createClass({
             }
         });
         if(this.props.params.id){
-            alert(1)
             sessionStorage.setItem("count","1");
             /*　ｓｅｌｅｃｔ之前为ａｊａｘ获取改为直接调取获取所有的　*/
-            ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
-                var data = JSON.parse(data);
-                if(data.code=="200"){
-                    _this.setState({
-                        tfdq:data.result
-                    })
-                }else {
-                    $(".ajax_error").html(data.message);
-                    $("#modal").modal("toggle");
-                }
-                return ajax("post","/api/customer_select",JSON.stringify({name:""}));
-            }).then(function (data) {
+            customerPromise.then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
                     _this.setState({
@@ -207,8 +211,8 @@ var CreateOffer = React.createClass({
                         country_detail:data.result.country_detail
                     });
                     setTimeout(function () {
-                        $(".tfpt").val(data.result.platform).trigger("change");
-                        $(".tfdq").val(data.result.country).trigger("change");
+                        $(".tfpt").val(data.result.platform.toString().split(",")).trigger("change");
+                        $(".tfdq").val(data.result.country.toString().split(",")).trigger("change");
                     });
                 }else {
                     $(".ajax_error").html(data.message);
@@ -216,7 +220,6 @@ var CreateOffer = React.createClass({
                 }
             });
         }
-
         $(".tfdq").on("change",function () {
             var result=_this.state.result;
             var new_result = [];
@@ -233,6 +236,11 @@ var CreateOffer = React.createClass({
                 });
             });
         });
+        $("#bulk_import_save").on("click",function () {
+            var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$(".tfdq").val().toString().toUpperCase();
+            $(".tfdq").val(text.toString().split(",")).trigger("change");
+        });
+
         /*合作方式*/
         $("#hzfs").on("change",function () {
             if($(this).val()=="cpa"){
@@ -402,12 +410,12 @@ var CreateOffer = React.createClass({
                             投放地区
                         </div>
                         <div className="col-sm-9">
-                            {/*{
-                                <Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
-                            }*/}
                             {
-                                this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
+                                <Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
                             }
+                            {/*{
+                                this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
+                            }*/}
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -417,9 +425,40 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-6">
                             <input type="number" data-required="true" className="form-control" data-key="price"/>
                         </div>
-                        <div className="col-sm-3" style={{position:"relative"}}>
-                            <input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
-                            <button type="button" className="btn btn-primary">Import</button>
+                        <div className="col-sm-3">
+                            <button type="button" className="btn btn-primary" style={{position:"relative"}}>
+                                Import<input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
+                            </button>
+                            <button style={{marginLeft:"15px",position:"relative",zIndex:2}} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                                批量导入
+                            </button>
+                        </div>
+                    </div>
+                    <div className="modal  fade" id="bulk_import">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <button type="button" className="close" data-dismiss="modal">
+                                        <span aria-hidden="true">&times;</span>
+                                        <span className="sr-only">Close</span>
+                                    </button>
+                                    <h4 className="modal-title">批量导入</h4>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="form-group">
+                                        <div className="col-md-2">批量导入</div>
+                                        <div className="col-md-10">
+                                        <textarea id="bulk_import_input" placeholder=",隔开" className="form-control">
+
+                                        </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" id="bulk_import_save" className="btn btn-primary" data-dismiss="modal">Save</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-10">
