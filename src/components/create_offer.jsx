@@ -154,6 +154,9 @@ var CreateOffer = React.createClass({
             }
         });
     },
+    invalid(e){
+        e.target.value = e.target.value.replace(/[^\d\.]/gi,"");
+    },
     componentDidMount(){
         var _this = this;
         ajax("get","/api/user_select").then(function (data) {
@@ -440,7 +443,7 @@ var CreateOffer = React.createClass({
                                         this.state.result.map(function (ele,index,array) {
                                             return <tr key={index}>
                                                         <td>{ele.country}</td>
-                                                        <td><input type="number" defaultValue={ele.price} className="form-control" /></td>
+                                                        <td><input type="text" onChange={_this.invalid} defaultValue={ele.price} className="form-control" /></td>
                                                         <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
                                                     </tr>
                                         })

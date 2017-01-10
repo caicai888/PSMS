@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, request
 
@@ -41,7 +41,7 @@ def customer():
                 'company_name': customer.company_name,
                 'company_address': customer.company_address,
                 'comment': customer.comment,
-                'last_datetime': str(customer.last_datetime),
+                'last_datetime': str(customer.last_datetime+timedelta(hours=8)),
                 'status': customer.status
             }
             msg_list += [data]
@@ -67,7 +67,7 @@ def query_customer(id):
         data['message'] = 'success'
         data['results'] = {'customer_code': customer.customer_code, 'company_name': customer.company_name,
                            'company_address': customer.company_address, 'comment': customer.comment,
-                           'last_datetime': str(customer.last_datetime)
+                           'last_datetime': str(customer.last_datetime+timedelta(hours=8))
                            }
         return json.dumps(data)
     return json.dumps({"code": "500", "message": "request method error"})

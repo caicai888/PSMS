@@ -17,6 +17,7 @@ var ajax = function (method,url,data) {
                 resolve(data);
             },
             error:function (e) {
+                debugger
                 reject(e);
                 $(".ajax_error").html(e.status+"---"+e.statusText);
                 $(".mask").hide();
