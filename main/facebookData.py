@@ -37,7 +37,7 @@ def dashboard():
     cpc_count = 0
     ctr_count = 0
     revenue_count = 0
-    advertisers_group = ["23842526661210437"]
+    advertisers_group = [{"adset":"23842526661210437"}]
     for ad in advertisers_group:
         url = "https://graph.facebook.com/v2.8/"+str(ad["adset"])+"/insights"
         params_impressions = {
@@ -1102,7 +1102,7 @@ def faceReport():
                             cvr_count_list += [
                                 {
                                     "cvr": str(0),
-                                    "date_start": date_start
+                                    "date_start": i["date_start"]
                                 }
                             ]
 
