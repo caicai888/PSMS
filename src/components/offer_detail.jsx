@@ -322,7 +322,7 @@ var OfferDetail = React.createClass({
                                                 <p>{ele.count_cost}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CVR($)</p>
+                                                <p>CVR(%)</p>
                                                 <p>{ele.count_ctr}</p>
                                             </div>
                                             <div className="box_20">

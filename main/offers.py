@@ -42,7 +42,7 @@ def countrySelect():
             countries = Country.query.filter(Country.british.ilike('%' + data["name"] + '%')).all()
         for i in countries:
             data = {
-                "id": i.shorthand,
+                "id": i.chinese+"("+i.shorthand+")",
                 "text": i.chinese+"("+i.shorthand+")"
             }
             result += [data]

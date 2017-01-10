@@ -25,6 +25,7 @@ var Login = React.createClass({
 
     },
     componentDidMount(){
+        debugger
         if($(".userId").html()!=""){
             location.hash="welcome"
         }

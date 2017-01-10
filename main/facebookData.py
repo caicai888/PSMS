@@ -37,6 +37,7 @@ def dashboard():
     cpc_count = 0
     ctr_count = 0
     revenue_count = 0
+    advertisers_group = [{"adset":"23842526661210437"}]
     for ad in advertisers_group:
         url = "https://graph.facebook.com/v2.8/"+str(ad["adset"])+"/insights"
         params_impressions = {
@@ -826,6 +827,8 @@ def faceReport():
                             else:
                                 if "link_click" in action["action_type"]:
                                     conversions = int(action["value"])
+                                else:
+                                    conversions = int(0)
                             conver_data = {
                                 "country": j["country"],
                                 "date_stop": j["date_stop"],
@@ -848,6 +851,8 @@ def faceReport():
                                 price = price_default
                             else:
                                 price = prices_history.price
+                        print price
+                        print "pppp"*10
                         revenue_list += [
                             {
                                 "country": country,
@@ -954,8 +959,6 @@ def faceReport():
                         if data != []:
                             if data[0]["actions"] != []:
                                 for action in data[0]["actions"]:
-                                    print "+++++"*10
-                                    print action
                                     if "offsite_conversion" in action["action_type"]:
                                         conversions = action["value"]
                                         date_start = data[0]["date_start"]
@@ -1070,39 +1073,29 @@ def faceReport():
                 ctr_count_list = [{"date_start": k, "ctr": str(v)} for k, v in dx.items()]
                 ctr_count_list = sorted(ctr_count_list, key=lambda k: k['date_start'])[::-1]
 
-                for l in range(len(conversions_count_list)):
-                    if conversions_count_list[l].get("date_start") == clicks_count_list[l].get("date_start"):
-                        cvr = '%0.2f' % (float(conversions_count_list[l].get("conversions")) / float(clicks_count_list[l].get("clicks")) * 100) if float(clicks_count_list[l].get("clicks")) !=0 else 0
-                        cvr_count_list += [
-                            {
-                                "cvr": cvr,
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
-                    else:
-                        cvr_count_list += [
-                            {
-                                "cvr": str(0),
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
+                for l in conversions_count_list:
+                    date_start = l["date_start"]
+                    for i in clicks_count_list:
+                        if date_start == i["date_start"]:
+                            cvr = '%0.2f' %(float(l["conversions"])/float(i["clicks"]) * 100) if float(i["clicks"]) != 0 else 0
+                            cvr_count_list += [
+                                {
+                                    "cvr": cvr,
+                                    "date_start": date_start
+                                }
+                            ]
 
-                for l in range(len(conversions_count_list)):
-                    if conversions_count_list[l].get("date_start") == costs_count_list[l].get("date_start"):
-                        cpi = '%0.2f' % (float(costs_count_list[l].get("spend")) / float(conversions_count_list[l].get("conversions")) * 100) if float(conversions_count_list[l].get("conversions")) !=0 else 0
-                        cpi_count_list += [
-                            {
-                                "cpi": cpi,
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
-                    else:
-                        cpi_count_list += [
-                            {
-                                "cpi": str(0),
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
+                for l in conversions_count_list:
+                    date_start = l["date_start"]
+                    for i in costs_count_list:
+                        if date_start == i["date_start"]:
+                            cpi = '%0.2f'%(float(i["spend"])/float(l["conversions"])*100) if float(l["conversions"]) != 0 else 0
+                            cpi_count_list += [
+                                {
+                                    "cpi": cpi,
+                                    "date_start": date_start
+                                }
+                            ]
 
                 if len(revenue_new_list) >= len(costs_count_list):
                     count = len(costs_count_list)
@@ -1117,25 +1110,22 @@ def faceReport():
                     count = len(revenue_new_list)
                     for le in range(len_difference):
                         revenue_new_list += [{
-                            "revenue": 0,
+                            "revenue": '%0.2f'%(float(conversions_count_list[count+le].get("conversions"))*float(price_default)),
                             "date_start": costs_count_list[count+le].get("date_start")
                         }]
 
-                for r in range(len(revenue_new_list)):
-                    if revenue_new_list[r].get("date_start") == costs_count_list[r].get("date_start"):
-                        profit_list += [
-                            {
-                                "profit": '%0.2f' % (float(revenue_new_list[r].get("revenue"))-float(costs_count_list[r].get("spend"))),
-                                "date_start": revenue_new_list[r].get("date_start")
-                            }
-                        ]
-                    else:
-                        profit_list += [
-                            {
-                                "profit": str(0),
-                                "date_start": revenue_new_list[r].get("date_start")
-                            }
-                        ]
+                for r in costs_count_list:
+                    date_start = r["date_start"]
+                    for j in revenue_new_list:
+                        if date_start == j["date_start"]:
+                            profit = '%0.2f' % (float(j["revenue"])-float(r["spend"]))
+                            profit_list += [
+                                {
+                                    "profit": profit,
+                                    "date_start": date_start
+                                }
+                            ]
+
                 count_revenue = 0
                 for a in revenue_new_list:
                     count_revenue += float(a["revenue"])
