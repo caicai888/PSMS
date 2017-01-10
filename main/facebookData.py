@@ -1098,13 +1098,13 @@ def faceReport():
                                     "date_start": date_start
                                 }
                             ]
-                        else:
-                            cvr_count_list += [
-                                {
-                                    "cvr": str(0),
-                                    "date_start": i["date_start"]
-                                }
-                            ]
+                        # else:
+                        #     cvr_count_list += [
+                        #         {
+                        #             "cvr": str(0),
+                        #             "date_start": i["date_start"]
+                        #         }
+                        #     ]
 
 
                 for l in range(len(conversions_count_list)):
