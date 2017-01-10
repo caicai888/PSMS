@@ -38,6 +38,8 @@ def dashboard():
     ctr_count = 0
     revenue_count = 0
     for ad in advertisers_group:
+        print "++++++"*10
+        print ad["adset"]
         url = "https://graph.facebook.com/v2.8/"+str(ad["adset"])+"/insights"
         params_impressions = {
             "access_token": accessToken,
@@ -46,6 +48,8 @@ def dashboard():
             "time_range": str(time_range)
         }
         result_impressions = requests.get(url=url, params=params_impressions)
+        print result_impressions.json()
+        print "------"*10
         data_impressions = result_impressions.json()["data"]
         for i in data_impressions:
             impressions_count += int(i["impressions"])
@@ -826,6 +830,8 @@ def faceReport():
                             else:
                                 if "link_click" in action["action_type"]:
                                     conversions = int(action["value"])
+                                else:
+                                    conversions = int(0)
                             conver_data = {
                                 "country": j["country"],
                                 "date_stop": j["date_stop"],
@@ -954,8 +960,6 @@ def faceReport():
                         if data != []:
                             if data[0]["actions"] != []:
                                 for action in data[0]["actions"]:
-                                    print "+++++"*10
-                                    print action
                                     if "offsite_conversion" in action["action_type"]:
                                         conversions = action["value"]
                                         date_start = data[0]["date_start"]
@@ -1070,22 +1074,41 @@ def faceReport():
                 ctr_count_list = [{"date_start": k, "ctr": str(v)} for k, v in dx.items()]
                 ctr_count_list = sorted(ctr_count_list, key=lambda k: k['date_start'])[::-1]
 
-                for l in range(len(conversions_count_list)):
-                    if conversions_count_list[l].get("date_start") == clicks_count_list[l].get("date_start"):
-                        cvr = '%0.2f' % (float(conversions_count_list[l].get("conversions")) / float(clicks_count_list[l].get("clicks")) * 100) if float(clicks_count_list[l].get("clicks")) !=0 else 0
-                        cvr_count_list += [
-                            {
-                                "cvr": cvr,
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
-                    else:
-                        cvr_count_list += [
-                            {
-                                "cvr": str(0),
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
+                # for l in range(len(conversions_count_list)):
+                #     if conversions_count_list[l].get("date_start") == clicks_count_list[l].get("date_start"):
+                #         cvr = '%0.2f' % (float(conversions_count_list[l].get("conversions")) / float(clicks_count_list[l].get("clicks")) * 100) if float(clicks_count_list[l].get("clicks")) !=0 else 0
+                #         cvr_count_list += [
+                #             {
+                #                 "cvr": cvr,
+                #                 "date_start": conversions_count_list[l].get("date_start")
+                #             }
+                #         ]
+                #     else:
+                #         cvr_count_list += [
+                #             {
+                #                 "cvr": str(0),
+                #                 "date_start": conversions_count_list[l].get("date_start")
+                #             }
+                #         ]
+                for l in conversions_count_list:
+                    date_start = l["date_start"]
+                    for i in clicks_count_list:
+                        if date_start == i["date_start"]:
+                            cvr = '%0.2f' %(float(l["conversions"])/float(i["clicks"]) * 100) if float(i["clicks"]) != 0 else 0
+                            cvr_count_list += [
+                                {
+                                    "cvr": cvr,
+                                    "date_start": date_start
+                                }
+                            ]
+                        else:
+                            cvr_count_list += [
+                                {
+                                    "cvr": str(0),
+                                    "date_start": conversions_count_list[l].get("date_start")
+                                }
+                            ]
+
 
                 for l in range(len(conversions_count_list)):
                     if conversions_count_list[l].get("date_start") == costs_count_list[l].get("date_start"):
