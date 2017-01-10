@@ -851,6 +851,8 @@ def faceReport():
                                 price = price_default
                             else:
                                 price = prices_history.price
+                        print price
+                        print "pppp"*10
                         revenue_list += [
                             {
                                 "country": country,
@@ -1071,22 +1073,6 @@ def faceReport():
                 ctr_count_list = [{"date_start": k, "ctr": str(v)} for k, v in dx.items()]
                 ctr_count_list = sorted(ctr_count_list, key=lambda k: k['date_start'])[::-1]
 
-                # for l in range(len(conversions_count_list)):
-                #     if conversions_count_list[l].get("date_start") == clicks_count_list[l].get("date_start"):
-                #         cvr = '%0.2f' % (float(conversions_count_list[l].get("conversions")) / float(clicks_count_list[l].get("clicks")) * 100) if float(clicks_count_list[l].get("clicks")) !=0 else 0
-                #         cvr_count_list += [
-                #             {
-                #                 "cvr": cvr,
-                #                 "date_start": conversions_count_list[l].get("date_start")
-                #             }
-                #         ]
-                #     else:
-                #         cvr_count_list += [
-                #             {
-                #                 "cvr": str(0),
-                #                 "date_start": conversions_count_list[l].get("date_start")
-                #             }
-                #         ]
                 for l in conversions_count_list:
                     date_start = l["date_start"]
                     for i in clicks_count_list:
@@ -1098,31 +1084,25 @@ def faceReport():
                                     "date_start": date_start
                                 }
                             ]
-                        # else:
-                        #     cvr_count_list += [
-                        #         {
-                        #             "cvr": str(0),
-                        #             "date_start": i["date_start"]
-                        #         }
-                        #     ]
-
 
                 for l in range(len(conversions_count_list)):
-                    if conversions_count_list[l].get("date_start") == costs_count_list[l].get("date_start"):
-                        cpi = '%0.2f' % (float(costs_count_list[l].get("spend")) / float(conversions_count_list[l].get("conversions")) * 100) if float(conversions_count_list[l].get("conversions")) !=0 else 0
-                        cpi_count_list += [
-                            {
-                                "cpi": cpi,
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
-                    else:
-                        cpi_count_list += [
-                            {
-                                "cpi": str(0),
-                                "date_start": conversions_count_list[l].get("date_start")
-                            }
-                        ]
+                    date_start = l["date_start"]
+                    for i in costs_count_list:
+                        if date_start == i["date_start"]:
+                            cpi = '%0.2f'%(float(i["spend"])/float(l["conversions"])*100) if float(l["conversions"]) != 0 else 0
+                            cpi_count_list += [
+                                {
+                                    "cpi": cpi,
+                                    "date_start": date_start
+                                }
+                            ]
+                    # else:
+                    #     cpi_count_list += [
+                    #         {
+                    #             "cpi": str(0),
+                    #             "date_start": conversions_count_list[l].get("date_start")
+                    #         }
+                    #     ]
 
                 if len(revenue_new_list) >= len(costs_count_list):
                     count = len(costs_count_list)
