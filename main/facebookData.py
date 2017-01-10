@@ -897,7 +897,7 @@ def faceReport():
                         data = result.json()
                         if data != []:
                             impressions_count.append(data)
-                #
+
                         params = {
                             "access_token": accessToken,
                             "level": "adset",
@@ -957,15 +957,13 @@ def faceReport():
                                     print "+++++"*10
                                     print action
                                     if "offsite_conversion" in action["action_type"]:
-                                        print "#####"*10
                                         conversions = action["value"]
                                         date_start = data[0]["date_start"]
                                         con_data = {
                                             "conversions": int(conversions),
                                             "date_start": date_start
                                         }
-                                        print con_data
-                                        print "&&&&&"*10
+
                                     else:
                                         if "link_click" in action["action_type"]:
                                             conversions = action["value"]
@@ -1060,7 +1058,7 @@ def faceReport():
                 for t_ctr in ctr_count:
                     if t_ctr["data"] != []:
                         ctr_data = {
-                            "ctr": t_ctr["data"][0].get("ctr"),
+                            "ctr": '%0.2f'%(float(t_ctr["data"][0].get("ctr"))),
                             "date_start": t_ctr["data"][0].get("date_start")
                         }
                         ctr_count_list += [ctr_data]

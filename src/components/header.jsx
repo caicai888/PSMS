@@ -13,7 +13,7 @@ var Header = React.createClass({
                 $(".isShow").hide();
             }else {
                 $(".ajax_error").html(data.message);
-                $(".modal").modal("toggle");
+                $("#modal").modal("toggle");
             }
         });
     },
@@ -27,8 +27,8 @@ var Header = React.createClass({
                     $(".isShow").show();
                 }else {
                     $(".ajax_error").html(data.message);
-                    $(".modal").modal("toggle");
-                    $(".modal").on("hidden.bs.modal",function () {
+                    $("#modal").modal("toggle");
+                    $("#modal").on("hidden.bs.modal",function () {
                         location.hash="/login";
                         $(".isShow").hide();
                     })

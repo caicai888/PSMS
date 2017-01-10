@@ -226,13 +226,45 @@ def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
     if offer.status == "active":
         offer.status = "inactive"
+        status = offer.status
         db.session.add(offer)
         db.session.commit()
+        history = History(offer.id, offer.user_id, "update",
+                          (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                              "%Y-%m-%d %H:%M:%S"),
+                          price=offer.price,
+                          status=status,
+                          daily_budget=offer.daily_budget,
+                          daily_type=offer.daily_type,
+                          total_budget=offer.total_budget,
+                          total_type=offer.total_type,
+                          KPI=offer.KPI,
+                          contract_type=offer.contract_type,
+                          contract_scale=offer.contract_scale)
+        db.session.add(history)
+        db.session.commit()
+        db.create_all()
         return json.dumps({"code": 200, "message":"success"})
     elif offer.status == "inactive":
         offer.status = "active"
+        status = offer.status
         db.session.add(offer)
         db.session.commit()
+        history = History(offer.id, offer.user_id, "update",
+                          (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                              "%Y-%m-%d %H:%M:%S"),
+                          price=offer.price,
+                          status=status,
+                          daily_budget=offer.daily_budget,
+                          daily_type=offer.daily_type,
+                          total_budget=offer.total_budget,
+                          total_type=offer.total_type,
+                          KPI=offer.KPI,
+                          contract_type=offer.contract_type,
+                          contract_scale=offer.contract_scale)
+        db.session.add(history)
+        db.session.commit()
+        db.create_all()
         return json.dumps({"code": 200, "message": "success"})
     else:
         return json.dumps({"code": 500, "message": "fail"})
@@ -247,7 +279,7 @@ def updateOffer():
             try:
                 offer.updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
                 offer.status = data["status"] if data["status"] != "" else offer.status
-                offer.customer_id = data["customer_id"] if data["customer_id"] != "" else offer.customer_id
+                offer.customer_id = int(data["customer_id"]) if data["customer_id"] != "" else offer.customer_id
                 offer.user_id = int(data["user_id"]) if data['user_id'] != "" else offer.user_id
                 offer.contract_type = data["contract_type"] if data["contract_type"] != "" else offer.contract_type
                 offer.contract_scale = float(data["contract_scale"]) if data["contract_scale"] != "" else offer.contract_scale
@@ -281,35 +313,36 @@ def updateOffer():
                 db.session.add(offer)
                 db.session.commit()
                 if "country_detail" in flag:
-                    for i in data['country_detail']:
-                        history = History(offer.id, offer.user_id, "update",
+                    if data["country_detail"] != []:
+                        for i in data['country_detail']:
+                            history = History(int(offer.id), int(offer.user_id), "update",
+                                              (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                                                  "%Y-%m-%d %H:%M:%S"), country=i["country"], country_price=i["price"],
+                                              price=float(data["price"]) if data["price"] != "" else 0,
+                                              status=data["status"],
+                                              daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
+                                              daily_type=data["daily_type"],
+                                              total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
+                                              total_type=data["total_type"], KPI=data["KPI"],
+                                              contract_type=data["contract_type"],
+                                              contract_scale=float(data["contract_scale"]))
+                            db.session.add(history)
+                            db.session.commit()
+                            db.create_all()
+                    else:
+                        history = History(int(offer.id), int(offer.user_id), "update",
                                           (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
-                                              "%Y-%m-%d %H:%M:%S"), country=i["country"], country_price=i["price"],
-                                          price=float(data["price"]) if data["price"] != "" else 0,
-                                          status=data["status"],
+                                              "%Y-%m-%d %H:%M:%S"),
+                                          price=float(data["price"]) if data["price"] != "" else 0, status=data["status"],
                                           daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
                                           daily_type=data["daily_type"],
                                           total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
                                           total_type=data["total_type"], KPI=data["KPI"],
                                           contract_type=data["contract_type"],
-                                          contract_scale=float(data["contract_scale"]))
+                                          contract_scale=float(data["contract_scale"]) if data["contract_scale"] != "" else 0)
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
-                else:
-                    history = History(offer.id, offer.user_id, "update",
-                                      (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
-                                          "%Y-%m-%d %H:%M:%S"),
-                                      price=float(data["price"]) if data["price"] != "" else 0, status=data["status"],
-                                      daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
-                                      daily_type=data["daily_type"],
-                                      total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
-                                      total_type=data["total_type"], KPI=data["KPI"],
-                                      contract_type=data["contract_type"],
-                                      contract_scale=float(data["contract_scale"]) if data["contract_scale"] != "" else 0)
-                    db.session.add(history)
-                    db.session.commit()
-                    db.create_all()
 
                 return json.dumps({"code": 200, "message": "success"})
             except Exception as e:
@@ -409,7 +442,6 @@ def historty():
             for i in history:
                 country.append(i.country)
             country = list(set(country))
-            print country
             for i in country:
                 detail = []
                 history_country = History.query.filter(History.offer_id == offer_id, History.country == i)
@@ -417,11 +449,11 @@ def historty():
                     createdTime = j.createdTime
                     country_price = j.country_price
                     country_data = {
+                        "country": i,
                         "country_price": country_price,
                         "createdTime": createdTime
                     }
-                    detail += [country_data]
-                result += [{"country": i, "detail": detail}]
+                    result += [country_data]
             response = {
                 "code": 200,
                 "result": result
