@@ -35,21 +35,28 @@ def customerSelect():
 def countrySelect():
     if request.method == "POST":
         data = request.get_json(force=True)
+        name_list = data['name'].split(',')
         result = []
-        if u'\u4e00' <= data["name"] <= u'\u9fff':
-            countries = Country.query.filter(Country.chinese.ilike('%' + data["name"] + '%')).all()
-        else:
-            countries = Country.query.filter(Country.british.ilike('%' + data["name"] + '%')).all()
-        for i in countries:
-            data = {
-                "id": i.shorthand,
-                "text": i.chinese+"("+i.shorthand+")"
-            }
-            result += [data]
+        for name in name_list:
+            if u'\u4e00' <= name <= u'\u9fff':
+                countries = Country.query.filter(Country.chinese.ilike('%' + name + '%')).all()
+            else:
+                countries = Country.query.filter(Country.british.ilike('%' + name + '%')).all()
+            if countries:
+                for i in countries:
+                    data = {
+                        "id": i.shorthand,
+                        "text": i.chinese+"("+i.shorthand+")"
+                    }
+                    result += [data]
+            else:
+                name_list.remove(name)
+        names = ','.join(name_list) 
         response = {
             "code": 200,
             "result": result,
-            "message": "success"
+            "message": "success",
+            "namelist": name,
         }
         return json.dumps(response)
     else:
