@@ -22,11 +22,12 @@ var Login = React.createClass({
         }
     },
     componentWillMount(){
-      if($(".userId").html()!=""){
-          location.hash="welcome"
-      }
+
     },
     componentDidMount(){
+        if($(".userId").html()!=""){
+            location.hash="welcome"
+        }
         var _this = this;
         $(document).keydown(function (e) {
             var event = e || event;

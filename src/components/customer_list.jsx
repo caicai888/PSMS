@@ -88,7 +88,7 @@ var CustomerList = React.createClass({
                             <tr>
                                 <th>ID</th>
                                 <th>客户编码</th>
-                                <th>客户名称</th>
+                                {/*<th>客户名称</th>*/}
                                 <th>公司名称</th>
                                 <th>公司地址</th>
                                 <th>备注</th>
@@ -102,7 +102,7 @@ var CustomerList = React.createClass({
                                     return  <tr key={index}>
                                                 <td>{item.customers_id}</td>
                                                 <td>{item.customer_code}</td>
-                                                <td>{item.company_name}</td>
+                                                {/*<td>{item.company_name}</td>*/}
                                                 <td>{item.company_name}</td>
                                                 <td>{item.company_address}</td>
                                                 <td>{item.comment}</td>

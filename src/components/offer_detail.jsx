@@ -98,7 +98,7 @@ var OfferDetail = React.createClass({
             "end_date":$(".reportRange").val().split(":")[1],
             "dimension":dimension
         };
-        ajax("post","/api/report",JSON.stringify(reportData)).then(function (res) { //googleads
+        ajax("post","/api/googleads",JSON.stringify(reportData)).then(function (res) { //googleads
                 var data = JSON.parse(res);
                 var isEmptyObject = function(obj) {
                     for (let key in obj) {
