@@ -35,21 +35,34 @@ def customerSelect():
 def countrySelect():
     if request.method == "POST":
         data = request.get_json(force=True)
+        name_list = data['name'].split(',')
+        result_list = []
         result = []
-        if u'\u4e00' <= data["name"] <= u'\u9fff':
-            countries = Country.query.filter(Country.chinese.ilike('%' + data["name"] + '%')).all()
-        else:
-            countries = Country.query.filter(Country.british.ilike('%' + data["name"] + '%')).all()
-        for i in countries:
-            data = {
-                "id": i.chinese+"("+i.shorthand+")",
-                "text": i.chinese+"("+i.shorthand+")"
-            }
-            result += [data]
+        for name in name_list:
+            if name == '':
+                countries = Country.query.all()
+            else:
+                if u'\u4e00' <= name <= u'\u9fff':
+                    countries = Country.query.filter(Country.chinese.ilike('%' + name + '%')).all()
+                else:
+                    countries = Country.query.filter(Country.shorthand.ilike('%' + name + '%')).all()
+            if countries and isinstance(countries, list):
+                for i in countries:
+                    if i.shorthand not in result_list and name not in result_list:
+                        if u'\u4e00' <= name <= u'\u9fff':
+                            result_list.append(i.shorthand)
+                        elif name != '':
+                            result_list.append(name)
+                    data = {
+                        "id": i.shorthand,
+                        "text": i.chinese+"("+i.shorthand+")"
+                    }
+                    result += [data]
         response = {
             "code": 200,
             "result": result,
-            "message": "success"
+            "message": "success",
+            "namelist": result_list,
         }
         return json.dumps(response)
     else:
@@ -76,6 +89,7 @@ def userSelect():
 
 
 @offers.route('/api/create_offer', methods=['POST', 'GET'])
+@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
 def createOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -147,7 +161,6 @@ def offerShow():
 
 
 @offers.route('/api/offer_detail/<id>', methods=["GET"])
-@Permission.check(models=['offer_query'])
 def offerDetail(id):
     offer = Offer.query.filter_by(id=int(id)).first()
     customerId = offer.customer_id
@@ -222,6 +235,7 @@ def offerDetail(id):
 
 #更新offer的状态
 @offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
+@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
 def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
     if offer.status == "active":
@@ -270,6 +284,7 @@ def updateStatus(offer_id):
         return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
+@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
 def updateOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -353,6 +368,7 @@ def updateOffer():
 
 #bind list
 @offers.route("/api/offer_bind", methods=["POST","GET"])
+@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
 def offerBind():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -411,6 +427,7 @@ def bindShow(offer_id):
 
 #update bind
 @offers.route("/api/bind_update", methods=["POST","GET"])
+@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
 def bindUpdate():
     if request.method == "POST":
         data = request.get_json(force=True)

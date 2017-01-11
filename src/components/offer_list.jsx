@@ -8,7 +8,8 @@ var OfferList = React.createClass({
     getInitialState() {
         return {
             result:[],
-            result_search:[]
+            result_search:[],
+            permissions:sessionStorage.getItem("permissions")
         };
     },
     export_table(){
@@ -126,7 +127,8 @@ var OfferList = React.createClass({
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
                                                 <td>
-                                                    <a href={"#/offer_detail/"+ele.offer_id+"/report"}><img src="./src/img/zx.jpg"/></a> <a href={"#/create_offer/"+ele.offer_id} className="btn btn-primary">Edit</a>
+                                                    <a href={"#/offer_detail/"+ele.offer_id+"/report"} className={_this.state.permissions.includes("report_query")?"":"none"}><img src="./src/img/zx.jpg"/></a>
+                                                    <a href={"#/create_offer/"+ele.offer_id} className={_this.state.permissions.includes("offer_edit")?"btn btn-primary":"none"}>Edit</a>
                                                 </td>
                                                 <td>{ele.updateTime}</td>
                                             </tr>

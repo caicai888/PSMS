@@ -7,7 +7,8 @@ var CustomerList = React.createClass({
     getInitialState() {
         return {
             result:[],
-            result_search:[]
+            result_search:[],
+            permissions:sessionStorage.getItem("permissions")
         };
     },
     export_table(){
@@ -108,8 +109,8 @@ var CustomerList = React.createClass({
                                                 <td>{item.comment}</td>
                                                 <td>{item.last_datetime}</td>
                                                 <td>
-                                                    <a href={"#/create_customer/"+item.customers_id} className="btn btn-primary">Edit</a>&nbsp;&nbsp;&nbsp;
-                                                    <a data-index={index} data-key={item.customers_id}  onClick={_this.delete_customer} className="btn btn-danger">Delete</a>
+                                                    <a href={"#/create_customer/"+item.customers_id} className={_this.state.permissions.includes("advertiser_query")?"btn btn-primary":"none"}>Edit</a>&nbsp;&nbsp;&nbsp;
+                                                    <a data-index={index} data-key={item.customers_id}  onClick={_this.delete_customer} className={_this.state.permissions.includes("advertiser_delete")?"btn btn-danger":"none"}>Delete</a>
                                                 </td>
                                             </tr>
                                 })
