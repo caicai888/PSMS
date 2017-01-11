@@ -11,6 +11,7 @@ class Permission(object):
     @classmethod
     def check(cls, *args, **kwargs):
         def decoratored(func):
+            @wraps(func)
             def wrap(*args, **kw):
                 models = kwargs.get('models')
                 if 'user_id' in session:
