@@ -34,8 +34,7 @@ def get_users():
                 "last_datetime": str(user.last_datetime+ timedelta(hours=8))
             }
             result += [data]
-        permissions = ["advertiser_create","advertiser_edit","advertiser_query"]
-        return json.dumps({"code": "200", "message": "success", "results": result,"permissions":permissions})
+        return json.dumps({"code": "200", "message": "success", "results": result})
     return json.dumps({"code": "500", "message": "request method error"})
 
 
@@ -60,8 +59,7 @@ def create_user():
         user_permission = UserRole(userid, data['role_ids'])
         db.session.add(user_permission)
         db.session.commit()
-        permissions = ["advertiser_create", "advertiser_edit", "advertiser_query"]
-        return json.dumps({"code": "200", "message": "success","permissions": permissions})
+        return json.dumps({"code": "200", "message": "success"})
     return json.dumps({"code": "500", "message": "request method error"})
 
 
@@ -79,8 +77,7 @@ def do_edit_user(id):
         msg['phone'] = user.phone
         msg['role_ids'] = db.session.query(UserRole).filter_by(user_id=id).first().role_id
         msg['permission_ids'] = db.session.query(UserPermissions).filter_by(user_id=id).first().permissions_id
-        permissions = ["advertiser_create", "advertiser_edit", "advertiser_query"]
-        return json.dumps({"code": "200", "message": "success", "results": msg, "permissions":permissions})
+        return json.dumps({"code": "200", "message": "success", "results": msg})
     return json.dumps({"code": "500", "message": "request method error"})
 
 
@@ -109,8 +106,7 @@ def edit_user(id):
         user_permission = db.session.query(UserPermissions).filter_by(user_id=id).first()
         user_permission.permissions_id = data['permission_ids']
         db.session.commit()
-        permissions = ["advertiser_create", "advertiser_edit", "advertiser_query"]
-        return json.dumps({"code": "200", "message": "success","permissions":permissions})
+        return json.dumps({"code": "200", "message": "success"})
     return json.dumps({"code": "500", "message": "request method error"})
 
 
@@ -159,12 +155,18 @@ def verify_session():
     if 'user_id' in session:
         user_id = session['user_id']
         user = db.session.query(User).filter_by(id=user_id).first()
+        user_permission = UserPermissions.query.filter_by(user_id=int(user_id)).first()
+        permissionIds = user_permission.permissions_id.split(",")
+        permissions = []
+        for i in permissionIds:
+            permissionName = Permissions.query.filter_by(id=int(i)).first()
+            permissions.append(permissionName.name)
         data = {
             'id': user.id,
             'name': user.name,
             'email': user.email
         }
-        return json.dumps({"code": "200", "message": "success", "results": data})
+        return json.dumps({"code": "200", "message": "success", "results": data, "permissions":permissions})
     else:
         return json.dumps({"code": "500", "message": "please login in"})
 
@@ -201,8 +203,7 @@ def create_role():
         role_permissions = RolePermissions(role_id, data['permission_ids'])
         db.session.add(role_permissions)
         db.session.commit()
-        permissions = ["advertiser_create","advertiser_edit","advertiser_query"]
-        return json.dumps({"code": "200", "message": "success", "permissions":permissions})
+        return json.dumps({"code": "200", "message": "success"})
     return json.dumps({"code": "500", "message": "request method error"})
 
 
@@ -220,11 +221,9 @@ def get_all_roles():
             'last_datetime': str(role.last_datetime+timedelta(hours=8))
         }
         msg_list += [data]
-    permissions = ["advertiser_create", "advertiser_edit", "advertiser_query"]
     msg_dict['code'] = '200'
     msg_dict['message'] = 'success'
     msg_dict['results'] = msg_list
-    msg_dict['permissions'] = permissions
     return json.dumps(msg_dict)
 
 
@@ -242,7 +241,6 @@ def do_edit_role(id):
         msg_dict['results']['id'] = id
         msg_dict['results']['name'] = role.name
         msg_dict['results']['permission_ids'] = role_permission.permissions_id
-        msg_dict['permissions'] = ["advertiser_create","advertiser_edit","advertiser_query"]
         return json.dumps(msg_dict)
     else:
         return json.dumps({"code": "500", "message": "request method error"})
@@ -260,8 +258,7 @@ def edit_role(id):
         role_permission.permissions_id = data['permission_ids']
         role.last_datetime = str(datetime.now())
         db.session.commit()
-        permissions = ["advertiser_create","advertiser_edit","advertiser_query"]
-        return json.dumps({"code": "200", "message": "success", "permissions":permissions})
+        return json.dumps({"code": "200", "message": "success"})
     else:
         return json.dumps({"code": "500", "message": "request method error"})
 
@@ -275,8 +272,7 @@ def get_role_permissions(id):
     data = {
         'code': '200',
         'message': 'success',
-        'results': {'permission_ids': permissions_list},
-        'permissions': ["advertiser_create","advertiser_edit","advertiser_query"]
+        'results': {'permission_ids': permissions_list}
     }
     return json.dumps(data)
 
@@ -294,7 +290,6 @@ def get_role_permissions_more():
             data = {
                 'code': '200',
                 'message': 'success',
-                'results': {'permission_ids': ",".join(list(set(permission_list)))},
-                'permissions': ["advertiser_create", "advertiser_edit", "advertiser_query"]
+                'results': {'permission_ids': ",".join(list(set(permission_list)))}
             }
             return json.dumps(data)
