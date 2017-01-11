@@ -6,6 +6,7 @@ def random_string():
 
 class Config:
     SECRET_KEY = random_string()
+    BASE_API_URL = "http://api.beta.dev.careerdream.org/core/v1/"
 
     @staticmethod
     def init_app(app):
@@ -14,7 +15,7 @@ class Config:
 class ProductionConfig(Config):
     DEBUG = True
     MYSQL_USER = "root"
-    MYSQL_PASS = ""
+    MYSQL_PASS = "12345"
     MYSQL_HOST = "localhost"
     MYSQL_PORT = "3306"
     MYSQL_DB = "psms"
