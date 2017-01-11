@@ -62,7 +62,6 @@ var OfferDetail = React.createClass({
     },
     componentDidMount(){
         var _this = this;
-        $(".none").remove();
         if(this.props.params.three){
             $("#myTab li:last a").tab("show");
         }
@@ -142,7 +141,6 @@ var OfferDetail = React.createClass({
                         "data_geo_table_revenue_list":data_geo_table.revenue_list,
                         "data_geo_table_impressions_list":data_geo_table.impressions_list
                     });
-                    $(".none").remove();
                 } else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -444,7 +442,9 @@ var OfferDetail = React.createClass({
                                     _this.state.data_geo_table_impressions_list.map(function (ele,index,array) {
                                         return <tr key={index}>
                                                     <td>{ele.date_start}</td>
-                                                    <td className={ele.country?"block":"none"}>{ele.country}</td>
+                                                    {
+                                                        ele.country?<td>{ele.country}</td>:""
+                                                    }
                                                     <td>{ _this.state.data_geo_table_revenue_list[index].revenue }</td>
                                                     <td>{ _this.state.data_geo_table_profit_list[index].profit }</td>
                                                     <td>{ _this.state.data_geo_table_cost_list[index].spend }</td>
