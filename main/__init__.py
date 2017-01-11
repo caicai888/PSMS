@@ -20,5 +20,7 @@ def create_app(config_name):
     app.register_blueprint(offers_blueprint)
     from facebookData import facebookDate as facebook_blueprint
     app.register_blueprint(facebook_blueprint)
+    from adwordsData import adwordsData as adwords_blueprint
+    app.register_blueprint(adwords_blueprint)
 
     return app
