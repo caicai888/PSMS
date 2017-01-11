@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
 from datetime import datetime, timedelta
-
+from main.has_permission import *
 from flask import Flask, Blueprint, request
 
 from main import db
@@ -13,6 +13,7 @@ customers = Blueprint('customers', __name__)
 
 # 创建客户
 @customers.route('/api/customers/create', methods=['POST', 'GET'])
+@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def create_customer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -75,6 +76,7 @@ def query_customer(id):
 
 # 编辑用户详情
 @customers.route('/api/customers/edit/<id>', methods=['POST', 'GET'])
+@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def edit_customer(id):
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -93,6 +95,7 @@ def edit_customer(id):
 
 # 删除当前客户
 @customers.route('/api/customers/delete/<id>', methods=['POST', 'GET'])
+@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query","advertiser_delete"])
 def delete_customer(id):
     if request.method == "POST":
         customer = db.session.query(Customers).filter_by(id=id).first()

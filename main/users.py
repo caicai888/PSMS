@@ -14,7 +14,6 @@ users = Blueprint('users', __name__)
 
 # 获取所有用户
 @users.route('/api/users', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_users():
     if request.method == "GET":
         users = User.query.all()
@@ -40,7 +39,7 @@ def get_users():
 
 # 创建用户
 @users.route('/api/user/create', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def create_user():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -65,7 +64,7 @@ def create_user():
 
 # 编辑用户
 @users.route('/api/user/do_edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def do_edit_user(id):
     if request.method == "POST":
         user = db.session.query(User).filter_by(id=id).first()
@@ -83,7 +82,7 @@ def do_edit_user(id):
 
 # 编辑用户
 @users.route('/api/user/edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def edit_user(id):
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -191,7 +190,7 @@ def get_all_permissions():
 
 # 创建用户组
 @users.route('/api/role/create', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def create_role():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -211,7 +210,6 @@ def create_role():
 
 # 查出所有的用户组
 @users.route('/api/roles', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_all_roles():
     roles = Role.query.all()
     msg_dict = {}
@@ -231,7 +229,7 @@ def get_all_roles():
 
 # 编辑用户组
 @users.route('/api/role/do_edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def do_edit_role(id):
     if request.method == "POST":
         msg_dict = dict()
@@ -250,7 +248,7 @@ def do_edit_role(id):
 
 # 编辑用户组
 @users.route('/api/role/edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def edit_role(id):
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -267,7 +265,6 @@ def edit_role(id):
 
 # 查出当前组所有的权限
 @users.route('/api/role_permissions/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_role_permissions(id):
     permissions = db.session.query(RolePermissions).filter_by(role_id=id).first()
     permissions_list = permissions.permissions_id
@@ -280,7 +277,6 @@ def get_role_permissions(id):
 
 # 查出几个角色对应的权限并取交集
 @users.route('/api/role_permissions', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_role_permissions_more():
     if request.method == "POST":
         data = request.get_json(force=True)
