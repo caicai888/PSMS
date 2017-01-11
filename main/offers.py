@@ -13,7 +13,6 @@ from sqlalchemy import desc
 offers = Blueprint('offers', __name__)
 
 @offers.route('/api/customer_select', methods=['POST', 'GET'])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def customerSelect():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -33,7 +32,6 @@ def customerSelect():
 
 
 @offers.route('/api/country_select', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def countrySelect():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -72,7 +70,6 @@ def countrySelect():
 
 
 @offers.route('/api/user_select', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def userSelect():
     users = User.query.filter().all()
     result = []
@@ -92,7 +89,7 @@ def userSelect():
 
 
 @offers.route('/api/create_offer', methods=['POST', 'GET'])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
 def createOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -130,7 +127,6 @@ def createOffer():
 
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def offerShow():
     offers = Offer.query.all()
     result = []
@@ -165,7 +161,6 @@ def offerShow():
 
 
 @offers.route('/api/offer_detail/<id>', methods=["GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def offerDetail(id):
     offer = Offer.query.filter_by(id=int(id)).first()
     customerId = offer.customer_id
@@ -240,7 +235,7 @@ def offerDetail(id):
 
 #更新offer的状态
 @offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
 def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
     if offer.status == "active":
@@ -289,7 +284,7 @@ def updateStatus(offer_id):
         return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
 def updateOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -373,7 +368,7 @@ def updateOffer():
 
 #bind list
 @offers.route("/api/offer_bind", methods=["POST","GET"])
-@Permission.check(models=["report_create","report_edit","report_query","advertiser_query","advertiser_edit","advertiser_create"])
+@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
 def offerBind():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -393,7 +388,6 @@ def offerBind():
 
 #show bind
 @offers.route("/api/bind_show/<offer_id>", methods=["POST","GET"])
-@Permission.check(models=["report_create","report_edit","report_query","advertiser_query","advertiser_edit","advertiser_create"])
 def bindShow(offer_id):
     advertiser_facebook = Advertisers.query.filter_by(offer_id=int(offer_id), type="facebook").first()
     if advertiser_facebook:
@@ -433,7 +427,7 @@ def bindShow(offer_id):
 
 #update bind
 @offers.route("/api/bind_update", methods=["POST","GET"])
-@Permission.check(models=["report_create","report_edit","report_query","advertiser_query","advertiser_edit","advertiser_create"])
+@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
 def bindUpdate():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -453,7 +447,6 @@ def bindUpdate():
             return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route("/api/history", methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def historty():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -580,7 +573,6 @@ def historty():
 
 # 导入国家表
 @offers.route("/api/country")
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def country():
     wb = xlrd.open_workbook("/home/centos/1.xlsx")
 
@@ -597,7 +589,6 @@ def country():
     print count
 #创建时导入国家对应时间价钱
 @offers.route("/api/country_time/create", methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def createCountryTime():
     if request.method == "POST":
         basedir = os.path.abspath(os.path.dirname(__file__))
@@ -676,7 +667,6 @@ def createCountryTime():
 
 # 更新时导入国家对应的时间
 @offers.route("/api/country_time/<offerId>", methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def importCountry(offerId):
     if request.method == "POST":
         basedir = os.path.abspath(os.path.dirname(__file__))
@@ -745,7 +735,6 @@ def importCountry(offerId):
 
 
 @offers.route("/api/country_time_show", methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def showCountryTime():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -820,7 +809,6 @@ def showCountryTime():
 
 
 @offers.route('/api/country_time_update', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","advertiser_query","advertiser_edit","advertiser_create"])
 def updateContryTime():
     data = request.get_json(force=True)
     result = data["result"]

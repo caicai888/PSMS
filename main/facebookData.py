@@ -12,7 +12,6 @@ import requests
 facebookDate = Blueprint('facebookDate', __name__)
 
 @facebookDate.route('/api/dashboard')
-@Permission.check(models=['dashboard_query',"advertiser_query","advertiser_edit","advertiser_create"])
 def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
     token = Token.query.filter().first()
@@ -43,7 +42,7 @@ def dashboard():
         url = "https://graph.facebook.com/v2.8/"+str(ad["adset"])+"/insights"
         params_impressions = {
             "access_token": accessToken,
-            "level": "adset",
+            "level": "campaign",
             "fields": ["impressions"],
             "time_range": str(time_range)
         }
@@ -180,7 +179,6 @@ def dashboard():
     return json.dumps(response)
 
 @facebookDate.route('/api/report', methods=["POST","GET"])
-@Permission.check(models=["report_query","advertiser_query","advertiser_edit","advertiser_create"])
 def faceReport():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -203,7 +201,7 @@ def faceReport():
             })
         accessToken = advertiser.token
         accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
-        advertise_groups = advertiser.advertise_groups.split(",")
+        advertise_groups = advertiser.advertise_series.split(",")
         count_impressions = 0
         count_cost = 0
         count_clicks = 0
@@ -221,7 +219,7 @@ def faceReport():
                     url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["impressions"],
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
@@ -233,7 +231,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["spend"],
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
@@ -245,7 +243,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["clicks"],
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
@@ -257,7 +255,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["actions"],
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
@@ -267,18 +265,18 @@ def faceReport():
                     for j in data:
                         actions = j.get("actions",[])
                         for action in actions:
-                            if "offsite_conversion" in action["action_type"]:
+                            if "mobile_app_install" in action["action_type"]:
                                 conversions = action["value"]
                                 count_conversions += int(conversions)
-                            elif "link_click" in action["action_type"]:
-                                conversions = action["value"]
-                                count_conversions += int(conversions)
+                            # elif "link_click" in action["action_type"]:
+                            #     conversions = action["value"]
+                            #     count_conversions += int(conversions)
                             else:
                                 conversions = 0
                                 count_conversions += conversions
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["ctr"],
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
@@ -290,7 +288,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["cpc"],
                         "breakdowns": ["country"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
@@ -321,7 +319,7 @@ def faceReport():
                     url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["impressions"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
@@ -332,7 +330,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["spend"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
@@ -343,7 +341,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["clicks"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
@@ -354,7 +352,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["actions"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
@@ -363,10 +361,7 @@ def faceReport():
                     for j in data:
                         actions = j.get("actions",[])
                         for action in actions:
-                            if "offsite_conversion" in action["action_type"]:
-                                conversions = action["value"]
-                                count_conversions += int(conversions)
-                            elif "link_click" in action["action_type"]:
+                            if "mobile_app_install" in action["action_type"]:
                                 conversions = action["value"]
                                 count_conversions += int(conversions)
                             else:
@@ -374,7 +369,7 @@ def faceReport():
                                 count_conversions += conversions
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["ctr"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
@@ -385,7 +380,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["cpc"],
                         "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
                     }
@@ -439,7 +434,7 @@ def faceReport():
                     url = "https://graph.facebook.com/v2.8/"+str(i)+"/insights"
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["impressions"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -451,7 +446,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["spend"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -463,7 +458,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["clicks"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -475,7 +470,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["actions"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -485,11 +480,11 @@ def faceReport():
                     for j in data:
                         actions = j.get("actions",[])
                         for action in actions:
-                            if "offsite_conversion" in action["action_type"]:
+                            if "mobile_app_install" in action["action_type"]:
                                 conversions = int(action["value"])
-                            else:
-                                if "link_click" in action["action_type"]:
-                                    conversions = int(action["value"])
+                            # else:
+                            #     if "link_click" in action["action_type"]:
+                            #         conversions = int(action["value"])
 
                         conver_data = {
                             "country": j["country"],
@@ -501,7 +496,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["ctr"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -513,7 +508,7 @@ def faceReport():
 
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["cpc"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -814,7 +809,7 @@ def faceReport():
                     url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
                     params = {
                         "access_token": accessToken,
-                        "level": "adset",
+                        "level": "campaign",
                         "fields": ["actions"],
                         "breakdowns": ["country"],
                         "time_ranges": str(time_ranges)
@@ -824,13 +819,10 @@ def faceReport():
                     for j in data:
                         actions = j.get("actions", [])
                         for action in actions:
-                            if "offsite_conversion" in action["action_type"]:
+                            if "mobile_app_install" in action["action_type"]:
                                 conversions = int(action["value"])
                             else:
-                                if "link_click" in action["action_type"]:
-                                    conversions = int(action["value"])
-                                else:
-                                    conversions = int(0)
+                                conversions = int(0)
                             conver_data = {
                                 "country": j["country"],
                                 "date_stop": j["date_stop"],
@@ -853,8 +845,7 @@ def faceReport():
                                 price = price_default
                             else:
                                 price = prices_history.price
-                        print price
-                        print "pppp"*10
+
                         revenue_list += [
                             {
                                 "country": country,
@@ -896,7 +887,7 @@ def faceReport():
                         url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
                         params = {
                             "access_token": accessToken,
-                            "level": "adset",
+                            "level": "campaign",
                             "fields": ["impressions"],
                             "time_range": str(t)
                         }
@@ -907,7 +898,7 @@ def faceReport():
 
                         params = {
                             "access_token": accessToken,
-                            "level": "adset",
+                            "level": "campaign",
                             "fields": ["spend"],
                             "time_range": str(t)
                         }
@@ -918,7 +909,7 @@ def faceReport():
 
                         params = {
                             "access_token": accessToken,
-                            "level": "adset",
+                            "level": "campaign",
                             "fields": ["clicks"],
                             "time_range": str(t)
                         }
@@ -929,7 +920,7 @@ def faceReport():
 
                         params = {
                             "access_token": accessToken,
-                            "level": "adset",
+                            "level": "campaign",
                             "fields": ["ctr"],
                             "time_range": str(t)
                         }
@@ -940,7 +931,7 @@ def faceReport():
 
                         params = {
                             "access_token": accessToken,
-                            "level": "adset",
+                            "level": "campaign",
                             "fields": ["cpc"],
                             "time_range": str(t)
                         }
@@ -951,7 +942,7 @@ def faceReport():
 
                         params = {
                             "access_token": accessToken,
-                            "level": "adset",
+                            "level": "campaign",
                             "fields": ["actions"],
                             "time_range": str(t)
                         }
@@ -961,7 +952,7 @@ def faceReport():
                         if data != []:
                             if data[0]["actions"] != []:
                                 for action in data[0]["actions"]:
-                                    if "offsite_conversion" in action["action_type"]:
+                                    if "mobile_app_install" in action["action_type"]:
                                         conversions = action["value"]
                                         date_start = data[0]["date_start"]
                                         con_data = {
@@ -970,20 +961,20 @@ def faceReport():
                                         }
 
                                     else:
-                                        if "link_click" in action["action_type"]:
-                                            conversions = action["value"]
-                                            date_start =data[0]["date_start"]
-                                            con_data = {
-                                                "conversions": int(conversions),
-                                                "date_start": date_start
-                                            }
-                                        else:
-                                            conversions = 0
-                                            date_start = data[0]["date_start"]
-                                            con_data = {
-                                                "conversions": int(conversions),
-                                                "date_start": date_start
-                                            }
+                                        # if "link_click" in action["action_type"]:
+                                        #     conversions = action["value"]
+                                        #     date_start =data[0]["date_start"]
+                                        #     con_data = {
+                                        #         "conversions": int(conversions),
+                                        #         "date_start": date_start
+                                        #     }
+                                        # else:
+                                        conversions = 0
+                                        date_start = data[0]["date_start"]
+                                        con_data = {
+                                            "conversions": int(conversions),
+                                            "date_start": date_start
+                                        }
                                     conversions_count_list += [con_data]
                 dx = dict()
                 for i in conversions_count_list:
