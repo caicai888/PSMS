@@ -25,10 +25,9 @@ var Login = React.createClass({
 
     },
     componentDidMount(){
-        debugger
-        if($(".userId").html()!=""){
+        /*if($(".userId").html()!=""){
             location.hash="welcome"
-        }
+        }*/
         var _this = this;
         $(document).keydown(function (e) {
             var event = e || event;

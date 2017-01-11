@@ -26,7 +26,7 @@ import Dashboard from "../components/dashboard";
 
 var Routers = <Router history={hashHistory}>
                 <Route path="/"  component={App}>
-                    <IndexRedirect to="/login" />
+                    {/*<IndexRedirect to="/login" />*/}
 
                     <Route path="/welcome" component={Welcome}/>
 
