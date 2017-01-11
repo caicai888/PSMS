@@ -12,6 +12,7 @@ import requests
 facebookDate = Blueprint('facebookDate', __name__)
 
 @facebookDate.route('/api/dashboard')
+@Permission.check(models=['dashboard_query',"advertiser_query","advertiser_edit","advertiser_create"])
 def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
     token = Token.query.filter().first()
@@ -179,6 +180,7 @@ def dashboard():
     return json.dumps(response)
 
 @facebookDate.route('/api/report', methods=["POST","GET"])
+@Permission.check(models=["report_query","advertiser_query","advertiser_edit","advertiser_create"])
 def faceReport():
     if request.method == "POST":
         data = request.get_json(force=True)
