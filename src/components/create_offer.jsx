@@ -159,7 +159,7 @@ var CreateOffer = React.createClass({
     },
     componentDidMount(){
         var _this = this;
-        var customerPromise = ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
+        var userSelectPromise = ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
                 _this.setState({
@@ -169,21 +169,20 @@ var CreateOffer = React.createClass({
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
             }
-            if(_this.props.params.id){
-                return ajax("post","/api/customer_select",JSON.stringify({name:""}));
-            }else {
-                return ajax("get","/api/user_select");
-            }
+            return ajax("get","/api/user_select");
         });
-        customerPromise.then(function (data) {
+        var customerPromise =  userSelectPromise.then(function (data) {
             var data = JSON.parse(data);
-            if(data.code=="200"){
+            if (data.code == "200") {
                 _this.setState({
-                    userId:data.result
+                    userId: data.result
                 })
-            }else {
+            } else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
+            }
+            if(_this.props.params.id){
+                return ajax("post","/api/customer_select",JSON.stringify({name:""}))
             }
         });
         if(this.props.params.id){

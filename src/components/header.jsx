@@ -2,11 +2,15 @@ import React from "react";
 import {ajax} from "../lib/ajax";
 require("../js/bootstrap.min");
 var Header = React.createClass({
+    getInitialState() {
+        return {
+            permissions:String(sessionStorage.getItem("permissions"))
+        }
+    },
     loginOut(){
         ajax("get","/api/user/logout").then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
-                debugger
                 $(".userEmail").html("");
                 $(".userId").html("");
                 location.hash="/login";
@@ -49,6 +53,8 @@ var Header = React.createClass({
 
     },
     render:function () {
+        let _this = this;
+        console.log(_this.state.permissions)
         return <nav className="navbar navbar-default" role="navigation">
             <div className="container-fluid">
                 <div className="navbar-header">
@@ -63,33 +69,33 @@ var Header = React.createClass({
 
                 <div className="collapse nav_right navbar-collapse" id="nav_nav">
                     <ul className="nav ul_active navbar-nav isShow">
-                        <li data-hash="dashboard"><a href="#/dashboard">Dashboard</a></li>
-                        <li data-hash="manager" className="dropdown">
+                        <li data-hash="dashboard" className={_this.state.permissions.includes("dashboard_query")?"":"none"}><a href="#/dashboard">Dashboard</a></li>
+                        <li data-hash="manager" className={_this.state.permissions.includes("manager_query")?"dropdown":"none"}>
                             <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Manager <span className="caret"></span></a>
                             <ul className="dropdown-menu" role="menu">
-                                <li><a href="#/create_manager">Create Manager</a></li>
-                                <li className="divider"> </li>
-                                <li><a href="#/manager_list">Manager List</a></li>
-                                <li className="divider"> </li>
-                                <li><a href="#/create_group_manager">Create Group</a></li>
-                                <li className="divider"> </li>
-                                <li><a href="#/group_list_manager">Group List</a></li>
+                                <li className={_this.state.permissions.includes("manager_create")?"":"none"}><a href="#/create_manager">Create Manager</a></li>
+                                <li className={_this.state.permissions.includes("manager_create")?"divider":"none"}> </li>
+                                <li className={_this.state.permissions.includes("manager_query")?"":"none"}><a href="#/manager_list">Manager List</a></li>
+                                <li className={_this.state.permissions.includes("manager_query")?"divider":"none"}> </li>
+                                <li className={_this.state.permissions.includes("manager_create")?"":"none"}><a href="#/create_group_manager">Create Group</a></li>
+                                <li className={_this.state.permissions.includes("manager_create")?"divider":"none"}> </li>
+                                <li className={_this.state.permissions.includes("manager_query")?"":"none"}><a href="#/group_list_manager">Group List</a></li>
                             </ul>
                         </li>
-                        <li data-hash="customer" className="dropdown">
+                        <li data-hash="customer" className={_this.state.permissions.includes("advertiser_query")?"dropdown":"none"}>
                             <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Advertiser <span className="caret"></span></a>
                             <ul className="dropdown-menu" role="menu">
-                                <li><a href="#/create_customer">Create Customer</a></li>
-                                <li className="divider"> </li>
-                                <li><a href="#/customer_list">Customer List</a></li>
+                                <li className={_this.state.permissions.includes("advertiser_create")?"":"none"}><a href="#/create_customer">Create Customer</a></li>
+                                <li className={_this.state.permissions.includes("advertiser_create")?"divider":"none"}> </li>
+                                <li className={_this.state.permissions.includes("advertiser_query")?"":"none"}><a href="#/customer_list">Customer List</a></li>
                             </ul>
                         </li>
-                        <li data-hash="offer" className="dropdown">
+                        <li data-hash="offer"  className={_this.state.permissions.includes("offer_query")?"dropdown":"none"}>
                             <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Offer <span className="caret"></span></a>
                             <ul className="dropdown-menu" role="menu">
-                                <li><a href="#/create_offer">Create Offer</a></li>
-                                <li className="divider"> </li>
-                                <li><a href="#/offer_list">Offer List</a></li>
+                                <li className={_this.state.permissions.includes("offer_create")?"":"none"}><a href="#/create_offer">Create Offer</a></li>
+                                <li className={_this.state.permissions.includes("offer_create")?"divider":"none"}> </li>
+                                <li className={_this.state.permissions.includes("offer_query")?"":"none"}><a href="#/offer_list">Offer List</a></li>
                             </ul>
                         </li>
                         {/*<li><a href="#/about">About</a></li>
