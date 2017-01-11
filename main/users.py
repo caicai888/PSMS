@@ -179,7 +179,9 @@ def get_all_permissions():
         'dashboard': {'create': 11, 'delete': 12, 'edit': 13, 'query': 14},
         'report': {'create': 15, 'delete': 16, 'edit': 17, 'query': 18},
         'offer': {'create': 19, 'delete': 20, 'edit': 21, 'query': 22},
-        'advertiser': {'create': 23, 'delete': 24, 'edit': 25, 'query': 26}
+        'advertiser': {'create': 23, 'delete': 24, 'edit': 25, 'query': 26},
+        'manager': {'create': 27, 'delete': 28, 'edit': 29, 'query': 30},
+        'bind': {'create': 31, 'delete': 32, 'edit': 33, 'query': 34}
     }
     data_dict['code'] = '200'
     data_dict['message'] = 'success'
