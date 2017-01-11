@@ -8,7 +8,8 @@ var ManagerList = React.createClass({
     getInitialState() {
         return {
             result:[],
-            result_search:[]
+            result_search:[],
+            permissions:sessionStorage.getItem("permissions")
         };
     },
     export_table(){
@@ -82,7 +83,7 @@ var ManagerList = React.createClass({
                                                 <td>{ele.email}</td>
                                                 <td>{ele.role}</td>
                                                 <td>{ele.phone}</td>
-                                                <td><a href={"#/create_manager/"+ele.id} className="btn btn-primary">Edit</a></td>
+                                                <td><a className={_this.state.permissions.includes("manager_edit")?"btn btn-primary":"none"} href={"#/create_manager/"+ele.id}>Edit</a></td>
                                                 <td>{ele.last_datetime}</td>
                                             </tr>
                                 })
