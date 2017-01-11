@@ -236,11 +236,6 @@ var CreateOffer = React.createClass({
                 });
             });
         });
-        $("#bulk_import_save").on("click",function () {
-            var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$(".tfdq").val().toString().toUpperCase();
-            $(".tfdq").val(text.toString().split(",")).trigger("change");
-        });
-
         /*合作方式*/
         $("#hzfs").on("change",function () {
             if($(this).val()=="cpa"){
@@ -255,6 +250,18 @@ var CreateOffer = React.createClass({
             html +=`<option value="${i<10?"0"+i:i}:00">${i<10?"0"+i:i}:00</option><option value="${i<10?"0"+i:i}:30">${i<10?"0"+i:i}:30</option>`
         }
         $("#email_report").html(html);
+    },
+    bulk_import_save(){
+        var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$(".tfdq").val().toString().toUpperCase();
+        ajax("post","/api/country_select",JSON.stringify({name:text})).then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+                $(".tfdq").val(data.namelist).trigger("change");
+            }else {
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
+            }
+        });
     },
     render:function () {
         var _this = this;
@@ -429,7 +436,7 @@ var CreateOffer = React.createClass({
                             <button type="button" className="btn btn-primary" style={{position:"relative"}}>
                                 Import<input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
                             </button>
-                            <button style={{marginLeft:"15px",position:"relative",zIndex:2}} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                            <button data-target="#bulk_import" style={{marginLeft:"15px",position:"relative",zIndex:2}} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
                                 批量导入
                             </button>
                         </div>
@@ -456,7 +463,7 @@ var CreateOffer = React.createClass({
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="button" id="bulk_import_save" className="btn btn-primary" data-dismiss="modal">Save</button>
+                                    <button onClick={_this.bulk_import_save} type="button" id="bulk_import_save" className="btn btn-primary" data-dismiss="modal">Save</button>
                                 </div>
                             </div>
                         </div>
