@@ -11,6 +11,7 @@ var OfferDetail = React.createClass({
     getInitialState() {
         return {
             "isYes":false, /*判断bind_list是update-save*/
+            "adwordsIsYes":false,
             "data_geo":[],
                 "data_geo_table_head":[],
             "data_geo_table_clicks_list":[],
@@ -28,14 +29,22 @@ var OfferDetail = React.createClass({
     export_table(){
         tableExport("export_table",'ReportTable', 'csv');
     },
-    submit(){
-        if(valid("#create_customer","data-required")) {
-            var data = setForm("#create_customer", "data-key");
-            var url= this.state.isYes?"/api/bind_update":"/api/offer_bind";
+    submit(e){
+        var id= e.target.dataset.form_id;
+        console.log(id)
+        if(valid(id,"data-required")) {
+            var data = setForm(id, "data-key");
+            let url="";
+            if(id=="#create_customer"){
+                url= this.state.isYes?"/api/bind_update":"/api/offer_bind";
+            }else {
+                url= this.state.adwordsIsYes?"/api/bind_update":"/api/offer_bind";
+            }
             ajax("post",url, JSON.stringify(data)).then(function (data) {
                 var data = JSON.parse(data);
                 if (data.code == "200") {
-                    $("#create_customer .disable").attr("disabled",true);
+                    let facebook_form_id = id+" .disable";
+                    $(facebook_form_id).attr("disabled",true);
                 } else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -43,8 +52,9 @@ var OfferDetail = React.createClass({
             });
         }
     },
-    edit(){
-        $("#create_customer .disable").removeAttr("disabled");
+    edit(e){
+        var id= e.target.dataset.form_id+" .disable";
+        $(id).removeAttr("disabled");
     },
     componentDidUpdate(){
 
@@ -58,13 +68,21 @@ var OfferDetail = React.createClass({
         ajax("post","/api/bind_show/"+this.props.params.id).then(function (data) {
             var data = JSON.parse(data);
             if (data.code == "200") {
-                if(data.facebook.facebook_id){
+                if(data.facebook&&data.facebook.facebook_id){
                     _this.setState({
                         isYes:true
                     });
                     $("#create_customer .disable").attr("disabled",true);
-                    $(".ad_id").val(data.facebook.facebook_id);
+                    $("#create_customer .ad_id").val(data.facebook.facebook_id);
                     getForm("#create_customer", data.facebook)
+                }
+                if(data.adwords&&data.adwords.adwords_id){
+                    _this.setState({
+                        adwordsIsYes:true
+                    });
+                    $("#adwords_form .disable").attr("disabled",true);
+                    $("#adwords_form .ad_id").val(data.adwords.adwords_id);
+                    getForm("#adwords_form", data.adwords)
                 }
             } else {
                 $(".ajax_error").html(data.message);
@@ -260,14 +278,53 @@ var OfferDetail = React.createClass({
                                         <input type="hidden" data-key="type" value='facebook'/>
                                         <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
                                         <input type="hidden" data-key="ad_id" className="ad_id"/>
-                                        <button  onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
-                                        <button onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <button data-form_id="#create_customer" onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
+                                        <button data-form_id="#create_customer" onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
                                         <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                                     </div>
                                 </div>
                             </div>
                         </form>
+                        <hr/>
+                        <form id="adwords_form" className="form-horizontal" role="form" noValidate="noValidate">
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right">
+                                        Adwords 广告系列
+                                    </div>
+                                    <div className="col-sm-9">
+                                    <textarea className="form-control disable" data-required="true" data-key="advertise_series">
 
+                                    </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right">
+                                        Adwords　广告组
+                                    </div>
+                                    <div className="col-sm-9">
+                                    <textarea className="form-control disable" data-required="true" data-key="advertise_groups">
+
+                                    </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right"></div>
+                                    <div className="col-sm-9">
+                                        <input type="hidden" data-key="type" value='adwords'/>
+                                        <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
+                                        <input type="hidden" data-key="ad_id" className="ad_id"/>
+                                        <button data-form_id="#adwords_form" onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
+                                        <button data-form_id="#adwords_form" onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div className="tab-pane fade" id="report">
                         <div className="row">
