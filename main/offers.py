@@ -37,21 +37,34 @@ def customerSelect():
 def countrySelect():
     if request.method == "POST":
         data = request.get_json(force=True)
+        name_list = data['name'].split(',')
+        result_list = []
         result = []
-        if u'\u4e00' <= data["name"] <= u'\u9fff':
-            countries = Country.query.filter(Country.chinese.ilike('%' + data["name"] + '%')).all()
-        else:
-            countries = Country.query.filter(Country.british.ilike('%' + data["name"] + '%')).all()
-        for i in countries:
-            data = {
-                "id": i.shorthand,
-                "text": i.chinese+"("+i.shorthand+")"
-            }
-            result += [data]
+        for name in name_list:
+            if name == '':
+                countries = Country.query.all()
+            else:
+                if u'\u4e00' <= name <= u'\u9fff':
+                    countries = Country.query.filter(Country.chinese.ilike('%' + name + '%')).all()
+                else:
+                    countries = Country.query.filter(Country.shorthand.ilike('%' + name + '%')).all()
+            if countries and isinstance(countries, list):
+                for i in countries:
+                    if i.shorthand not in result_list and name not in result_list:
+                        if u'\u4e00' <= name <= u'\u9fff':
+                            result_list.append(i.shorthand)
+                        elif name != '':
+                            result_list.append(name)
+                    data = {
+                        "id": i.shorthand,
+                        "text": i.chinese+"("+i.shorthand+")"
+                    }
+                    result += [data]
         response = {
             "code": 200,
             "result": result,
-            "message": "success"
+            "message": "success",
+            "namelist": result_list,
         }
         return json.dumps(response)
     else:
