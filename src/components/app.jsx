@@ -11,6 +11,10 @@ var App = React.createClass({
                     $(".userEmail").html(data.results.email);
                     $(".userId").html(data.results.id);
                     $(".isShow").show();
+                    if(!sessionStorage.getItem("into")){
+                        sessionStorage.setItem("into",1);
+                        location.reload();
+                    }
                 }else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("show");
