@@ -561,7 +561,7 @@ def faceReport():
                         date_start = l["date_start"]
                         for i in cost_list:
                             if date_start == i["date_start"]:
-                                cpi = '%0.2f' %(float(i["spend"])/float(l["conversions"]) * 100) if float(l["conversions"]) != 0 else 0
+                                cpi = '%0.2f' %(float(i["spend"])/float(l["conversions"])) if float(l["conversions"]) != 0 else 0
                                 cpi_list += [
                                     {
                                         "cpi": cpi,
@@ -1037,7 +1037,7 @@ def faceReport():
                         date_start = l["date_start"]
                         for i in costs_count_list:
                             if date_start == i["date_start"]:
-                                cpi = '%0.2f'%(float(i["spend"])/float(l["conversions"])*100) if float(l["conversions"]) != 0 else 0
+                                cpi = '%0.2f'%(float(i["spend"])/float(l["conversions"])) if float(l["conversions"]) != 0 else 0
                                 cpi_count_list += [
                                     {
                                         "cpi": cpi,
