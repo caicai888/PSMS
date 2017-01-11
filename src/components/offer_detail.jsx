@@ -23,7 +23,8 @@ var OfferDetail = React.createClass({
             "data_geo_table_cvr_list":[],
             "data_geo_table_profit_list":[],
                 "data_geo_table_revenue_list":[],
-            "data_geo_table_impressions_list":[]
+            "data_geo_table_impressions_list":[],
+            "permissions":sessionStorage.getItem("permissions")
         };
     },
     export_table(){
@@ -61,7 +62,6 @@ var OfferDetail = React.createClass({
     },
     componentDidMount(){
         var _this = this;
-        $(".none").remove();
         if(this.props.params.three){
             $("#myTab li:last a").tab("show");
         }
@@ -238,8 +238,8 @@ var OfferDetail = React.createClass({
             <div>
                 <ul id="myTab" className="nav nav-tabs">
                     <li className="active"><a href="#offer_detail" data-toggle="tab">Offer Detail</a></li>
-                    <li><a href="#bind_list" data-toggle="tab">Bind List</a></li>
-                    <li><a href="#report"  data-toggle="tab">Report</a></li>
+                    <li className={_this.state.permissions.includes("bind_query")?"":"none"}><a href="#bind_list" data-toggle="tab">Bind List</a></li>
+                    <li className={_this.state.permissions.includes("report_query")?"":"none"}><a href="#report"  data-toggle="tab">Report</a></li>
                 </ul>
                 <div id="myTabContent" className="tab-content" style={{marginTop:"10px"}}>
                     <div className="tab-pane fade in active" id="offer_detail">
@@ -278,8 +278,8 @@ var OfferDetail = React.createClass({
                                         <input type="hidden" data-key="type" value='facebook'/>
                                         <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
                                         <input type="hidden" data-key="ad_id" className="ad_id"/>
-                                        <button data-form_id="#create_customer" onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
-                                        <button data-form_id="#create_customer" onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <button data-form_id="#create_customer" onClick={this.submit} type="button" className={_this.state.permissions.includes("bind_create")?"btn btn-primary disable":"none"}>Save</button>
+                                        <button data-form_id="#create_customer" onClick={this.edit} type="button" className={_this.state.permissions.includes("bind_edit")?"btn btn-primary":"none"} style={{marginLeft:"20px"}}>Edit</button>
                                         <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                                     </div>
                                 </div>
@@ -318,8 +318,8 @@ var OfferDetail = React.createClass({
                                         <input type="hidden" data-key="type" value='adwords'/>
                                         <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
                                         <input type="hidden" data-key="ad_id" className="ad_id"/>
-                                        <button data-form_id="#adwords_form" onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
-                                        <button data-form_id="#adwords_form" onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <button data-form_id="#adwords_form" onClick={this.submit} type="button" className={_this.state.permissions.includes("bind_create")?"btn btn-primary disable":"none"}>Save</button>
+                                        <button data-form_id="#adwords_form" onClick={this.edit} type="button" className={_this.state.permissions.includes("bind_edit")?"btn btn-primary":"none"} style={{marginLeft:"20px"}}>Edit</button>
                                         <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                                     </div>
                                 </div>
@@ -442,7 +442,9 @@ var OfferDetail = React.createClass({
                                     _this.state.data_geo_table_impressions_list.map(function (ele,index,array) {
                                         return <tr key={index}>
                                                     <td>{ele.date_start}</td>
-                                                    <td className={ele.country?"block":"none"}>{ele.country}</td>
+                                                    {
+                                                        ele.country?<td>{ele.country}</td>:""
+                                                    }
                                                     <td>{ _this.state.data_geo_table_revenue_list[index].revenue }</td>
                                                     <td>{ _this.state.data_geo_table_profit_list[index].profit }</td>
                                                     <td>{ _this.state.data_geo_table_cost_list[index].spend }</td>

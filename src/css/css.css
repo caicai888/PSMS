@@ -385,3 +385,7 @@ table tr td{
     display: block!important;
     border-top: 0!important;
 }
+#role_cb td{
+    padding-left: 15px;
+    text-align: left!important;
+}

@@ -145,7 +145,6 @@ var CreateManager = React.createClass({
                 }
             });
         })
-
         return (
             <div className="col-sm-8 col-sm-offset-2 animated slideInDown create_customer" style={{marginTop:0}}>
                 <form id="create_customer" className="form-horizontal" role="form" noValidate="noValidate">
@@ -201,7 +200,7 @@ var CreateManager = React.createClass({
                     </div>
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-10">
-                            <button onClick={this.submit} type="button" className="btn btn-primary">Create/Update</button>
+                            <button  className="btn btn-primary" onClick={this.submit} type="button">Create/Update</button>
                             <a href="javascript:history.go(-1)" type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                         </div>
                     </div>
