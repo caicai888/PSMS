@@ -1150,3 +1150,7 @@ def faceReport():
                 })
             except Exception as e:
                 print e
+                return json.dumps({
+                    "code":500,
+                    "message": "no bind data or bind wrong data"
+                })
