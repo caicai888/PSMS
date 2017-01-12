@@ -194,7 +194,6 @@ def get_all_permissions():
 def create_role():
     if request.method == "POST":
         data = request.get_json(force=True)
-        print data
         role = Role(data["name"])
         if db.session.query(Role).filter_by(name=data["name"]).first():
             return json.dumps({"code": "500", "message": "role had exits"})
