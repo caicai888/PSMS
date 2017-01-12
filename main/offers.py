@@ -432,7 +432,7 @@ def bindUpdate():
     if request.method == "POST":
         data = request.get_json(force=True)
         advertise = Advertisers.query.filter_by(id=int(data["ad_id"])).first()
-        print advertise
+
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         try:
             advertise.advertise_series = data["advertise_series"]
@@ -563,7 +563,7 @@ def historty():
                         "createdTime": createdTime
                     }
                     result += [detail]
-                    print
+
             f = lambda x, y: x if y in x else x + [y]
             response = {
                 "code": 200,
@@ -586,7 +586,6 @@ def country():
         db.create_all()
         count += 1
 
-    print count
     return json.dumps({
         "code":200,
         "message":"success"
