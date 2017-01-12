@@ -375,19 +375,19 @@ var OfferDetail = React.createClass({
                                                 <p>{ele.count_conversions}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CTR($)</p>
-                                                <p>{ele.count_cost}</p>
+                                                <p>CTR(%)</p>
+                                                <p>{ele.count_ctr}</p>
                                             </div>
                                             <div className="box_20">
                                                 <p>CVR(%)</p>
-                                                <p>{ele.count_ctr}</p>
+                                                <p>{ele.count_cvr}</p>
                                             </div>
                                             <div className="box_20">
                                                 <p>CPC</p>
                                                 <p>{ele.count_cpc}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CPI</p>
+                                                <p>CPI($)</p>
                                                 <p>{ele.count_cpi}</p>
                                             </div>
                                         </div>

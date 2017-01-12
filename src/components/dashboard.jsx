@@ -21,6 +21,7 @@ var Dashboard = React.createClass({
                 $("#modal").modal("toggle");
             }
         });
+        return;
         ajax("get","/api/adwords/dashboard").then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
@@ -90,12 +91,12 @@ var Dashboard = React.createClass({
                         })
                     }
                 </div>
-                <div className="row">
+                <div className="row none">
                     <div className="col-md-12" style={{padding:"15px"}}>
                         Adwords Dashboard
                     </div>
                 </div>
-                <div className="row dashboard_data">
+                <div className="row none dashboard_data">
                     {
                         this.state.adwordsResult.map(function (ele,index,array) {
                             return <div className="col-md-12" key={index}>
