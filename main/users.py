@@ -284,7 +284,10 @@ def get_role_permissions_more():
         permission_list = []
         for role_id in role_id_list:
             permissions = db.session.query(RolePermissions).filter_by(role_id=role_id).first()
-            permission_list += permissions.permissions_id.split(",")
+            if not permissions:
+                permission_list = []
+            else:
+                permission_list += permissions.permissions_id.split(",")
             data = {
                 'code': '200',
                 'message': 'success',
