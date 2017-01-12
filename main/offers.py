@@ -587,6 +587,10 @@ def country():
         count += 1
 
     print count
+    return json.dumps({
+        "code":200,
+        "message":"success"
+    })
 #创建时导入国家对应时间价钱
 @offers.route("/api/country_time/create", methods=["POST", "GET"])
 def createCountryTime():
