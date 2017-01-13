@@ -855,7 +855,7 @@ def updateContryTime():
     countryName = data["country"]
     country = Country.query.filter_by(shorthand=countryName).first()
     countryId = country.id
-    offer_id = int(data["offer_id"])
+
     if data["offer_id"] == "":
         offerIds = []
         offer_msg = Offer.query.all()
@@ -866,6 +866,8 @@ def updateContryTime():
             for i in offer_msg:
                 offerIds.append(i.id)
             offer_id = offerIds[-1] + 1
+    else:
+        offer_id = int(data["offer_id"])
     for i in result:
         if i["price"] != "":
             timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id).first()
