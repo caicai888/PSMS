@@ -337,24 +337,27 @@ class GoogleAdsUtils(object):
 
 class AdwordsRoutes(GoogleAdsUtils): 
 
-    @adwordsData.route('/api/googleads', methods=['POST', 'GET'])
+    # @adwordsData.route('/api/googleads', methods=['POST', 'GET'])
     def get_report():
-        if request.method == 'POST':
-            _args = request.get_json(force=True)
-            dimen = 'geo' in _args.get("dimension")  # date: 0, geo: 1
-            offer_id = _args.get('offer_id')
-            start = _args.get('start_date')
-            end = _args.get('end_date')
+        # if request.method == 'POST':
+        # _args = request.get_json(force=True)
+        # dimen = 'geo' in _args.get("dimension")  # date: 0, geo: 1
+        # offer_id = _args.get('offer_id')
+        # start = _args.get('start_date')
+        # end = _args.get('end_date')
+        # self.dimen = 'geo' in dimension
+        # self.start = start_date
+        # self.end = end_date
 
-            ads = GoogleAdsUtils('296-153-6464', start, end, offer_id)
-            total, table_data, chart_data = ads.GetDataFromGads(dimen)
-            if dimen:
-                response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
-                            "data_date_table": {}, 'data_range': chart_data}
-            else:
-                response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
-                            "data_geo_table": {}, 'data_range': chart_data}
-            return json.dumps(response)
+        ads = GoogleAdsUtils('296-153-6464', start_date, end_date, offer_id)
+        total, table_data, chart_data = ads.GetDataFromGads(dimen)
+        if dimen:
+            response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
+                        "data_date_table": {}, 'data_range': chart_data}
+        else:
+            response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
+                        "data_geo_table": {}, 'data_range': chart_data}
+        return json.dumps(response)
 
     @adwordsData.route('/api/adwords/dashboard')
     def get_dashboard():
