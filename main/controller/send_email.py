@@ -52,6 +52,7 @@ class SimpleGoogleAds(object):
                 row_dict = { fields_map_column[key]: value for key, value in row.iteritems() if key not in ['Country/Territory', 'Cost'] }
                 row_dict['Country'] = country
                 row_dict['Cost'] = '%.2f' % (float(row.get('Cost')) / (10**6)) if row.get('Cost') else '0'
+                row_dict['CPI'] = '%.2f' % (float(row_dict['CPI']) / (10**6))
                 row_dict['CustomerId'] = customer_id
                 content_list = map(lambda e: row_dict[e], self.columns)
                 return content_list 
