@@ -108,7 +108,8 @@ var CreateOffer = React.createClass({
         }
         ajax("post","/api/country_time_show",JSON.stringify({
             date:(_this.state.date&&moment(this.state.date).format("YYYY-MM")) || moment().format("YYYY-MM"),
-            country:e?e.target.dataset.country:_this.state.country
+            country:e?e.target.dataset.country:_this.state.country,
+            offer_id:_this.props.params.id?_this.props.params.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
