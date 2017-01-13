@@ -201,7 +201,7 @@ def offerDetail(id):
         "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
         "contract_type": contract_type,
-        "user_id": str(user.name)+"("+str(user.id)+")",
+        "user_id": user.name+"("+str(user.id)+")",
         "os": offer.os,
         "package_name": offer.package_name,
         "app_name": offer.app_name,
