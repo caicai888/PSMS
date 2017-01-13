@@ -20,7 +20,7 @@ def customerSelect():
         customers = Customers.query.filter(Customers.company_name.ilike('%' + data["name"] + '%'),Customers.status=="Created").all()
         for i in customers:
             data = {
-                "id": i.id,
+                "id": i.company_name+"("+str(i.id)+")",
                 "text": i.company_name
             }
             result += [data]
@@ -201,7 +201,7 @@ def offerDetail(id):
         "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
         "contract_type": contract_type,
-        "user_id": user.id,
+        "user_id": str(user.name)+"("+str(user.id)+")",
         "os": offer.os,
         "package_name": offer.package_name,
         "app_name": offer.app_name,
