@@ -32,7 +32,7 @@ class GoogleAdsUtils(object):
                                 cpi=dict(), cvr=dict(),)
 
     def __repr__(self):
-        return None
+        return self.__dict__.__repr__() 
 
     @staticmethod
     def date_range(start, stop, step):

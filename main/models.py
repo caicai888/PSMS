@@ -2,7 +2,6 @@
 from datetime import datetime
 from main import db
 
-
 # 用户,角色关联表
 class UserRole(db.Model):
     __tablename__ = 'user_role'
