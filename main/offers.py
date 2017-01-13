@@ -131,7 +131,7 @@ def createOffer():
                                   daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
                                   total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
                                   KPI=data["KPI"], contract_type=contract_type,
-                                  contract_scale=float(data["contract_scale"]))
+                                  contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
                 db.session.add(history)
                 db.session.commit()
                 db.create_all()
@@ -365,7 +365,7 @@ def updateOffer():
                                               total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
                                               total_type=data["total_type"], KPI=data["KPI"],
                                               contract_type=data["contract_type"],
-                                              contract_scale=float(data["contract_scale"]))
+                                              contract_scale=float(data["contract_scale"] if data["contract_scale"] != "" else 0))
                             db.session.add(history)
                             db.session.commit()
                             db.create_all()
