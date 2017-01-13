@@ -103,7 +103,7 @@ def userSelect():
 
 
 @offers.route('/api/create_offer', methods=['POST', 'GET'])
-@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["offer_create"])
 def createOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -260,7 +260,7 @@ def offerDetail(id):
 
 #更新offer的状态
 @offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
     if offer.status == "active":
@@ -309,7 +309,7 @@ def updateStatus(offer_id):
         return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -393,7 +393,7 @@ def updateOffer():
 
 #bind list
 @offers.route("/api/offer_bind", methods=["POST","GET"])
-@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["bind_create","bind_edit","bind_query"])
 def offerBind():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -452,7 +452,7 @@ def bindShow(offer_id):
 
 #update bind
 @offers.route("/api/bind_update", methods=["POST","GET"])
-@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["bind_create","bind_edit","bind_query"])
 def bindUpdate():
     if request.method == "POST":
         data = request.get_json(force=True)
