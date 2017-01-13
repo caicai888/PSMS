@@ -85,9 +85,9 @@ var Header = React.createClass({
                         <li data-hash="customer" className={_this.state.permissions.includes("advertiser_query")?"dropdown":"none"}>
                             <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown">Advertiser <span className="caret"></span></a>
                             <ul className="dropdown-menu" role="menu">
-                                <li className={_this.state.permissions.includes("advertiser_create")?"":"none"}><a href="#/create_customer">Create Customer</a></li>
+                                <li className={_this.state.permissions.includes("advertiser_create")?"":"none"}><a href="#/create_customer">Create Advertiser</a></li>
                                 <li className={_this.state.permissions.includes("advertiser_create")?"divider":"none"}> </li>
-                                <li className={_this.state.permissions.includes("advertiser_query")?"":"none"}><a href="#/customer_list">Customer List</a></li>
+                                <li className={_this.state.permissions.includes("advertiser_query")?"":"none"}><a href="#/customer_list">Advertiser List</a></li>
                             </ul>
                         </li>
                         <li data-hash="offer"  className={_this.state.permissions.includes("offer_query")?"dropdown":"none"}>
