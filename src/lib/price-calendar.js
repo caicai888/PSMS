@@ -60,15 +60,18 @@ module.exports = (function ($) {
             if(!IsEdit){
                 // 修改某日价格
                 $("#cal-set").on("click", "dd", function () {
+                    if($(this).children(".cal-price").html()==undefined){
+                        return;
+                    }
                     var old_price = $(this).children(".cal-price").html().replace(/\￥/g,"");
                     $(this).children(".cal-price").replaceWith('<input type="number" class="cal-price-input">');
                     $(this).children(".cal-price-input").val(old_price);
                     $(this).children(".cal-price-input").focus();
 
-                    $(".cal-price-input").on("keyup",function () {
+                    /*$(".cal-price-input").on("keyup",function () {
                         var price = $(this).val().replace(/\-|\e/g,"");
                         $(this).val(price);
-                    });
+                    });*/
 
                 });
 
