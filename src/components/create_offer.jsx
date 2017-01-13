@@ -81,7 +81,8 @@ var CreateOffer = React.createClass({
         for(var i =0;i<dd.length;i++){
             result.push({
                 date:$(".cal-year").html()+"-"+($(".cal-month").html().toString().length<2?"0"+$(".cal-month").html():$(".cal-month").html())+"-"+($(dd[i]).find(".cal-day").html().toString().length<2?"0"+$(dd[i]).find(".cal-day").html():$(dd[i]).find(".cal-day").html()),
-                price:$(dd[i]).find(".cal-price").html().length>0?$(dd[i]).find(".cal-price").html().toString().substring(1):""
+                price:$(dd[i]).find(".cal-price").html().length>0?$(dd[i]).find(".cal-price").html().toString().substring(1):"",
+                offer_id:_this.props.params.id?_this.props.params.id:""
             })
         }
         ajax("post","/api/country_time_update",JSON.stringify({
@@ -156,7 +157,7 @@ var CreateOffer = React.createClass({
         });
     },
     invalid(e){
-        e.target.value = e.target.value.replace(/[^\d\.]/gi,"");
+        e.target.value = e.target.value.replace(/[^\d\.\-]/gi,"");
     },
     parseFloat(e){
         e.target.value = parseFloat(e.target.value);
