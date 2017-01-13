@@ -3,7 +3,7 @@ from main.has_permission import *
 from flask import Blueprint, request, safe_join, Response, send_file, make_response
 
 from main import db
-from models import Offer, History, User, Customers, Country, TimePrice, Advertisers
+from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role
 import json
 import os
 import datetime, time
@@ -71,32 +71,47 @@ def countrySelect():
 
 @offers.route('/api/user_select', methods=["POST", "GET"])
 def userSelect():
-    users = User.query.filter().all()
-    result = []
-    for i in users:
-        data = {
-            "id": i.id,
-            "name": i.name,
-            "email": i.email
+    try:
+        role = Role.query.filter_by(name="Sales").first()
+        roleId = str(role.id)
+        user_roles = UserRole.query.filter().all()
+        userIds = []
+        for r in user_roles:
+            if roleId in r.role_id:
+                userIds.append(r.user_id)
+        result = []
+        for i in userIds:
+            user = User.query.filter_by(id=int(i)).first()
+            data = {
+                "id": i,
+                "name": user.name,
+                "email": user.email
+            }
+            result += [data]
+        response = {
+            "code": 200,
+            "result": result,
+            "message": "success"
         }
-        result += [data]
-    response = {
-        "code": 200,
-        "result": result,
-        "message": "success"
-    }
+    except Exception as e:
+        print e
+        response = {
+            "code": 500,
+            "message": "no sales group"
+        }
     return json.dumps(response)
 
 
 @offers.route('/api/create_offer', methods=['POST', 'GET'])
-@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["offer_create"])
 def createOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+        contract_type = data["contract_type"]
 
-        offer = Offer(int(data["user_id"]), int(data["customer_id"]), data["status"], data["contract_type"],
+        offer = Offer(int(data["user_id"]), int(data["customer_id"]), data["status"], contract_type,
                       data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],
                       data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
                       data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),
@@ -115,7 +130,7 @@ def createOffer():
                                   country=i["country"], country_price=i["price"], price=data["price"],
                                   daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
                                   total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
-                                  KPI=data["KPI"], contract_type=data["contract_type"],
+                                  KPI=data["KPI"], contract_type=contract_type,
                                   contract_scale=float(data["contract_scale"]))
                 db.session.add(history)
                 db.session.commit()
@@ -136,6 +151,11 @@ def offerShow():
         customerName = customer.company_name  # 客户名称
         status = i.status
         contract_type = i.contract_type
+        sales = User.query.filter_by(id=int(i.user_id)).first()
+        if contract_type == "1":
+            contract_type = u"服务费"
+        elif contract_type == "2":
+            contract_type = "cpa"
         os = i.os
         app_name = i.app_name
         data = {
@@ -149,7 +169,8 @@ def offerShow():
             "endTime": i.endTime,
             "country": str(i.country),
             "price": i.price,
-            "updateTime": i.updateTime
+            "updateTime": i.updateTime,
+            "sale_name":sales.name
         }
         result += [data]
     response = {
@@ -168,6 +189,10 @@ def offerDetail(id):
     userId = offer.user_id
     user = User.query.filter_by(id=userId).first()
     contract_type = offer.contract_type
+    if contract_type == "1":
+        contract_type = u"服务费"
+    elif contract_type == "2":
+        contract_type = "cpa"
     if contract_type != "cpa":
         contract_scale = 0
     else:
@@ -179,8 +204,8 @@ def offerDetail(id):
         "status": offer.status,
         "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
-        "contract_type": offer.contract_type,
-        "user_id": user.id,
+        "contract_type": contract_type,
+        "user_id": user.name,
         "os": offer.os,
         "package_name": offer.package_name,
         "app_name": offer.app_name,
@@ -235,7 +260,7 @@ def offerDetail(id):
 
 #更新offer的状态
 @offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
     if offer.status == "active":
@@ -284,7 +309,7 @@ def updateStatus(offer_id):
         return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
-@Permission.check(models=["offer_create","offer_edit","offer_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -368,7 +393,7 @@ def updateOffer():
 
 #bind list
 @offers.route("/api/offer_bind", methods=["POST","GET"])
-@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["bind_create","bind_edit","bind_query"])
 def offerBind():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -427,7 +452,7 @@ def bindShow(offer_id):
 
 #update bind
 @offers.route("/api/bind_update", methods=["POST","GET"])
-@Permission.check(models=["bind_create","bind_edit","bind_query","manager_query","manager_edit","manager_create"])
+@Permission.check(models=["bind_create","bind_edit","bind_query"])
 def bindUpdate():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -495,6 +520,10 @@ def historty():
                 history = History.query.filter(History.offer_id == offer_id, History.contract_type != "")
                 for i in history:
                     contract_type = i.contract_type
+                    if contract_type == "1":
+                        contract_type = u"服务费"
+                    elif contract_type == "2":
+                        contract_type = "cpa"
                     contract_scale = i.contract_scale
                     createdTime = i.createdTime
                     user_id = i.user_id
@@ -787,22 +816,30 @@ def showCountryTime():
                             date + "-25", date + "-26", date + "-27", date + "-28"]
         result = []
         dateCurrent = []
-        timePrices = TimePrice.query.filter(TimePrice.country_id == countryId).all()
-        for t in timePrices:
-            dateCurrent.append(t.date)
-        for i in dateList:
-            if i in dateCurrent:
-                timePrice = TimePrice.query.filter_by(country_id=countryId, date=i).first()
-                detail = {
-                    "date": i,
-                    "price": timePrice.price
-                }
-            else:
+        if data["offer_id"] != "":
+            timePrices = TimePrice.query.filter(TimePrice.country_id == countryId, TimePrice.offer_id == int(data["offer_id"])).all()
+            for t in timePrices:
+                dateCurrent.append(t.date)
+            for i in dateList:
+                if i in dateCurrent:
+                    timePrice = TimePrice.query.filter_by(country_id=countryId, date=i, offer_id=int(data["offer_id"])).first()
+                    detail = {
+                        "date": i,
+                        "price": timePrice.price
+                    }
+                else:
+                    detail = {
+                        "date": i,
+                        "price": ""
+                    }
+                result += [detail]
+        else:
+            for i in dateList:
                 detail = {
                     "date": i,
                     "price": ""
                 }
-            result += [detail]
+                result += [detail]
         response = {
             "code": 200,
             "result": result,
@@ -818,9 +855,20 @@ def updateContryTime():
     countryName = data["country"]
     country = Country.query.filter_by(shorthand=countryName).first()
     countryId = country.id
+    offer_id = int(data["offer_id"])
+    if data["offer_id"] == "":
+        offerIds = []
+        offer_msg = Offer.query.all()
+
+        if offer_msg == []:
+            offer_id = 1
+        else:
+            for i in offer_msg:
+                offerIds.append(i.id)
+            offer_id = offerIds[-1] + 1
     for i in result:
         if i["price"] != "":
-            timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"]).first()
+            timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id).first()
             if timePrice:
                 timePrice.price = i["price"]
                 try:
@@ -830,7 +878,7 @@ def updateContryTime():
                     print e
                     return json.dumps({"code": 500, "message": "fail"})
             else:
-                timePriceNew = TimePrice(countryId, i["date"], i["price"])
+                timePriceNew = TimePrice(offer_id,countryId, i["date"], i["price"])
                 try:
                     db.session.add(timePriceNew)
                     db.session.commit()

@@ -86,7 +86,8 @@ var CreateOffer = React.createClass({
         }
         ajax("post","/api/country_time_update",JSON.stringify({
             result:result,
-            country:_this.state.country
+            country:_this.state.country,
+            offer_id:_this.props.params.id?_this.props.params.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -108,7 +109,8 @@ var CreateOffer = React.createClass({
         }
         ajax("post","/api/country_time_show",JSON.stringify({
             date:(_this.state.date&&moment(this.state.date).format("YYYY-MM")) || moment().format("YYYY-MM"),
-            country:e?e.target.dataset.country:_this.state.country
+            country:e?e.target.dataset.country:_this.state.country,
+            offer_id:_this.props.params.id?_this.props.params.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -155,7 +157,10 @@ var CreateOffer = React.createClass({
         });
     },
     invalid(e){
-        e.target.value = e.target.value.replace(/[^\d\.]/gi,"");
+        e.target.value = e.target.value.replace(/[^\d\.\-]/gi,"");
+    },
+    parseFloat(e){
+        e.target.value = parseFloat(e.target.value);
     },
     componentDidMount(){
         var _this = this;
@@ -292,15 +297,18 @@ var CreateOffer = React.createClass({
                         </div>
                         <div className="col-sm-3">
                             <select id="hzfs" className="form-control" data-key="contract_type">
-                                <option value="服务费">服务费</option>
-                                <option value="cpa">cpa</option>
+                                <option value="1">服务费</option>
+                                <option value="2">CPA</option>
                             </select>
                         </div>
                         <div className="col-sm-3 text-right">
                             比例
                         </div>
                         <div className="col-sm-3">
-                            <input id="bl" type="number" className="form-control"  data-key="contract_scale"/>
+                            <div className="input-group">
+                                <input onBlur={_this.parseFloat} id="bl" type="number" className="form-control"  data-key="contract_scale"/>
+                                <div className="input-group-addon">%</div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -332,7 +340,7 @@ var CreateOffer = React.createClass({
                         </div>
                         <div className="col-sm-3">
                             <select className="form-control" data-key="os">
-                                <option value="ios">iOS</option>
+                                <option value="iOS">iOS</option>
                                 <option value="android">Android</option>
                             </select>
                         </div>
@@ -415,13 +423,18 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3 text-right">
                             投放地区
                         </div>
-                        <div className="col-sm-9">
+                        <div className="col-sm-6">
                             {
                                 <Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
                             }
                             {/*{
                                 this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
                             }*/}
+                        </div>
+                        <div className="col-md-3">
+                            <button data-target="#bulk_import" type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                                批量导入
+                            </button>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -434,9 +447,6 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3">
                             <button type="button" className="btn btn-primary" style={{position:"relative"}}>
                                 Import<input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
-                            </button>
-                            <button data-target="#bulk_import" style={{marginLeft:"15px",position:"relative",zIndex:2}} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
-                                批量导入
                             </button>
                         </div>
                     </div>
