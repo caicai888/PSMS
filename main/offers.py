@@ -71,27 +71,34 @@ def countrySelect():
 
 @offers.route('/api/user_select', methods=["POST", "GET"])
 def userSelect():
-    role = Role.query.filter_by(name="Sales").first()
-    roleId = str(role.id)
-    user_roles = UserRole.query.filter().all()
-    userIds = []
-    for r in user_roles:
-        if roleId in r.role_id:
-            userIds.append(r.user_id)
-    result = []
-    for i in userIds:
-        user = User.query.filter_by(id=int(i)).first()
-        data = {
-            "id": i,
-            "name": user.name,
-            "email": user.email
+    try:
+        role = Role.query.filter_by(name="Sales").first()
+        roleId = str(role.id)
+        user_roles = UserRole.query.filter().all()
+        userIds = []
+        for r in user_roles:
+            if roleId in r.role_id:
+                userIds.append(r.user_id)
+        result = []
+        for i in userIds:
+            user = User.query.filter_by(id=int(i)).first()
+            data = {
+                "id": i,
+                "name": user.name,
+                "email": user.email
+            }
+            result += [data]
+        response = {
+            "code": 200,
+            "result": result,
+            "message": "success"
         }
-        result += [data]
-    response = {
-        "code": 200,
-        "result": result,
-        "message": "success"
-    }
+    except Exception as e:
+        print e
+        response = {
+            "code": 500,
+            "message": "no sales group"
+        }
     return json.dumps(response)
 
 
