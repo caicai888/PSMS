@@ -131,7 +131,7 @@ def createOffer():
                                   daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
                                   total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
                                   KPI=data["KPI"], contract_type=contract_type,
-                                  contract_scale=float(data["contract_scale"]))
+                                  contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
                 db.session.add(history)
                 db.session.commit()
                 db.create_all()
@@ -189,11 +189,7 @@ def offerDetail(id):
     userId = offer.user_id
     user = User.query.filter_by(id=userId).first()
     contract_type = offer.contract_type
-    if contract_type == "1":
-        contract_type = u"服务费"
-    elif contract_type == "2":
-        contract_type = "cpa"
-    if contract_type != "cpa":
+    if contract_type != "1":
         contract_scale = 0
     else:
         contract_scale = offer.contract_scale
@@ -205,7 +201,7 @@ def offerDetail(id):
         "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
         "contract_type": contract_type,
-        "user_id": user.name,
+        "user_id": user.id,
         "os": offer.os,
         "package_name": offer.package_name,
         "app_name": offer.app_name,
@@ -365,7 +361,7 @@ def updateOffer():
                                               total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
                                               total_type=data["total_type"], KPI=data["KPI"],
                                               contract_type=data["contract_type"],
-                                              contract_scale=float(data["contract_scale"]))
+                                              contract_scale=float(data["contract_scale"] if data["contract_scale"] != "" else 0))
                             db.session.add(history)
                             db.session.commit()
                             db.create_all()
@@ -855,7 +851,7 @@ def updateContryTime():
     countryName = data["country"]
     country = Country.query.filter_by(shorthand=countryName).first()
     countryId = country.id
-    offer_id = int(data["offer_id"])
+
     if data["offer_id"] == "":
         offerIds = []
         offer_msg = Offer.query.all()
@@ -866,6 +862,8 @@ def updateContryTime():
             for i in offer_msg:
                 offerIds.append(i.id)
             offer_id = offerIds[-1] + 1
+    else:
+        offer_id = int(data["offer_id"])
     for i in result:
         if i["price"] != "":
             timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id).first()
