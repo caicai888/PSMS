@@ -189,11 +189,7 @@ def offerDetail(id):
     userId = offer.user_id
     user = User.query.filter_by(id=userId).first()
     contract_type = offer.contract_type
-    if contract_type == "1":
-        contract_type = u"服务费"
-    elif contract_type == "2":
-        contract_type = "cpa"
-    if contract_type != "cpa":
+    if contract_type != "1":
         contract_scale = 0
     else:
         contract_scale = offer.contract_scale
