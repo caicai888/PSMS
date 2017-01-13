@@ -20,7 +20,7 @@ def customerSelect():
         customers = Customers.query.filter(Customers.company_name.ilike('%' + data["name"] + '%'),Customers.status=="Created").all()
         for i in customers:
             data = {
-                "id": i.company_name+"("+str(i.id)+")",
+                "id": i.id,
                 "text": i.company_name
             }
             result += [data]
