@@ -196,7 +196,8 @@ def offerDetail(id):
     plate = offer.platform
 
     result = {
-        "customer_id": customer.company_name,
+        # "customer_id": customer.company_name,
+        "customer_id": customer.id,
         "status": offer.status,
         "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
