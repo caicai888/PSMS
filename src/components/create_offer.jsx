@@ -81,13 +81,13 @@ var CreateOffer = React.createClass({
         for(var i =0;i<dd.length;i++){
             result.push({
                 date:$(".cal-year").html()+"-"+($(".cal-month").html().toString().length<2?"0"+$(".cal-month").html():$(".cal-month").html())+"-"+($(dd[i]).find(".cal-day").html().toString().length<2?"0"+$(dd[i]).find(".cal-day").html():$(dd[i]).find(".cal-day").html()),
-                price:$(dd[i]).find(".cal-price").html().length>0?$(dd[i]).find(".cal-price").html().toString().substring(1):"",
-                offer_id:_this.props.params.id?_this.props.params.id:""
+                price:$(dd[i]).find(".cal-price").html().length>0?$(dd[i]).find(".cal-price").html().toString().substring(1):""
             })
         }
         ajax("post","/api/country_time_update",JSON.stringify({
             result:result,
-            country:_this.state.country
+            country:_this.state.country,
+            offer_id:_this.props.params.id?_this.props.params.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
