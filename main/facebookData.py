@@ -593,8 +593,7 @@ def faceReport():
                                 price = price_default
                             else:
                                 price = prices_history.price
-                        print price
-                        print "+++++++"
+
                         revenue_list += [
                             {
                                 "country": country,
@@ -771,7 +770,7 @@ def faceReport():
                     ctr_count = []
                     cpc_count = []
                     conversions_list = []
-                    revenue_list = []
+                    revenue_new_list = []
                     profit_list = []
                     conversions_count_list = []
 
@@ -791,19 +790,18 @@ def faceReport():
                             for action in actions:
                                 if "mobile_app_install" in action["action_type"]:
                                     conversions = int(action["value"])
-                                else:
-                                    conversions = int(0)
-                                conver_data = {
-                                    "country": j["country"],
-                                    "date_stop": j["date_stop"],
-                                    "date_start": j["date_start"],
-                                    "conversions": conversions
-                                }
-                                conversions_list += [conver_data]
+
+                            conver_data = {
+                                "country": j["country"],
+                                "date_stop": j["date_stop"],
+                                "date_start": j["date_start"],
+                                "conversions": conversions
+                            }
+                            conversions_list += [conver_data]
                         for r in range(len(conversions_list)):
                             country = conversions_list[r].get("country")
                             date = conversions_list[r].get("date_start")
-                            conversion = float(conversions_list[r].get("conversions"))
+                            conversion = int(conversions_list[r].get("conversions"))
                             countries = Country.query.filter_by(shorthand=country).first()
                             country_id = countries.id
                             time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId,TimePrice.date <= date, TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
@@ -816,7 +814,7 @@ def faceReport():
                                 else:
                                     price = prices_history.price
 
-                            revenue_list += [
+                            revenue_new_list += [
                                 {
                                     "country": country,
                                     "revenue": float(conversion * price),
@@ -825,32 +823,32 @@ def faceReport():
                                 }
                             ]
 
-                        revenue_new_list = []
-                        for i in revenue_list:
-                            if i not in revenue_new_list:
-                                revenue_new_list.append(i)
-                            else:
-                                pass
-                        for j in range(len(revenue_new_list)):
-                            if j+1 < len(revenue_new_list) and revenue_new_list[j+1].get("date_start") == revenue_new_list[j].get("date_start"):
-                                revenue_new_list[j+1] = {
-                                    "revenue": '%0.2f'%(float(revenue_new_list[j].get("revenue"))+revenue_new_list[j+1].get("revenue")),
-                                    "date_start": revenue_new_list[j].get("date_start")
-                                }
-                                revenue_new_list[j] = revenue_new_list[j+1]
-                                revenue_new_list.remove(revenue_new_list[j])
-
-                            else:
-                                pass
-
-                        dx = dict()
-                        for i in revenue_new_list:
-                            dx.setdefault(i["date_start"], []).append(i["revenue"])
-
-                        for k in dx:
-                            dx[k] = sum(float(i) for i in dx[k])
-
-                        revenue_new_list = [{"date_start": k, "revenue": str(v)} for k, v in dx.items()][::-1]
+                        # revenue_new_list = []
+                        # for i in revenue_list:
+                        #     if i not in revenue_new_list:
+                        #         revenue_new_list.append(i)
+                        #     else:
+                        #         pass
+                        # for j in range(len(revenue_new_list)):
+                        #     if j+1 < len(revenue_new_list) and revenue_new_list[j+1].get("date_start") == revenue_new_list[j].get("date_start"):
+                        #         revenue_new_list[j+1] = {
+                        #             "revenue": '%0.2f'%(float(revenue_new_list[j].get("revenue"))+revenue_new_list[j+1].get("revenue")),
+                        #             "date_start": revenue_new_list[j].get("date_start")
+                        #         }
+                        #         revenue_new_list[j] = revenue_new_list[j+1]
+                        #         revenue_new_list.remove(revenue_new_list[j])
+                        #
+                        #     else:
+                        #         pass
+                        #
+                        # dx = dict()
+                        # for i in revenue_new_list:
+                        #     dx.setdefault(i["date_start"], []).append(i["revenue"])
+                        #
+                        # for k in dx:
+                        #     dx[k] = sum(float(i) for i in dx[k])
+                        #
+                        # revenue_new_list = [{"date_start": k, "revenue": str(v)} for k, v in dx.items()][::-1]
 
                     for t in time_ranges:
                         for i in advertise_groups:
@@ -942,7 +940,7 @@ def faceReport():
                     for i in conversions_count_list:
                         dx.setdefault(i["date_start"], []).append(i["conversions"])
                     for k in dx:
-                        dx[k] = sum(float(i) for i in dx[k])
+                        dx[k] = sum(int(i) for i in dx[k])
                     conversions_count_list = [{"date_start": k, "conversions": str(v)} for k, v in dx.items()]
                     conversions_count_list = sorted(conversions_count_list, key=lambda k: k['date_start'])[::-1]
 
