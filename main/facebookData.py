@@ -603,11 +603,12 @@ def faceReport():
                             revenue_list += [
                                 {
                                     "country": country,
-                                    "revenue": cost*(1+float(contract_scale)/100),
+                                    "revenue": '%0.2f'%(cost*(1+float(contract_scale)/100)),
                                     "date_start": date,
                                     "date_stop": date
                                 }
                             ]
+
                     else:
                         for r in range(len(conversions_list)):
                             country = conversions_list[r].get("country")
@@ -634,6 +635,8 @@ def faceReport():
                                     "date_stop": date
                                 }
                             ]
+                    print "&&&&" * 10
+                    print revenue_list
 
                     for r in cost_list:
                         date_start = r["date_start"]
@@ -776,6 +779,8 @@ def faceReport():
                     }
                     count_revenue = 0
                     for a in revenue_list:
+                        print "+++++++"*10
+                        print a["revenue"]
                         count_revenue += float(a["revenue"])
                     data_geo["revenue"] = '%0.2f'%(count_revenue)
                     data_geo["profit"] = '%0.2f'%(float(count_revenue)-float(data_geo["count_cost"]))
@@ -991,7 +996,7 @@ def faceReport():
                         for r in range(len(costs_count_list)):
                             revenue_new_list += [
                                 {
-                                    "revenue": float(costs_count_list[r].get("spend"))*(1+float(contract_scale)/100),
+                                    "revenue": '%0.2f'%(float(costs_count_list[r].get("spend"))*(1+float(contract_scale)/100)),
                                     "date_start": costs_count_list[r].get("date_start"),
                                 }
                             ]
