@@ -389,3 +389,6 @@ table tr td{
     padding-left: 15px;
     text-align: left!important;
 }
+#create_customer textarea,#adwords_form textarea{
+    height: 114px;
+}
