@@ -32,9 +32,19 @@ var OfferDetail = React.createClass({
     },
     submit(e){
         var id= e.target.dataset.form_id;
-        console.log(id)
         if(valid(id,"data-required")) {
             var data = setForm(id, "data-key");
+            data.advertise_series =data.advertise_series.replace(/[\r\n]/g,",").split(",").filter(function (val) {
+                if(val){
+                    return val;
+                }
+            }).join(",");
+            data.advertise_groups=data.advertise_groups.replace(/[\r\n]/g,",").split(",").filter(function (val) {
+                if(val){
+                    return val;
+                }
+            }).join(",");
+            getForm(id,data);
             let url="";
             if(id=="#create_customer"){
                 url= this.state.isYes?"/api/bind_update":"/api/offer_bind";
@@ -144,6 +154,7 @@ var OfferDetail = React.createClass({
                 } else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
+                    return;
                 }
 
                 var strToInt = function (array) {
@@ -153,13 +164,12 @@ var OfferDetail = React.createClass({
                     }
                     return newArr;
                 }
-
                 var hightchats = {
                     title: {
                         text: ''
                     },
                     xAxis: {
-                        categories: data.data_range.date
+                        categories: data.data_range && data.data_range.date
                     },
                     yAxis: {
                         plotLines: [{
@@ -253,7 +263,7 @@ var OfferDetail = React.createClass({
                                         Facebook 广告系列
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_series">
+                                    <textarea className="form-control disable" data-key="advertise_series" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -265,7 +275,7 @@ var OfferDetail = React.createClass({
                                         Facebook　广告组
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_groups">
+                                    <textarea className="form-control disable" data-key="advertise_groups" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -293,7 +303,7 @@ var OfferDetail = React.createClass({
                                         Adwords 广告系列
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_series">
+                                    <textarea className="form-control disable"  data-key="advertise_series" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -305,7 +315,7 @@ var OfferDetail = React.createClass({
                                         Adwords　广告组
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_groups">
+                                    <textarea className="form-control disable"  data-key="advertise_groups" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
