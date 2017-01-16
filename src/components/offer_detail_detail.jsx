@@ -138,7 +138,7 @@ var OfferDetailDetail = React.createClass({
                             <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
                         </div>
                         <div className="col-sm-3">
-                            {this.state.result.contract_type}
+                            {this.state.result.contract_type=="1"?"服务费":"CPA"}
                         </div>
                         <div className="col-sm-3 text-right">
                             比例

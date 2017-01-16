@@ -208,7 +208,7 @@ var CreateOffer = React.createClass({
                     data.result.country = data.result.country.split(",");
                     getForm("#create_offer",data.result);
                     if(data.result&&data.result.contract_type=="2"){
-                        $("#bl").attr("readonly","true")
+                        $("#bl").attr("readonly","true").val(0)
                     }else {
                         $("#bl").removeAttr("readonly")
                     }
@@ -219,6 +219,7 @@ var CreateOffer = React.createClass({
                     setTimeout(function () {
                         $(".tfpt").val(data.result.platform.toString().split(",")).trigger("change");
                         $(".tfdq").val(data.result.country.toString().split(",")).trigger("change");
+                        $(".khmc").val(data.result.customer_id.toString().split(",")).trigger("change");
                     });
                 }else {
                     $(".ajax_error").html(data.message);
@@ -256,9 +257,9 @@ var CreateOffer = React.createClass({
         /*合作方式*/
         $("#hzfs").on("change",function () {
             if($(this).val()=="2"){
-                $("#bl").attr("readonly","true")
+                $("#bl").attr("readonly","true").val(0);
             }else {
-                $("#bl").removeAttr("readonly")
+                $("#bl").removeAttr("readonly");
             }
         })
         /*邮件报告*/
@@ -338,7 +339,7 @@ var CreateOffer = React.createClass({
                             <select className="form-control"  data-key="user_id">
                                 {
                                     this.state.userId.map(function (ele,index,array) {
-                                        return <option key={index} value={ele.id}>{ele.name+" ("+ele.id+") "}</option>
+                                        return <option key={index} value={ele.name+"("+ele.id+")"}>{ele.name+" ("+ele.id+") "}</option>
                                     })
                                 }
                             </select>
