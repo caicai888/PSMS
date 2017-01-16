@@ -189,11 +189,18 @@ def faceReport():
         offerId = int(data["offer_id"])
         start_date = data["start_date"]
         end_date = data["end_date"]
-        dimension = data["dimension"]
+        dimen = 'geo' in data["dimension"]
         customer_id = "296-153-6464"
-        adwords = adwordsData.AdwordsRoutes(customer_id,start_date,end_date,offerId)
-        result = adwords.get_report()
-        return result
+        ads = adwordsData.AdwordsRoutes(customer_id,start_date,end_date,offerId)
+        total, table_data, chart_data = ads.GetDataFromGads(dimen)
+        if dimen:
+            response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
+                        "data_date_table": {}, 'data_range': chart_data}
+        else:
+            response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
+                        "data_geo_table": {}, 'data_range': chart_data}
+        return json.dumps(response)
+
     #
     #     offer = Offer.query.filter_by(id=offerId).first()
     #     price_default = offer.price
