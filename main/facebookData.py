@@ -1092,7 +1092,7 @@ def faceReport():
                         "cvr_list": cvr_count_list,
                         "cpc_list": cpc_count_list,
                         "cpi_list": cpi_count_list,
-                        "revenue_list": revenue_new_list[::-1],
+                        "revenue_list": revenue_new_list,
                         "profit_list": profit_list,
                         "head": ["Date","Revenue","Profit","Cost","Impressions","Clicks","Conversions","CTR","CVR","CPC","CPI"]
                     }
