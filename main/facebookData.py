@@ -118,7 +118,7 @@ def dashboard():
             offer = Offer.query.filter_by(id=int(ad["offer_id"])).first()
             contract_type = offer.contract_type
             if contract_type == "1":
-                contract_num = float(offer.contract_num)
+                contract_scale = float(offer.contract_scale)
                 params_spend = {
                     "access_token": accessToken,
                     "level": "campaign",
@@ -128,7 +128,7 @@ def dashboard():
                 result_spend = requests.get(url=url, params=params_spend)
                 data_spend = result_spend.json()["data"]
                 for i in data_spend:
-                    revenue_count += float(i["spend"])*(1+contract_num/100)
+                    revenue_count += float(i["spend"])*(1+contract_scale/100)
             else:
                 params_revenue = {
                     "access_token": accessToken,
@@ -211,7 +211,7 @@ def faceReport():
         offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
         contract_type = offer.contract_type
-        contract_num = offer.contract_num
+        contract_scale = offer.contract_scale
 
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
         if not advertiser:
@@ -603,7 +603,7 @@ def faceReport():
                             revenue_list += [
                                 {
                                     "country": country,
-                                    "revenue": cost*(1+float(contract_num)/100),
+                                    "revenue": cost*(1+float(contract_scale)/100),
                                     "date_start": date,
                                     "date_stop": date
                                 }
@@ -991,7 +991,7 @@ def faceReport():
                         for r in range(len(costs_count_list)):
                             revenue_new_list += [
                                 {
-                                    "revenue": float(costs_count_list[r].get("spend"))*(1+float(contract_num)/100),
+                                    "revenue": float(costs_count_list[r].get("spend"))*(1+float(contract_scale)/100),
                                     "date_start": costs_count_list[r].get("date_start"),
                                 }
                             ]
