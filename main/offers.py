@@ -20,7 +20,7 @@ def customerSelect():
         customers = Customers.query.filter(Customers.company_name.ilike('%' + data["name"] + '%'),Customers.status=="Created").all()
         for i in customers:
             data = {
-                "id": i.id,
+                "id": i.company_name+"("+str(i.id)+")",
                 "text": i.company_name
             }
             result += [data]
@@ -111,7 +111,10 @@ def createOffer():
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         contract_type = data["contract_type"]
 
-        offer = Offer(int(data["user_id"]), int(data["customer_id"]), data["status"], contract_type,
+        user_id= data["user_id"].split("(")[1].split(')')[0]
+        customer_id = data["customer_id"].split("(")[1].split(')')[0]
+
+        offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,
                       data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],
                       data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
                       data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),
@@ -126,7 +129,7 @@ def createOffer():
             db.create_all()
 
             for i in data['country_detail']:
-                history = History(offer.id, int(data["user_id"]), "default", createdTime, status=data["status"],
+                history = History(offer.id, int(user_id), "default", createdTime, status=data["status"],
                                   country=i["country"], country_price=i["price"], price=data["price"],
                                   daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
                                   total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
@@ -196,12 +199,12 @@ def offerDetail(id):
     plate = offer.platform
 
     result = {
-        "customer_id": customer.company_name,
+        "customer_id": customer.company_name+"("+str(customer.id)+")",
         "status": offer.status,
         "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
         "contract_type": contract_type,
-        "user_id": user.id,
+        "user_id": user.name+"("+str(user.id)+")",
         "os": offer.os,
         "package_name": offer.package_name,
         "app_name": offer.app_name,
@@ -313,10 +316,12 @@ def updateOffer():
         flag = data["flag"]
         if offer is not None:
             try:
+                customer_id = data["customer_id"].split("(")[1].split(')')[0]
+                user_id = data["user_id"].split("(")[1].split(')')[0]
                 offer.updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
                 offer.status = data["status"] if data["status"] != "" else offer.status
-                offer.customer_id = int(data["customer_id"]) if data["customer_id"] != "" else offer.customer_id
-                offer.user_id = int(data["user_id"]) if data['user_id'] != "" else offer.user_id
+                offer.customer_id = int(customer_id) if data["customer_id"] != "" else offer.customer_id
+                offer.user_id = int(user_id) if data['user_id'] != "" else offer.user_id
                 offer.contract_type = data["contract_type"] if data["contract_type"] != "" else offer.contract_type
                 offer.contract_scale = float(data["contract_scale"]) if data["contract_scale"] != "" else offer.contract_scale
                 offer.contract_num = data["contract_num"] if data["contract_num"] != "" else offer.contract_num
