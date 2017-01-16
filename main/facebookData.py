@@ -593,7 +593,8 @@ def faceReport():
                                 price = price_default
                             else:
                                 price = prices_history.price
-
+                        print price
+                        print "+++++++"
                         revenue_list += [
                             {
                                 "country": country,
