@@ -23,6 +23,7 @@ def dashboard():
     for i in advertisers:
         advertise_group = i.advertise_series
         offer_id = i.offer_id
+
         for j in advertise_group.split(','):
             group_result = {
                 "offer_id": offer_id,
@@ -114,39 +115,53 @@ def dashboard():
             for i in data_ctr:
                 ctr_count += float(i["ctr"])
 
-            params_revenue = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["actions"],
-                "breakdowns": ["country"],
-                "time_range": str(time_range)
-            }
-            result_revenue = requests.get(url=url, params=params_revenue)
-            data_revenue = result_revenue.json()["data"]
-            if data_revenue != []:
-                for action in data_revenue:
-                    country = action["country"]
-                    date = action["date_start"]
-                    countries = Country.query.filter_by(shorthand=country).first()
-                    country_id = countries.id
-                    offer = Offer.query.filter_by(id=int(ad["offer_id"])).first()
-                    startTime = offer.startTime
-                    prices = TimePrice.query.filter(TimePrice.country_id==country_id,TimePrice.offer_id == int(ad["offer_id"]),TimePrice.date <= date,TimePrice.date>=startTime).order_by(TimePrice.date.desc()).first()
-                    if not prices:
-                        prices_history = History.query.filter(History.country==country, History.offer_id==ad["offer_id"]).order_by(History.createdTime.desc()).first()
-                        if not prices_history:
-                            price = offer.price
+            offer = Offer.query.filter_by(id=int(ad["offer_id"])).first()
+            contract_type = offer.contract_type
+            if contract_type == "1":
+                contract_num = float(offer.contract_num)
+                params_spend = {
+                    "access_token": accessToken,
+                    "level": "campaign",
+                    "fields": ["spend"],
+                    "time_range": str(time_range)
+                }
+                result_spend = requests.get(url=url, params=params_spend)
+                data_spend = result_spend.json()["data"]
+                for i in data_spend:
+                    revenue_count += float(i["spend"])*(1+contract_num/100)
+            else:
+                params_revenue = {
+                    "access_token": accessToken,
+                    "level": "campaign",
+                    "fields": ["actions"],
+                    "breakdowns": ["country"],
+                    "time_range": str(time_range)
+                }
+                result_revenue = requests.get(url=url, params=params_revenue)
+                data_revenue = result_revenue.json()["data"]
+                if data_revenue != []:
+                    for action in data_revenue:
+                        country = action["country"]
+                        date = action["date_start"]
+                        countries = Country.query.filter_by(shorthand=country).first()
+                        country_id = countries.id
+                        startTime = offer.startTime
+                        prices = TimePrice.query.filter(TimePrice.country_id==country_id,TimePrice.offer_id == int(ad["offer_id"]),TimePrice.date <= date,TimePrice.date>=startTime).order_by(TimePrice.date.desc()).first()
+                        if not prices:
+                            prices_history = History.query.filter(History.country==country, History.offer_id==ad["offer_id"]).order_by(History.createdTime.desc()).first()
+                            if not prices_history:
+                                price = offer.price
+                            else:
+                                price = prices_history.price
                         else:
-                            price = prices_history.price
-                    else:
-                        price = prices.price
-                    actions = action.get("actions", [])
-                    for j in actions:
-                        if "mobile_app_install" in j["action_type"]:
-                            conversions_revenue = float(j["value"])
-                        else:
-                            conversions_revenue = 0
-                        revenue_count += (conversions_revenue * float(price))
+                            price = prices.price
+                        actions = action.get("actions", [])
+                        for j in actions:
+                            if "mobile_app_install" in j["action_type"]:
+                                conversions_revenue = float(j["value"])
+                            else:
+                                conversions_revenue = 0
+                            revenue_count += (conversions_revenue * float(price))
         except Exception as e:
             print e
             impressions_count = 0
@@ -195,6 +210,9 @@ def faceReport():
 
         offer = Offer.query.filter_by(id=offerId).first()
         price_default = offer.price
+        contract_type = offer.contract_type
+        contract_num = offer.contract_num
+
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId),type="facebook").first()
         if not advertiser:
             return json.dumps({
@@ -577,31 +595,45 @@ def faceReport():
                                     }
                                 ]
 
-                    for r in range(len(conversions_list)):
-                        country = conversions_list[r].get("country")
-                        date = conversions_list[r].get("date_start")
-                        conversion = float(conversions_list[r].get("conversions"))
-                        countries = Country.query.filter_by(shorthand=country).first()
-                        country_id = countries.id
-                        time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId, TimePrice.date <= date,TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
-                        if time_price:
-                            price = time_price.price
-                        else:
-                            prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(
-                                History.createdTime.desc()).first()
-                            if not prices_history:
-                                price = price_default
+                    if contract_type == "1":
+                        for r in range(len(cost_list)):
+                            country = cost_list[r].get("country")
+                            date = cost_list[r].get("date_start")
+                            cost = float(cost_list[r].get("spend"))
+                            revenue_list += [
+                                {
+                                    "country": country,
+                                    "revenue": cost*(1+float(contract_num)/100),
+                                    "date_start": date,
+                                    "date_stop": date
+                                }
+                            ]
+                    else:
+                        for r in range(len(conversions_list)):
+                            country = conversions_list[r].get("country")
+                            date = conversions_list[r].get("date_start")
+                            conversion = float(conversions_list[r].get("conversions"))
+                            countries = Country.query.filter_by(shorthand=country).first()
+                            country_id = countries.id
+                            time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId, TimePrice.date <= date,TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
+                            if time_price:
+                                price = time_price.price
                             else:
-                                price = prices_history.price
+                                prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(
+                                    History.createdTime.desc()).first()
+                                if not prices_history:
+                                    price = price_default
+                                else:
+                                    price = prices_history.price
 
-                        revenue_list += [
-                            {
-                                "country": country,
-                                "revenue": float(conversion*price),
-                                "date_start": date,
-                                "date_stop": date
-                            }
-                        ]
+                            revenue_list += [
+                                {
+                                    "country": country,
+                                    "revenue": float(conversion*price),
+                                    "date_start": date,
+                                    "date_stop": date
+                                }
+                            ]
 
                     for r in cost_list:
                         date_start = r["date_start"]
@@ -798,57 +830,32 @@ def faceReport():
                                 "conversions": conversions
                             }
                             conversions_list += [conver_data]
-                        for r in range(len(conversions_list)):
-                            country = conversions_list[r].get("country")
-                            date = conversions_list[r].get("date_start")
-                            conversion = int(conversions_list[r].get("conversions"))
-                            countries = Country.query.filter_by(shorthand=country).first()
-                            country_id = countries.id
-                            time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId,TimePrice.date <= date, TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
-                            if time_price:
-                                price = time_price.price
-                            else:
-                                prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
-                                if not prices_history:
-                                    price = price_default
+
+                        if contract_type == "2":
+                            for r in range(len(conversions_list)):
+                                country = conversions_list[r].get("country")
+                                date = conversions_list[r].get("date_start")
+                                conversion = int(conversions_list[r].get("conversions"))
+                                countries = Country.query.filter_by(shorthand=country).first()
+                                country_id = countries.id
+                                time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId,TimePrice.date <= date, TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
+                                if time_price:
+                                    price = time_price.price
                                 else:
-                                    price = prices_history.price
+                                    prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
+                                    if not prices_history:
+                                        price = price_default
+                                    else:
+                                        price = prices_history.price
 
-                            revenue_new_list += [
-                                {
-                                    "country": country,
-                                    "revenue": float(conversion * price),
-                                    "date_start": date,
-                                    "date_stop": date
-                                }
-                            ]
-
-                        # revenue_new_list = []
-                        # for i in revenue_list:
-                        #     if i not in revenue_new_list:
-                        #         revenue_new_list.append(i)
-                        #     else:
-                        #         pass
-                        # for j in range(len(revenue_new_list)):
-                        #     if j+1 < len(revenue_new_list) and revenue_new_list[j+1].get("date_start") == revenue_new_list[j].get("date_start"):
-                        #         revenue_new_list[j+1] = {
-                        #             "revenue": '%0.2f'%(float(revenue_new_list[j].get("revenue"))+revenue_new_list[j+1].get("revenue")),
-                        #             "date_start": revenue_new_list[j].get("date_start")
-                        #         }
-                        #         revenue_new_list[j] = revenue_new_list[j+1]
-                        #         revenue_new_list.remove(revenue_new_list[j])
-                        #
-                        #     else:
-                        #         pass
-                        #
-                        # dx = dict()
-                        # for i in revenue_new_list:
-                        #     dx.setdefault(i["date_start"], []).append(i["revenue"])
-                        #
-                        # for k in dx:
-                        #     dx[k] = sum(float(i) for i in dx[k])
-                        #
-                        # revenue_new_list = [{"date_start": k, "revenue": str(v)} for k, v in dx.items()][::-1]
+                                revenue_new_list += [
+                                    {
+                                        "country": country,
+                                        "revenue": float(conversion * price),
+                                        "date_start": date,
+                                        "date_stop": date
+                                    }
+                                ]
 
                     for t in time_ranges:
                         for i in advertise_groups:
@@ -980,6 +987,14 @@ def faceReport():
                         dx[k] = sum(float(i) for i in dx[k])
                     costs_count_list = [{"date_start": k, "spend": str(v)} for k, v in dx.items()]
                     costs_count_list = sorted(costs_count_list, key=lambda k: k['date_start'])[::-1]
+                    if contract_type == "1":
+                        for r in range(len(costs_count_list)):
+                            revenue_new_list += [
+                                {
+                                    "revenue": float(costs_count_list[r].get("spend"))*(1+float(contract_num)/100),
+                                    "date_start": costs_count_list[r].get("date_start"),
+                                }
+                            ]
 
                     for t_clicks in clicks_count:
                         if t_clicks["data"] != []:
