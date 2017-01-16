@@ -635,8 +635,6 @@ def faceReport():
                                     "date_stop": date
                                 }
                             ]
-                    print "&&&&" * 10
-                    print revenue_list
 
                     for r in cost_list:
                         date_start = r["date_start"]
@@ -779,8 +777,6 @@ def faceReport():
                     }
                     count_revenue = 0
                     for a in revenue_list:
-                        print "+++++++"*10
-                        print a["revenue"]
                         count_revenue += float(a["revenue"])
                     data_geo["revenue"] = '%0.2f'%(count_revenue)
                     data_geo["profit"] = '%0.2f'%(float(count_revenue)-float(data_geo["count_cost"]))
