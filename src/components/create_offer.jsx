@@ -156,9 +156,6 @@ var CreateOffer = React.createClass({
             }
         });
     },
-    invalid(e){
-        e.target.value = e.target.value.replace(/[^\d\.\-]/gi,"");
-    },
     parseFloat(e){
         e.target.value = parseFloat(e.target.value);
     },
@@ -210,6 +207,11 @@ var CreateOffer = React.createClass({
                     data.result.platform = data.result.platform.split(",");
                     data.result.country = data.result.country.split(",");
                     getForm("#create_offer",data.result);
+                    if(data.result&&data.result.contract_type=="2"){
+                        $("#bl").attr("readonly","true").val(0)
+                    }else {
+                        $("#bl").removeAttr("readonly")
+                    }
                     _this.setState({
                         result:data.result.country_detail,
                         country_detail:data.result.country_detail
@@ -217,6 +219,7 @@ var CreateOffer = React.createClass({
                     setTimeout(function () {
                         $(".tfpt").val(data.result.platform.toString().split(",")).trigger("change");
                         $(".tfdq").val(data.result.country.toString().split(",")).trigger("change");
+                        $(".khmc").val(data.result.customer_id.toString().split(",")).trigger("change");
                     });
                 }else {
                     $(".ajax_error").html(data.message);
@@ -224,7 +227,19 @@ var CreateOffer = React.createClass({
                 }
             });
         }
-        $(".tfdq").on("change",function () {
+        function tfdq_price_calendar(arr) {
+            let html ="";
+            arr.map(function (ele,index,array) {
+                html +=`<tr key=${index}>
+                    <td>${ele.country}</td>
+                    <td><input type="number"  value="${ele.price}" class="form-control" /></td>
+                    <td><img  data-country=${ele.country} class="calendar_img" style='cursor:pointer;width:24px' src="./src/img/calender.jpg"/></td>
+                </tr>`
+            });
+            return html;
+        }
+
+        $(".tfdq").unbind("change").bind("change",function () {
             var result=_this.state.result;
             var new_result = [];
             var val = $(".tfdq").val();
@@ -234,18 +249,17 @@ var CreateOffer = React.createClass({
                     price:(result.length>i)&&result[i].price?result[i].price:""
                 })
             }
-            setTimeout(function () {
-                _this.setState({
-                    result:new_result
-                });
+            $("#tfdq_price_calendar").html(tfdq_price_calendar(new_result));
+            $(".calendar_img").unbind("click").bind("click",function (e) {
+                _this.price(e);
             });
         });
         /*合作方式*/
         $("#hzfs").on("change",function () {
-            if($(this).val()=="cpa"){
-                $("#bl").attr("readonly","true")
+            if($(this).val()=="2"){
+                $("#bl").attr("readonly","true").val(0);
             }else {
-                $("#bl").removeAttr("readonly")
+                $("#bl").removeAttr("readonly");
             }
         })
         /*邮件报告*/
@@ -325,7 +339,7 @@ var CreateOffer = React.createClass({
                             <select className="form-control"  data-key="user_id">
                                 {
                                     this.state.userId.map(function (ele,index,array) {
-                                        return <option key={index} value={ele.id}>{ele.name+" ("+ele.id+") "}</option>
+                                        return <option key={index} value={ele.name+"("+ele.id+")"}>{ele.name+" ("+ele.id+") "}</option>
                                     })
                                 }
                             </select>
@@ -481,8 +495,8 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3"> </div>
                         <div className="col-sm-9 table-responsive">
                             <table className="table table-bordered text-center" id="country_detail">
-                                <tbody>
-                                    {
+                                <tbody id="tfdq_price_calendar">
+                                    {/*{
                                         this.state.result.map(function (ele,index,array) {
                                             return <tr key={index}>
                                                         <td>{ele.country}</td>
@@ -490,7 +504,7 @@ var CreateOffer = React.createClass({
                                                         <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
                                                     </tr>
                                         })
-                                    }
+                                    }*/}
                                 </tbody>
                             </table>
                         </div>
