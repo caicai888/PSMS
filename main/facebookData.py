@@ -234,7 +234,7 @@ def geo_data_total(offerId,advertise_groups,start_date, end_date):
         result = request.get(url=url, params=params)
         data = result.json()["data"]
         for j in data:
-            count_cost += int(j["spend"])
+            count_cost += float(j["spend"])
 
         params = {
             "access_token": accessToken,
@@ -246,7 +246,7 @@ def geo_data_total(offerId,advertise_groups,start_date, end_date):
         result = requests.get(url=url, params=params)
         data = result.json()["data"]
         for j in data:
-            count_clicks += float(j["clicks"])
+            count_clicks += int(j["clicks"])
 
         params = {
             "access_token": accessToken,
@@ -258,40 +258,32 @@ def geo_data_total(offerId,advertise_groups,start_date, end_date):
         result = requests.get(url=url, params=params)
         data = result.json()["data"]
         offer = Offer.query.filter_by(id=offerId).first()
-        for j in data:
-            actions = j.get("actions", [])
-            date = j["date_start"]
-            country = Country.query.filter_by(shorthand=j["country"]).first()
-            country_id = country.id
-            time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId, TimePrice.date <= date,
-                                                TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
-            if time_price:
-                price = time_price.price
-            else:
-                prices_history = History.query.filter(History.country == j["country"], History.offer_id == offerId).order_by(
-                    History.createdTime.desc()).first()
-                if not prices_history:
-                    price = offer.price
+        contract_type = offer.contract_type
+        if contract_type != "1":
+            for j in data:
+                actions = j.get("actions",[])
+                country_name = j["country"]
+                date = j["date_start"]
+                country = Country.query.filter_by(shorthand=country_name).first()
+                country_id = country.id
+                time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId, TimePrice.date <= date,TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
+                if time_price:
+                    price = time_price.price
                 else:
-                    price = prices_history.price
-            params = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["spend"],
-                "breakdowns": ["country"],
-                "time_range": "{'since': " + "'" + str(date) + "'" + ", 'until': " + "'" + str(date) + "'" + "}"
-            }
-            result = request.get(url=url, params=params)
-            data = result.json()["data"]
-            for action in actions:
-                if "mobile_app_install" in action["action_type"]:
-                    conversions = action["value"]
-                    count_conversions += int(conversions)
-                    count_revenue += float(conversions)*price
-                else:
-                    conversions = 0
-                    count_conversions += conversions
-                    count_revenue += float(conversions) * price
+                    prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
+                    if not prices_history:
+                        price = offer.price
+                    else:
+                        price = prices_history.price
+                for action in actions:
+                    if "mobile_app_install" in action["action_type"]:
+                        count_conversions += int(action["value"])
+                        count_revenue += float(action["value"])*float(price)
+        else:
+            for j in data:
+                actions = j.get("actions",[])
+
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
