@@ -450,8 +450,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         "revenue": '%0.2f' % (count_revenue),
         "profit": '%0.2f' % (float(count_revenue)-float(count_cost))
     }
-    print data_geo
-    return json.dumps(data_geo)
+    return data_geo
 
 #geo维度数据
 def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
@@ -1185,7 +1184,8 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         "data_date_table": data_date_table,
         "data_range": data_range
     }
-    return json.dumps(date_datas)
+    # return json.dumps(date_datas)
+    return date_datas
 
 @facebookDate.route('/api/report', methods=["POST","GET"])
 def faceReport():
@@ -1258,10 +1258,7 @@ def faceReport():
             try:
                 data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
                 date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-                print "***"*10
-                print type(date_datas)
                 data_date_table = date_datas["data_date_table"]
-                print data_date_table
                 data_range = date_datas["data_range"]
                 return json.dumps({
                     "code": 200,
