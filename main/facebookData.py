@@ -1268,8 +1268,12 @@ def faceReport():
             try:
                 data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
                 date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
+                print "*&"*10
                 data_date_table = date_datas["data_date_table"]
+                print data_date_table
                 data_range = date_datas["data_range"]
+                print "^&"*10
+                print data_range
                 return json.dumps({
                     "code": 200,
                     "data_geo": data_geo,
