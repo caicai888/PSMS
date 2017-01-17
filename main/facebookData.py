@@ -351,8 +351,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         data = result.json()["data"]
         for j in data:
             count_impressions += int(j["impressions"])
-        print "++++"*10
-        print count_impressions
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -363,8 +362,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         data = result.json()["data"]
         for j in data:
             count_cost += float(j["spend"])
-        print "****"*10
-        print count_cost
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -375,8 +373,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         data = result.json()["data"]
         for j in data:
             count_clicks += int(j["clicks"])
-        print "-----"*10
-        print count_clicks
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -414,8 +411,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                     if "mobile_app_install" in action["action_type"]:
                         conversions = action["value"]
                         count_conversions += int(conversions)
-        print "&&&&"*10
-        print count_conversions
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -426,8 +422,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         data = result.json()["data"]
         for j in data:
             count_ctr += float(j["ctr"])
-        print "^^^^^"*10
-        print count_ctr
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -442,10 +437,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
     count_cpi = '%0.2f' % (count_cost / count_conversions) if count_conversions != 0 else 0
     if contract_type == "1":
         count_revenue = float(count_cost)*(1+float(offer.contract_num)/100)
-    print "!!!!"*10
-    print count_ctr
-    print count_cpi
-    print count_revenue
+
     data_geo = {
         "count_impressions": str(count_impressions),
         "count_cost": '%0.2f' % (count_cost),
@@ -1193,8 +1185,6 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         "data_date_table": data_date_table,
         "data_range": data_range
     }
-    print "@@@@"*10
-    print date_datas
     return json.dumps(date_datas)
 
 @facebookDate.route('/api/report', methods=["POST","GET"])
@@ -1268,12 +1258,11 @@ def faceReport():
             try:
                 data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
                 date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-                print "*&"*10
+                print "***"*10
+                print type(date_datas)
                 data_date_table = date_datas["data_date_table"]
                 print data_date_table
                 data_range = date_datas["data_range"]
-                print "^&"*10
-                print data_range
                 return json.dumps({
                     "code": 200,
                     "data_geo": data_geo,
