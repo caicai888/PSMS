@@ -336,9 +336,10 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
     count_ctr = 0
     count_cpc = 0
     count_revenue = 0
+    offer = Offer.query.filter_by(id=offerId).first()
+    contract_type = offer.contract_type
 
     for i in advertise_groups:
-        print i
         url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
         params = {
             "access_token": accessToken,
@@ -350,8 +351,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         data = result.json()["data"]
         for j in data:
             count_impressions += int(j["impressions"])
-        print "+++++"*10
-        print count_impressions
+
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -383,8 +383,6 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         }
         result = requests.get(url=url, params=params)
         data = result.json()["data"]
-        offer = Offer.query.filter_by(id=offerId).first()
-        contract_type = offer.contract_type
         if contract_type != "1":
             for j in data:
                 actions = j.get("actions", [])
@@ -396,30 +394,23 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                 if time_price:
                     price = time_price.price
                 else:
-                    prices_history = History.query.filter(History.country == country, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
+                    prices_history = History.query.filter(History.country == country_id, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
                     if not prices_history:
                         price = offer.price
                     else:
                         price = prices_history.price
+
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
                         count_conversions += int(action["value"])
                         count_revenue += float(action["value"]) * float(price)
-
-        params = {
-            "access_token": accessToken,
-            "level": "campaign",
-            "fields": ["actions"],
-            "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        }
-        result = requests.get(url=url, params=params)
-        data = result.json()["data"]
-        for j in data:
-            actions = j.get("actions", [])
-            for action in actions:
-                if "mobile_app_install" in action["action_type"]:
-                    conversions = action["value"]
-                    count_conversions += int(conversions)
+        else:
+            for j in data:
+                actions = j.get("actions", [])
+                for action in actions:
+                    if "mobile_app_install" in action["action_type"]:
+                        conversions = action["value"]
+                        count_conversions += int(conversions)
 
         params = {
             "access_token": accessToken,
@@ -444,6 +435,9 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
             count_cpc += float(j["cpc"])
     count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
     count_cpi = '%0.2f' % (count_cost / count_conversions) if count_conversions != 0 else 0
+    if contract_type == "1":
+        count_revenue = float(count_cost)*(1+float(offer.contract_num)/100)
+
     data_geo = {
         "count_impressions": str(count_impressions),
         "count_cost": '%0.2f' % (count_cost),
@@ -456,7 +450,8 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         "revenue": '%0.2f' % (count_revenue),
         "profit": '%0.2f' % (float(count_revenue)-float(count_cost))
     }
-    return data_geo
+
+    return json.dumps(data_geo)
 
 #geo维度数据
 def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
@@ -830,7 +825,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
     profit_list = []
     conversions_count_list = []
 
-    offer = Offer.query.filter_by(id=offerId)
+    offer = Offer.query.filter_by(id=offerId).first()
     contract_type = offer.contract_type
     contract_scale = offer.contract_scale
     for i in advertise_groups:
@@ -1190,7 +1185,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         "data_date_table": data_date_table,
         "data_range": data_range
     }
-    return date_datas
+    return json.dumps(date_datas)
 
 @facebookDate.route('/api/report', methods=["POST","GET"])
 def faceReport():
