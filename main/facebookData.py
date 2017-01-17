@@ -1193,7 +1193,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
 @facebookDate.route('/api/report', methods=["POST","GET"])
 def faceReport():
     if request.method == "POST":
-        data = requests.get_json(force=True)
+        data = request.get_json(force=True)
         offerId = int(data['offer_id'])
         start_date = data["start_date"]
         end_date = data["end_date"]
