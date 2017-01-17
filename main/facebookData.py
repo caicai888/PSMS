@@ -14,7 +14,7 @@ facebookDate = Blueprint('facebookDate', __name__)
 @facebookDate.route('/api/dashboard')
 def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
-    token = Token.query.filter().first()
+    token = Token.query.filter_by(account="rongchangzhang@gmail.com").first()
     accessToken = token.accessToken
     time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
 
@@ -223,8 +223,7 @@ def faceReport():
                 "data_date_table": {},
                 "data_range": {},
             })
-        accessToken = advertiser.token
-        accessToken = "EAAHgEYXO0BABAFXOL9QQ8GNPhLi5eC04UKySrmkpgdLy9MrZBIczE8xsD4uxfLCmZAZBaFuyGuZB3ZAyRATxrsAPOZCwr5OZBYQcjcr3cHZCJUUzvvB2oABEGmO2EuZAyYlPq1OZCcwdZBcOi7SgoD60XFSMN7ZCYwbngOVDqYmRoUb16wZDZD"
+        accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
         advertise_groups = advertiser.advertise_series.split(",")
         count_impressions = 0
         count_cost = 0
