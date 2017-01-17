@@ -338,6 +338,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
     count_revenue = 0
 
     for i in advertise_groups:
+        print i
         url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
         params = {
             "access_token": accessToken,
@@ -349,7 +350,8 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         data = result.json()["data"]
         for j in data:
             count_impressions += int(j["impressions"])
-
+        print "+++++"*10
+        print count_impressions
         params = {
             "access_token": accessToken,
             "level": "campaign",
