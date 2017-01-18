@@ -152,7 +152,7 @@ def dashboard():
                             if not prices_history:
                                 price = offer.price
                             else:
-                                price = prices_history.price
+                                price = prices_history.country_price
                         else:
                             price = prices.price
                         actions = action.get("actions", [])
@@ -273,7 +273,7 @@ def geo_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                     if not prices_history:
                         price = offer.price
                     else:
-                        price = prices_history.price
+                        price = prices_history.country_price
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
                         count_conversions += int(action["value"])
@@ -398,7 +398,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                     if not prices_history:
                         price = offer.price
                     else:
-                        price = prices_history.price
+                        price = prices_history.country_price
 
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
@@ -641,7 +641,7 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                 if not prices_history:
                     price = offer.price
                 else:
-                    price = prices_history.price
+                    price = prices_history.country_price
 
             revenue_list += [
                 {
@@ -868,7 +868,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                     if not prices_history:
                         price = offer.price
                     else:
-                        price = prices_history.price
+                        price = prices_history.country_price
             revenue_new_list += [
                 {
                     "country": country,
@@ -972,6 +972,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         dx[k] = sum(int(i) for i in dx[k])
     conversions_count_list = [{"date_start": k, "conversions": str(v)} for k, v in dx.items()]
     conversions_count_list = sorted(conversions_count_list, key=lambda k: k['date_start'])[::-1]
+
+    dx = dict()
+    for i in revenue_new_list:
+        dx.setdefault(i["date_start"], []).append(i["revenue"])
+    for k in dx:
+        dx[k] = sum(int(i) for i in dx[k])
+    revenue_new_list = [{"date_start": k, "revenue": str(v)} for k, v in dx.items()]
+    revenue_new_list = sorted(revenue_new_list, key=lambda k: k['date_start'])[::-1]
 
     impressions_count_list = []
     costs_count_list = []
@@ -1714,7 +1722,7 @@ def faceReport():
     #                             if not prices_history:
     #                                 price = price_default
     #                             else:
-    #                                 price = prices_history.price
+    #                                 price = prices_history.country_price
     #
     #                         revenue_list += [
     #                             {
@@ -1936,7 +1944,7 @@ def faceReport():
     #                                 if not prices_history:
     #                                     price = price_default
     #                                 else:
-    #                                     price = prices_history.price
+    #                                     price = prices_history.country_price
     #
     #                             revenue_new_list += [
     #                                 {
