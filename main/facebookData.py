@@ -374,16 +374,16 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         for j in data:
             count_clicks += int(j["clicks"])
 
-        params = {
-            "access_token": accessToken,
-            "level": "campaign",
-            "fields": ["actions"],
-            "breakdowns": ["country"],
-            "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-        }
-        result = requests.get(url=url, params=params)
-        data = result.json()["data"]
         if contract_type != "1":
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["actions"],
+                "breakdowns": ["country"],
+                "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
             for j in data:
                 actions = j.get("actions", [])
                 country_name = j["country"]
@@ -399,13 +399,20 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                         price = offer.price
                     else:
                         price = prices_history.country_price
-                print "+++++"*10
-                print price
+
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
                         count_conversions += int(action["value"])
                         count_revenue += float(action["value"]) * float(price)
         else:
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["actions"],
+                "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
             for j in data:
                 actions = j.get("actions", [])
                 for action in actions:
