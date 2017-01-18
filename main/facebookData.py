@@ -869,14 +869,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                         price = offer.price
                     else:
                         price = prices_history.country_price
-            revenue_new_list += [
-                {
-                    "country": country,
-                    "revenue": float(conversion * price),
-                    "date_start": date,
-                    "date_stop": date
-                }
-            ]
+                revenue_new_list += [
+                    {
+                        "country": country,
+                        "revenue": float(conversion * price),
+                        "date_start": date,
+                        "date_stop": date
+                    }
+                ]
 
     for t in time_ranges:
         for i in advertise_groups:
