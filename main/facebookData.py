@@ -1113,7 +1113,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         else:
             pass
     dx = dict()
-    for i in ctr_count_list:
+    for i in ctr_count_list_unique:
         dx.setdefault(i["date_start"], []).append(i["ctr"])
     for k in dx:
         dx[k] = sum(float(i) for i in dx[k])
@@ -1227,14 +1227,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         "date": date_range[::-1],
         "revenue": revenue_range[::-1],
         "impressions": impressions_range[::-1],
-        # "costs": cost_range[::-1],
-        # "clicks": clicks_range[::-1],
-        # "conversions": conversions_range[::-1],
-        # "ctr": ctr_range[::-1],
-        # "cvr": cvr_range[::-1],
-        # "cpc": cpc_range[::-1],
-        # "cpi": cpi_range[::-1],
-        # "profit": profit_range[::-1]
+        "costs": cost_range[::-1],
+        "clicks": clicks_range[::-1],
+        "conversions": conversions_range[::-1],
+        "ctr": ctr_range[::-1],
+        "cvr": cvr_range[::-1],
+        "cpc": cpc_range[::-1],
+        "cpi": cpi_range[::-1],
+        "profit": profit_range[::-1]
     }
 
     date_datas = {
