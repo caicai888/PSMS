@@ -604,8 +604,9 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
 
     for l in conversions_list:
         date_start = l["date_start"]
+        country = l["country"]
         for i in clicks_list:
-            if date_start == i["date_start"]:
+            if date_start == i["date_start"] and country == i["country"]:
                 cvr = '%0.2f' %(float(l["conversions"])/float(i["clicks"]) * 100) if float(i["clicks"]) != 0 else 0
                 cvr_list += [
                     {
@@ -618,8 +619,9 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
 
     for l in conversions_list:
         date_start = l["date_start"]
+        country = l["country"]
         for i in cost_list:
-            if date_start == i["date_start"]:
+            if date_start == i["date_start"] and country == i["country"]:
                 cpi = '%0.2f' % (float(i["spend"]) / float(l["conversions"])) if float(l["conversions"]) != 0 else 0
                 cpi_list += [
                     {
@@ -675,8 +677,9 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
 
     for r in cost_list:
         date_start = r["date_start"]
+        country = r["country"]
         for j in revenue_list:
-            if date_start == j["date_start"]:
+            if date_start == j["date_start"] and country == j["country"]:
                 profit = '%0.2f' % (float(j["revenue"]) - float(r["spend"]))
                 profit_list += [
                     {
