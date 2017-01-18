@@ -405,6 +405,8 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                         count_conversions += int(action["value"])
                         count_revenue += float(action["value"]) * float(price)
         else:
+            print "++++"*10
+            print count_conversions
             params = {
                 "access_token": accessToken,
                 "level": "campaign",
@@ -418,7 +420,10 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
                         conversions = action["value"]
+                        print conversions
                         count_conversions += int(conversions)
+                        print "&&&&"*10
+                        print count_conversions
 
         params = {
             "access_token": accessToken,
