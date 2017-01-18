@@ -402,28 +402,21 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
 
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
-                        count_conversions += int(action["value"])
                         count_revenue += float(action["value"]) * float(price)
-        else:
-            print "++++"*10
-            print count_conversions
-            params = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["actions"],
-                "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-            }
-            result = requests.get(url=url, params=params)
-            data = result.json()["data"]
-            for j in data:
-                actions = j.get("actions", [])
-                for action in actions:
-                    if "mobile_app_install" in action["action_type"]:
-                        conversions = action["value"]
-                        print conversions
-                        count_conversions += int(conversions)
-                        print "&&&&"*10
-                        print count_conversions
+        params = {
+            "access_token": accessToken,
+            "level": "campaign",
+            "fields": ["actions"],
+            "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
+        }
+        result = requests.get(url=url, params=params)
+        data = result.json()["data"]
+        for j in data:
+            actions = j.get("actions", [])
+            for action in actions:
+                if "mobile_app_install" in action["action_type"]:
+                    conversions = action["value"]
+                    count_conversions += int(conversions)
 
         params = {
             "access_token": accessToken,
