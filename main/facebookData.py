@@ -1192,7 +1192,6 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         "data_date_table": data_date_table,
         "data_range": data_range
     }
-    # return json.dumps(date_datas)
     return date_datas
 
 @facebookDate.route('/api/report', methods=["POST","GET"])
@@ -1263,25 +1262,25 @@ def faceReport():
                     })
 
         else:
-            try:
-                data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
-                date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-                data_date_table = date_datas["data_date_table"]
-                data_range = date_datas["data_range"]
-                return json.dumps({
-                    "code": 200,
-                    "data_geo": data_geo,
-                    "data_geo_table": {},
-                    "data_date_table": data_date_table,
-                    "data_range": data_range,
-                    "message": "success"
-                })
-            except Exception as e:
-                print e
-                return json.dumps({
-                    "code": 500,
-                    "message": "no bind data or bind wrong data"
-                })
+            # try:
+            data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
+            date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
+            data_date_table = date_datas["data_date_table"]
+            data_range = date_datas["data_range"]
+            return json.dumps({
+                "code": 200,
+                "data_geo": data_geo,
+                "data_geo_table": {},
+                "data_date_table": data_date_table,
+                "data_range": data_range,
+                "message": "success"
+            })
+            # except Exception as e:
+            #     print e
+            #     return json.dumps({
+            #         "code": 500,
+            #         "message": "no bind data or bind wrong data"
+            #     })
 
 
 # @facebookDate.route('/api/report', methods=["POST","GET"])
