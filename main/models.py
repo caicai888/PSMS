@@ -288,8 +288,8 @@ class Advertisers(db.Model):
     token = db.Column(db.String(10000), nullable=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     type = db.Column(db.String(100), default="facebook")
-    advertise_series = db.Column(db.String(100), nullable=True)
-    advertise_groups = db.Column(db.String(100), nullable=True)
+    advertise_series = db.Column(db.Text, nullable=True)
+    advertise_groups = db.Column(db.Text, nullable=True)
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
 
