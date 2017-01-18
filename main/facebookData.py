@@ -394,7 +394,7 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                 if time_price:
                     price = time_price.price
                 else:
-                    prices_history = History.query.filter(History.country == country_id, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
+                    prices_history = History.query.filter(History.country == country_name, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
                     if not prices_history:
                         price = offer.price
                     else:
