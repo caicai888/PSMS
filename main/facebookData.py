@@ -970,15 +970,26 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                                 "date_start": date_start
                             }
                         conversions_count_list += [con_data]
-
+    conversions_count_list_unique = []
+    for j in conversions_count_list:
+        if j not in conversions_count_list_unique:
+            conversions_count_list_unique.append(j)
+        else:
+            pass
     dx = dict()
-    for i in conversions_count_list:
+    for i in conversions_count_list_unique:
         dx.setdefault(i["date_start"], []).append(i["conversions"])
     for k in dx:
         dx[k] = sum(int(i) for i in dx[k])
     conversions_count_list = [{"date_start": k, "conversions": str(v)} for k, v in dx.items()]
     conversions_count_list = sorted(conversions_count_list, key=lambda k: k['date_start'])[::-1]
 
+    revenue_new_list_unique = []
+    for j in revenue_new_list:
+        if j not in revenue_new_list_unique:
+            revenue_new_list_unique.append(j)
+        else:
+            pass
     dx = dict()
     for i in revenue_new_list:
         dx.setdefault(i["date_start"], []).append(i["revenue"])
@@ -1001,8 +1012,16 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                 "date_start": t_impression["data"][0].get("date_start")
             }
             impressions_count_list += [impression_data]
+
+    impressions_count_list_unqiue = []
+    for j in impressions_count_list:
+        if j not in impressions_count_list_unqiue:
+            impressions_count_list_unqiue.append(j)
+        else:
+            pass
+
     dx = dict()
-    for i in impressions_count_list:
+    for i in impressions_count_list_unqiue:
         dx.setdefault(i["date_start"], []).append(i["impressions"])
     for k in dx:
         dx[k] = sum(float(i) for i in dx[k])
@@ -1016,8 +1035,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                 "date_start": t_cost["data"][0].get("date_start")
             }
             costs_count_list += [costs_data]
+    costs_count_list_unique = []
+    for j in costs_count_list:
+        if j not in costs_count_list_unique:
+            costs_count_list_unique.append(j)
+        else:
+            pass
     dx = dict()
-    for i in costs_count_list:
+    for i in costs_count_list_unique:
         dx.setdefault(i["date_start"], []).append(i["spend"])
     for k in dx:
         dx[k] = sum(float(i) for i in dx[k])
@@ -1039,8 +1064,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                 "date_start": t_clicks["data"][0].get("date_start")
             }
             clicks_count_list += [clicks_data]
+    clicks_count_list_unique = []
+    for j in clicks_count_list:
+        if j not in clicks_count_list_unique:
+            clicks_count_list_unique.append(j)
+        else:
+            pass
     dx = dict()
-    for i in clicks_count_list:
+    for i in clicks_count_list_unique:
         dx.setdefault(i["date_start"], []).append(i["clicks"])
     for k in dx:
         dx[k] = sum(float(i) for i in dx[k])
@@ -1054,8 +1085,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                 "date_start": t_cpc["data"][0].get("date_start")
             }
             cpc_count_list += [cpc_data]
+    cpc_count_list_unique = []
+    for j in cpc_count_list:
+        if j not in cpc_count_list_unique:
+            cpc_count_list_unique.append(j)
+        else:
+            pass
     dx = dict()
-    for i in cpc_count_list:
+    for i in cpc_count_list_unique:
         dx.setdefault(i["date_start"], []).append(i["cpc"])
     for k in dx:
         dx[k] = sum(float(i) for i in dx[k])
@@ -1069,6 +1106,12 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
                 "date_start": t_ctr["data"][0].get("date_start")
             }
             ctr_count_list += [ctr_data]
+    ctr_count_list_unique = []
+    for j in ctr_count_list_unique:
+        if j not in ctr_count_list_unique:
+            ctr_count_list_unique.append(j)
+        else:
+            pass
     dx = dict()
     for i in ctr_count_list:
         dx.setdefault(i["date_start"], []).append(i["ctr"])
@@ -1184,14 +1227,14 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
         "date": date_range[::-1],
         "revenue": revenue_range[::-1],
         "impressions": impressions_range[::-1],
-        "costs": cost_range[::-1],
-        "clicks": clicks_range[::-1],
-        "conversions": conversions_range[::-1],
-        "ctr": ctr_range[::-1],
-        "cvr": cvr_range[::-1],
-        "cpc": cpc_range[::-1],
-        "cpi": cpi_range[::-1],
-        "profit": profit_range[::-1]
+        # "costs": cost_range[::-1],
+        # "clicks": clicks_range[::-1],
+        # "conversions": conversions_range[::-1],
+        # "ctr": ctr_range[::-1],
+        # "cvr": cvr_range[::-1],
+        # "cpc": cpc_range[::-1],
+        # "cpi": cpi_range[::-1],
+        # "profit": profit_range[::-1]
     }
 
     date_datas = {
