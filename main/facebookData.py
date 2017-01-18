@@ -669,7 +669,7 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             revenue_list += [
                 {
                     "country": country,
-                    "revenue": float(conversion * price),
+                    "revenue": '%0.2f'%(float(conversion * price)),
                     "date_start": date,
                     "date_stop": date
                 }
