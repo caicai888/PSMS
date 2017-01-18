@@ -337,7 +337,6 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
     count_cpc = 0
     count_revenue = 0
     offer = Offer.query.filter_by(id=offerId).first()
-    contract_type = offer.contract_type
 
     for i in advertise_groups:
         url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
@@ -374,35 +373,6 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
         for j in data:
             count_clicks += int(j["clicks"])
 
-        if contract_type != "1":
-            params = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["actions"],
-                "breakdowns": ["country"],
-                "time_range": "{'since': " + "'" + str(start_date) + "'" + ", 'until': " + "'" + str(end_date) + "'" + "}"
-            }
-            result = requests.get(url=url, params=params)
-            data = result.json()["data"]
-            for j in data:
-                actions = j.get("actions", [])
-                country_name = j["country"]
-                date = j["date_start"]
-                country = Country.query.filter_by(shorthand=country_name).first()
-                country_id = country.id
-                time_price = TimePrice.query.filter(TimePrice.country_id == country_id, TimePrice.offer_id == offerId, TimePrice.date <= date, TimePrice.date >= offer.startTime).order_by(TimePrice.date.desc()).first()
-                if time_price:
-                    price = time_price.price
-                else:
-                    prices_history = History.query.filter(History.country == country_name, History.offer_id == offerId).order_by(History.createdTime.desc()).first()
-                    if not prices_history:
-                        price = offer.price
-                    else:
-                        price = prices_history.country_price
-
-                for action in actions:
-                    if "mobile_app_install" in action["action_type"]:
-                        count_revenue += float(action["value"]) * float(price)
         params = {
             "access_token": accessToken,
             "level": "campaign",
@@ -441,8 +411,6 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
             count_cpc += float(j["cpc"])
     count_cvr = '%0.2f' % (count_conversions / count_clicks * 100) if count_clicks != 0 else 0
     count_cpi = '%0.2f' % (count_cost / count_conversions) if count_conversions != 0 else 0
-    if contract_type == "1":
-        count_revenue = float(count_cost)*(1+float(offer.contract_num)/100)
 
     data_geo = {
         "count_impressions": str(count_impressions),
@@ -1239,7 +1207,8 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
 
     date_datas = {
         "data_date_table": data_date_table,
-        "data_range": data_range
+        "data_range": data_range,
+        "count_revenue": '%0.2f'%(count_revenue)
     }
     return date_datas
 
@@ -1311,25 +1280,27 @@ def faceReport():
                     })
 
         else:
-            # try:
-            data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
-            date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-            data_date_table = date_datas["data_date_table"]
-            data_range = date_datas["data_range"]
-            return json.dumps({
-                "code": 200,
-                "data_geo": data_geo,
-                "data_geo_table": {},
-                "data_date_table": data_date_table,
-                "data_range": data_range,
-                "message": "success"
-            })
-            # except Exception as e:
-            #     print e
-            #     return json.dumps({
-            #         "code": 500,
-            #         "message": "no bind data or bind wrong data"
-            #     })
+            try:
+                data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
+                date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
+                data_date_table = date_datas["data_date_table"]
+                data_range = date_datas["data_range"]
+                data_geo["revenue"] = date_datas["count_revenue"]
+                data_geo["profit"] = '%0.2f'%(float(date_datas["count_revenue"])-float(data_geo["count_cost"]))
+                return json.dumps({
+                    "code": 200,
+                    "data_geo": data_geo,
+                    "data_geo_table": {},
+                    "data_date_table": data_date_table,
+                    "data_range": data_range,
+                    "message": "success"
+                })
+            except Exception as e:
+                print e
+                return json.dumps({
+                    "code": 500,
+                    "message": "no bind data or bind wrong data"
+                })
 
 
 # @facebookDate.route('/api/report', methods=["POST","GET"])
