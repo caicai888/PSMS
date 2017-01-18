@@ -399,7 +399,8 @@ def date_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
                         price = offer.price
                     else:
                         price = prices_history.country_price
-
+                print "+++++"*10
+                print price
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
                         count_conversions += int(action["value"])
