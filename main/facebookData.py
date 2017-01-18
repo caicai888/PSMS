@@ -1107,7 +1107,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             }
             ctr_count_list += [ctr_data]
     ctr_count_list_unique = []
-    for j in ctr_count_list_unique:
+    for j in ctr_count_list:
         if j not in ctr_count_list_unique:
             ctr_count_list_unique.append(j)
         else:
