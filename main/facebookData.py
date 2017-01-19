@@ -1270,7 +1270,8 @@ def faceReport():
         start_date = data["start_date"]
         end_date = data["end_date"]
         dimension = data["dimension"]
-        advertiser = Advertisers.query.filter_by(offer_id=int(offerId), type="facebook").first()
+        advertiser = Advertisers.query.filter_by(offer_id=int(offerId)).first()
+        type = advertiser.type
         if not advertiser:
             return json.dumps({
                 "code":500,
@@ -1280,91 +1281,72 @@ def faceReport():
                 "data_date_table": {},
                 "data_range": {},
             })
-        advertise_groups = advertiser.advertise_series.split(",")
+        if type == "facebook":
+            advertise_groups = advertiser.advertise_series.split(",")
+            all_date = []
+            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+            date_timelta = datetime.timedelta(days=1)
+            all_date.append(start_date)
+            while date_timelta < (date2 - date1):
+                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                date_timelta += datetime.timedelta(days=1)
+            all_date.append(end_date)
 
-        all_date = []
-        date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-        date2 = datetime.datetime.strptime(end_date, '%Y-%m-%d')
-        date_timelta = datetime.timedelta(days=1)
-        all_date.append(start_date)
-        while date_timelta < (date2 - date1):
-            all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-            date_timelta += datetime.timedelta(days=1)
-        all_date.append(end_date)
+            time_ranges = []
+            for day in all_date[::-1]:
+                time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
 
-        time_ranges = []
-        for day in all_date[::-1]:
-            time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-
-        accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
-        if "source" in dimension:
+            accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
             if "geo" in dimension:
-                dimen = 'geo' in data["dimension"]
-                customer_id = "296-153-6464"
-                ads = adwordsData.AdwordsRoutes(customer_id, start_date, end_date, offerId)
-                total, table_data, chart_data = ads.GetDataFromGads(dimen)
-                impressions_list = table_data["impressions_list"]
-                for i in impressions_list:
-                    i["source"] = "adwords"
-                table_data["impressions_list"] = impressions_list
-                table_data["head"].append("Source")
-                for i in table_data["cpc_list"]:
-                    i["source"] = "adwords"
-                # for i in table_data[""]
-                return json.dumps({
-                    'code': 200,
-                    'data_geo': total,
-                    'data_geo_table': table_data,
-                    'message': "success",
-                    "data_date_table": {},
-                    'data_range': chart_data
-                })
+                try:
+                    data_geo = geo_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
+                    geo_datas = geo_data_detail(offerId,accessToken,advertise_groups,time_ranges)
+                    data_geo_table = geo_datas["data_geo_table"]
+                    data_range = geo_datas["data_range"]
+                    return json.dumps({
+                        "code": 200,
+                        "data_geo": data_geo,
+                        "data_geo_table": data_geo_table,
+                        "data_date_table": {},
+                        "data_range": data_range,
+                        "message": "success"
+                    })
+                except Exception as e:
+                    print e
+                    return json.dumps({
+                        "code": 500,
+                        "message": "no bind data or bind wrong data"
+                    })
 
-                # data_geo = geo_data_total(offerId, accessToken, advertise_groups, start_date, end_date)
-                # geo_datas = geo_data_detail(offerId, accessToken, advertise_groups, time_ranges)
-                # data_geo_table = geo_datas["data_geo_table"]
-                # data_range = geo_datas["data_range"]
-
-        # if "geo" in dimension:
-        #     try:
-        #         data_geo = geo_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
-        #         geo_datas = geo_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-        #         data_geo_table = geo_datas["data_geo_table"]
-        #         data_range = geo_datas["data_range"]
-        #         return json.dumps({
-        #             "code": 200,
-        #             "data_geo": data_geo,
-        #             "data_geo_table": data_geo_table,
-        #             "data_date_table": {},
-        #             "data_range": data_range,
-        #             "message": "success"
-        #         })
-        #     except Exception as e:
-        #         print e
-        #         return json.dumps({
-        #             "code": 500,
-        #             "message": "no bind data or bind wrong data"
-        #         })
-
+            else:
+                try:
+                    data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
+                    date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
+                    data_date_table = date_datas["data_date_table"]
+                    data_range = date_datas["data_range"]
+                    data_geo["revenue"] = date_datas["count_revenue"]
+                    data_geo["profit"] = '%0.2f'%(float(date_datas["count_revenue"])-float(data_geo["count_cost"]))
+                    return json.dumps({
+                        "code": 200,
+                        "data_geo": data_geo,
+                        "data_geo_table": {},
+                        "data_date_table": data_date_table,
+                        "data_range": data_range,
+                        "message": "success"
+                    })
+                except Exception as e:
+                    print e
+                    return json.dumps({
+                        "code": 500,
+                        "message": "no bind data or bind wrong data"
+                    })
         else:
-            try:
-                data_geo = date_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
-                date_datas = date_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-                data_date_table = date_datas["data_date_table"]
-                data_range = date_datas["data_range"]
-                data_geo["revenue"] = date_datas["count_revenue"]
-                data_geo["profit"] = '%0.2f'%(float(date_datas["count_revenue"])-float(data_geo["count_cost"]))
-                return json.dumps({
-                    "code": 200,
-                    "data_geo": data_geo,
-                    "data_geo_table": {},
-                    "data_date_table": data_date_table,
-                    "data_range": data_range,
-                    "message": "success"
-                })
-            except Exception as e:
-                print e
-                return json.dumps({
-                    "code": 500,
-                    "message": "no bind data or bind wrong data"
-                })
+            ads = adwordsData.GoogleAdsUtils('296-153-6464', start_date, end_date, offerId)
+            dimen = 'geo' in dimension
+            total, table_data, chart_data = ads.GetDataFromGads(dimen)
+            if dimen:
+                response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success","data_date_table": {}, 'data_range': chart_data}
+            else:
+                response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success","data_geo_table": {}, 'data_range': chart_data}
+            return json.dumps(response)
