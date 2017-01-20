@@ -1366,25 +1366,25 @@ def faceReport():
 
             accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
             if "geo" in dimension:
-                # try:
-                data_geo = geo_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
-                geo_datas = geo_data_detail(offerId,accessToken,advertise_groups,time_ranges)
-                data_geo_table = geo_datas["data_geo_table"]
-                data_range = geo_datas["data_range"]
-                return json.dumps({
-                    "code": 200,
-                    "data_geo": data_geo,
-                    "data_geo_table": data_geo_table,
-                    "data_date_table": {},
-                    "data_range": data_range,
-                    "message": "success"
-                })
-                # except Exception as e:
-                #     print e
-                #     return json.dumps({
-                #         "code": 500,
-                #         "message": "no bind data or bind wrong data"
-                #     })
+                try:
+                    data_geo = geo_data_total(offerId,accessToken,advertise_groups,start_date,end_date)
+                    geo_datas = geo_data_detail(offerId,accessToken,advertise_groups,time_ranges)
+                    data_geo_table = geo_datas["data_geo_table"]
+                    data_range = geo_datas["data_range"]
+                    return json.dumps({
+                        "code": 200,
+                        "data_geo": data_geo,
+                        "data_geo_table": data_geo_table,
+                        "data_date_table": {},
+                        "data_range": data_range,
+                        "message": "success"
+                    })
+                except Exception as e:
+                    print e
+                    return json.dumps({
+                        "code": 500,
+                        "message": "no bind data or bind wrong data"
+                    })
 
             else:
                 try:
