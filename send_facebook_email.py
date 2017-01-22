@@ -416,7 +416,10 @@ for i in results:
         msg['date'] = time.strftime('%Y-%m-%d')
         msg['Subject'] = app_name+"_report Data"
         smtp = smtplib.SMTP()
-        smtp.connect('smtp.exmail.qq.com')
+        smtp.connect('smtp.exmail.qq.com',25)
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
         smtp.login('liyin@newborn-town.com', '920130LiY')
         smtp.sendmail(mail_from, mail_to, msg.as_string())
         smtp.quit()
