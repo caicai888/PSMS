@@ -14,7 +14,6 @@ users = Blueprint('users', __name__)
 
 # 获取所有用户
 @users.route('/api/users', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_users():
     if request.method == "GET":
         users = User.query.all()
@@ -40,7 +39,7 @@ def get_users():
 
 # 创建用户
 @users.route('/api/user/create', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def create_user():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -65,7 +64,7 @@ def create_user():
 
 # 编辑用户
 @users.route('/api/user/do_edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def do_edit_user(id):
     if request.method == "POST":
         user = db.session.query(User).filter_by(id=id).first()
@@ -83,7 +82,7 @@ def do_edit_user(id):
 
 # 编辑用户
 @users.route('/api/user/edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def edit_user(id):
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -155,12 +154,18 @@ def verify_session():
     if 'user_id' in session:
         user_id = session['user_id']
         user = db.session.query(User).filter_by(id=user_id).first()
+        user_permission = UserPermissions.query.filter_by(user_id=int(user_id)).first()
+        permissionIds = user_permission.permissions_id.split(",")
+        permissions = []
+        for i in permissionIds:
+            permissionName = Permissions.query.filter_by(id=int(i)).first()
+            permissions.append(permissionName.name)
         data = {
             'id': user.id,
             'name': user.name,
             'email': user.email
         }
-        return json.dumps({"code": "200", "message": "success", "results": data})
+        return json.dumps({"code": "200", "message": "success", "results": data, "permissions":permissions})
     else:
         return json.dumps({"code": "500", "message": "please login in"})
 
@@ -173,7 +178,9 @@ def get_all_permissions():
         'dashboard': {'create': 11, 'delete': 12, 'edit': 13, 'query': 14},
         'report': {'create': 15, 'delete': 16, 'edit': 17, 'query': 18},
         'offer': {'create': 19, 'delete': 20, 'edit': 21, 'query': 22},
-        'advertiser': {'create': 23, 'delete': 24, 'edit': 25, 'query': 26}
+        'advertiser': {'create': 23, 'delete': 24, 'edit': 25, 'query': 26},
+        'manager': {'create': 27, 'delete': 28, 'edit': 29, 'query': 30},
+        'bind': {'create': 31, 'delete': 32, 'edit': 33, 'query': 34}
     }
     data_dict['code'] = '200'
     data_dict['message'] = 'success'
@@ -183,11 +190,10 @@ def get_all_permissions():
 
 # 创建用户组
 @users.route('/api/role/create', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def create_role():
     if request.method == "POST":
         data = request.get_json(force=True)
-        print data
         role = Role(data["name"])
         if db.session.query(Role).filter_by(name=data["name"]).first():
             return json.dumps({"code": "500", "message": "role had exits"})
@@ -203,7 +209,6 @@ def create_role():
 
 # 查出所有的用户组
 @users.route('/api/roles', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_all_roles():
     roles = Role.query.all()
     msg_dict = {}
@@ -223,7 +228,7 @@ def get_all_roles():
 
 # 编辑用户组
 @users.route('/api/role/do_edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def do_edit_role(id):
     if request.method == "POST":
         msg_dict = dict()
@@ -242,7 +247,7 @@ def do_edit_role(id):
 
 # 编辑用户组
 @users.route('/api/role/edit/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
+@Permission.check(models=["manager_create","manager_edit","manager_query"])
 def edit_role(id):
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -259,7 +264,6 @@ def edit_role(id):
 
 # 查出当前组所有的权限
 @users.route('/api/role_permissions/<id>', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_role_permissions(id):
     permissions = db.session.query(RolePermissions).filter_by(role_id=id).first()
     permissions_list = permissions.permissions_id
@@ -272,7 +276,6 @@ def get_role_permissions(id):
 
 # 查出几个角色对应的权限并取交集
 @users.route('/api/role_permissions', methods=['POST', 'GET'])
-@Permission.check(models=["advertiser_create","advertiser_edit","advertiser_query"])
 def get_role_permissions_more():
     if request.method == "POST":
         data = request.get_json(force=True)
@@ -280,7 +283,10 @@ def get_role_permissions_more():
         permission_list = []
         for role_id in role_id_list:
             permissions = db.session.query(RolePermissions).filter_by(role_id=role_id).first()
-            permission_list += permissions.permissions_id.split(",")
+            if not permissions:
+                permission_list = []
+            else:
+                permission_list += permissions.permissions_id.split(",")
             data = {
                 'code': '200',
                 'message': 'success',

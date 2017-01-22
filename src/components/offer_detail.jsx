@@ -23,7 +23,8 @@ var OfferDetail = React.createClass({
             "data_geo_table_cvr_list":[],
             "data_geo_table_profit_list":[],
                 "data_geo_table_revenue_list":[],
-            "data_geo_table_impressions_list":[]
+            "data_geo_table_impressions_list":[],
+            "permissions":sessionStorage.getItem("permissions")
         };
     },
     export_table(){
@@ -31,9 +32,19 @@ var OfferDetail = React.createClass({
     },
     submit(e){
         var id= e.target.dataset.form_id;
-        console.log(id)
         if(valid(id,"data-required")) {
             var data = setForm(id, "data-key");
+            data.advertise_series =data.advertise_series.replace(/[\r\n]/g,",").split(",").filter(function (val) {
+                if(val){
+                    return val;
+                }
+            }).join(",");
+            data.advertise_groups=data.advertise_groups.replace(/[\r\n]/g,",").split(",").filter(function (val) {
+                if(val){
+                    return val;
+                }
+            }).join(",");
+            getForm(id,data);
             let url="";
             if(id=="#create_customer"){
                 url= this.state.isYes?"/api/bind_update":"/api/offer_bind";
@@ -61,7 +72,6 @@ var OfferDetail = React.createClass({
     },
     componentDidMount(){
         var _this = this;
-        $(".none").remove();
         if(this.props.params.three){
             $("#myTab li:last a").tab("show");
         }
@@ -144,6 +154,7 @@ var OfferDetail = React.createClass({
                 } else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
+                    return;
                 }
 
                 var strToInt = function (array) {
@@ -153,13 +164,12 @@ var OfferDetail = React.createClass({
                     }
                     return newArr;
                 }
-
                 var hightchats = {
                     title: {
                         text: ''
                     },
                     xAxis: {
-                        categories: data.data_range.date
+                        categories: data.data_range && data.data_range.date
                     },
                     yAxis: {
                         plotLines: [{
@@ -238,8 +248,8 @@ var OfferDetail = React.createClass({
             <div>
                 <ul id="myTab" className="nav nav-tabs">
                     <li className="active"><a href="#offer_detail" data-toggle="tab">Offer Detail</a></li>
-                    <li><a href="#bind_list" data-toggle="tab">Bind List</a></li>
-                    <li><a href="#report"  data-toggle="tab">Report</a></li>
+                    <li className={_this.state.permissions.includes("bind_query")?"":"none"}><a href="#bind_list" data-toggle="tab">Bind List</a></li>
+                    <li className={_this.state.permissions.includes("report_query")?"":"none"}><a href="#report"  data-toggle="tab">Report</a></li>
                 </ul>
                 <div id="myTabContent" className="tab-content" style={{marginTop:"10px"}}>
                     <div className="tab-pane fade in active" id="offer_detail">
@@ -253,7 +263,7 @@ var OfferDetail = React.createClass({
                                         Facebook 广告系列
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_series">
+                                    <textarea className="form-control disable" data-key="advertise_series" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -265,7 +275,7 @@ var OfferDetail = React.createClass({
                                         Facebook　广告组
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_groups">
+                                    <textarea className="form-control disable" data-key="advertise_groups" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -278,8 +288,8 @@ var OfferDetail = React.createClass({
                                         <input type="hidden" data-key="type" value='facebook'/>
                                         <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
                                         <input type="hidden" data-key="ad_id" className="ad_id"/>
-                                        <button data-form_id="#create_customer" onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
-                                        <button data-form_id="#create_customer" onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <button data-form_id="#create_customer" onClick={this.submit} type="button" className={_this.state.permissions.includes("bind_create")?"btn btn-primary disable":"none"}>Save</button>
+                                        <button data-form_id="#create_customer" onClick={this.edit} type="button" className={_this.state.permissions.includes("bind_edit")?"btn btn-primary":"none"} style={{marginLeft:"20px"}}>Edit</button>
                                         <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                                     </div>
                                 </div>
@@ -293,7 +303,7 @@ var OfferDetail = React.createClass({
                                         Adwords 广告系列
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_series">
+                                    <textarea className="form-control disable"  data-key="advertise_series" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -305,7 +315,7 @@ var OfferDetail = React.createClass({
                                         Adwords　广告组
                                     </div>
                                     <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-required="true" data-key="advertise_groups">
+                                    <textarea className="form-control disable"  data-key="advertise_groups" placeholder="Enter key or comma separated">
 
                                     </textarea>
                                     </div>
@@ -318,8 +328,8 @@ var OfferDetail = React.createClass({
                                         <input type="hidden" data-key="type" value='adwords'/>
                                         <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
                                         <input type="hidden" data-key="ad_id" className="ad_id"/>
-                                        <button data-form_id="#adwords_form" onClick={this.submit} type="button" className="btn btn-primary disable">Save</button>
-                                        <button data-form_id="#adwords_form" onClick={this.edit} type="button" className="btn btn-primary" style={{marginLeft:"20px"}}>Edit</button>
+                                        <button data-form_id="#adwords_form" onClick={this.submit} type="button" className={_this.state.permissions.includes("bind_create")?"btn btn-primary disable":"none"}>Save</button>
+                                        <button data-form_id="#adwords_form" onClick={this.edit} type="button" className={_this.state.permissions.includes("bind_edit")?"btn btn-primary":"none"} style={{marginLeft:"20px"}}>Edit</button>
                                         <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
                                     </div>
                                 </div>
@@ -375,19 +385,19 @@ var OfferDetail = React.createClass({
                                                 <p>{ele.count_conversions}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CTR($)</p>
-                                                <p>{ele.count_cost}</p>
+                                                <p>CTR(%)</p>
+                                                <p>{ele.count_ctr}</p>
                                             </div>
                                             <div className="box_20">
                                                 <p>CVR(%)</p>
-                                                <p>{ele.count_ctr}</p>
+                                                <p>{ele.count_cvr}</p>
                                             </div>
                                             <div className="box_20">
                                                 <p>CPC</p>
                                                 <p>{ele.count_cpc}</p>
                                             </div>
                                             <div className="box_20">
-                                                <p>CPI</p>
+                                                <p>CPI($)</p>
                                                 <p>{ele.count_cpi}</p>
                                             </div>
                                         </div>
@@ -442,7 +452,9 @@ var OfferDetail = React.createClass({
                                     _this.state.data_geo_table_impressions_list.map(function (ele,index,array) {
                                         return <tr key={index}>
                                                     <td>{ele.date_start}</td>
-                                                    <td className={ele.country?"block":"none"}>{ele.country}</td>
+                                                    {
+                                                        ele.country?<td>{ele.country}</td>:""
+                                                    }
                                                     <td>{ _this.state.data_geo_table_revenue_list[index].revenue }</td>
                                                     <td>{ _this.state.data_geo_table_profit_list[index].profit }</td>
                                                     <td>{ _this.state.data_geo_table_cost_list[index].spend }</td>

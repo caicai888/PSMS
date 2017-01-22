@@ -114,7 +114,7 @@ class Offer(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 销售
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))  # 客户
     status = db.Column(db.String(100), default='active')
-    contract_type = db.Column(db.String(100), default='cpa')  # 合同模式
+    contract_type = db.Column(db.String(100))  # 合同模式
     contract_num = db.Column(db.String(100), nullable=False)  # 合同编号
     contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
     os = db.Column(db.String(100), nullable=True)  # 操作系统　
@@ -147,7 +147,7 @@ class Offer(db.Model):
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
 
-    def __init__(self, user_id, customer_id, status="active", contract_type="cpa", contract_num=None, contract_scale=0,
+    def __init__(self, user_id, customer_id, status="active", contract_type=None, contract_num=None, contract_scale=0,
                  os=None, package_name=None, app_name=None, app_type=None, preview_link=None, track_link=None,
                  material="yes", startTime=None, endTime=None, platform=None, country=None, price=0, daily_budget=0,
                  daily_type="install", total_budget=0, total_type="cost", distribution=None, authorized=None,
@@ -287,8 +287,8 @@ class Advertisers(db.Model):
     token = db.Column(db.String(10000), nullable=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     type = db.Column(db.String(100), default="facebook")
-    advertise_series = db.Column(db.String(100), nullable=True)
-    advertise_groups = db.Column(db.String(100), nullable=True)
+    advertise_series = db.Column(db.Text, nullable=True)
+    advertise_groups = db.Column(db.Text, nullable=True)
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
 

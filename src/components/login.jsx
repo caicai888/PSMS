@@ -25,9 +25,11 @@ var Login = React.createClass({
 
     },
     componentDidMount(){
-        /*if($(".userId").html()!=""){
+        sessionStorage.setItem("permissions","");
+        sessionStorage.removeItem("into");
+        if($(".userId").html()!=""){
             location.hash="welcome"
-        }*/
+        }
         var _this = this;
         $(document).keydown(function (e) {
             var event = e || event;

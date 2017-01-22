@@ -337,24 +337,27 @@ class GoogleAdsUtils(object):
 
 class AdwordsRoutes(GoogleAdsUtils): 
 
-    @adwordsData.route('/api/googleads', methods=['POST', 'GET'])
-    def get_report():
-        if request.method == 'POST':
-            _args = request.get_json(force=True)
-            dimen = 'geo' in _args.get("dimension")  # date: 0, geo: 1
-            offer_id = _args.get('offer_id')
-            start = _args.get('start_date')
-            end = _args.get('end_date')
+    # @adwordsData.route('/api/googleads', methods=['POST', 'GET'])
+    # def get_report():
+        # if request.method == 'POST':
+        # _args = request.get_json(force=True)
+        # dimen = 'geo' in _args.get("dimension")  # date: 0, geo: 1
+        # offer_id = _args.get('offer_id')
+        # start = _args.get('start_date')
+        # end = _args.get('end_date')
+        # self.dimen = 'geo' in dimension
+        # self.start = start_date
+        # self.end = end_date
 
-            ads = GoogleAdsUtils('296-153-6464', start, end, offer_id)
-            total, table_data, chart_data = ads.GetDataFromGads(dimen)
-            if dimen:
-                response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
-                            "data_date_table": {}, 'data_range': chart_data}
-            else:
-                response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
-                            "data_geo_table": {}, 'data_range': chart_data}
-            return json.dumps(response)
+        # ads = GoogleAdsUtils('296-153-6464', start_date, end_date, offer_id)
+        # total, table_data, chart_data = ads.GetDataFromGads(dimen)
+        # if dimen:
+        #     response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
+        #                 "data_date_table": {}, 'data_range': chart_data}
+        # else:
+        #     response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
+        #                 "data_geo_table": {}, 'data_range': chart_data}
+        # return json.dumps(response)
 
     @adwordsData.route('/api/adwords/dashboard')
     def get_dashboard():
@@ -364,7 +367,7 @@ class AdwordsRoutes(GoogleAdsUtils):
             "cvr": 0, "revenue": 0, "profit": 0,}
         offer_msg = Advertisers.query.filter(Advertisers.type=='facebook').all() 
         for offer in offer_msg:
-            offer.advertise_series = '296-153-6464'
+            # offer.advertise_series = '296-153-6464'
             ads = GoogleAdsUtils(offer.advertise_series, yesterday, yesterday, offer.offer_id)
             dashboard_data = ads.GetDashboard()
             for k, v in result.iteritems():

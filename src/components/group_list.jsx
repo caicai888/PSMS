@@ -5,7 +5,8 @@ import {valid,setForm,getForm} from "../lib/form";
 var GroupList = React.createClass({
     getInitialState() {
         return {
-            result:[]
+            result:[],
+            permissions:sessionStorage.getItem("permissions")
         };
     },
     componentDidMount(){
@@ -23,6 +24,7 @@ var GroupList = React.createClass({
         });
     },
     render:function () {
+        let _this = this;
         return (
             <div className="col-sm-12 animated slideInDown">
                 <div className="table-responsive">
@@ -42,7 +44,7 @@ var GroupList = React.createClass({
                                                 <td>{ele.id}</td>
                                                 <td>{ele.name}</td>
                                                 <td>{ele.last_datetime}</td>
-                                                <td><a href={"#/create_group_manager/"+ele.id} className="btn btn-primary">Edit</a></td>
+                                                <td><a className={ _this.state.permissions.includes("manager_edit")?"btn btn-primary":"none"} href={"#/create_group_manager/"+ele.id} >Edit</a></td>
                                             </tr>
                                 })
                             }

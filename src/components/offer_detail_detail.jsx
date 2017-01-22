@@ -44,7 +44,8 @@ var OfferDetailDetail = React.createClass({
         }
         ajax("post","/api/country_time_show",JSON.stringify({
             date:(_this.state.date&&moment(this.state.date).format("YYYY-MM")) || moment().format("YYYY-MM"),
-            country:e?e.target.dataset.country:_this.state.country
+            country:e?e.target.dataset.country:_this.state.country,
+            offer_id:_this.props.id?_this.props.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -137,7 +138,7 @@ var OfferDetailDetail = React.createClass({
                             <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
                         </div>
                         <div className="col-sm-3">
-                            {this.state.result.contract_type}
+                            {this.state.result.contract_type=="1"?"服务费":"CPA"}
                         </div>
                         <div className="col-sm-3 text-right">
                             比例
