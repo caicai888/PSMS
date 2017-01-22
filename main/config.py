@@ -28,7 +28,7 @@ class ProductionConfig(Config):
     MYSQL_USER = "root"
     MYSQL_PASS = "chizicheng521"
     MYSQL_HOST = "localhost"
-    MYSQL_PORT = 3306
+    MYSQL_PORT = "3306"
     MYSQL_DB = "psms"
 
 config = {
