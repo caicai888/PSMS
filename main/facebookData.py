@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from main.has_permission import *
 from flask import Blueprint, request
-from main import db, adwordsData
+# from main import db, adwordsData
+import adwordsData
 from models import Offer, Token, Advertisers, TimePrice, Country, History
 import json
 import os

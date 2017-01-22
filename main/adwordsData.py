@@ -6,7 +6,6 @@ import sys
 import json
 import tempfile
 from datetime import datetime, timedelta
-from main import db
 from models import Advertisers, Offer, TimePrice, Country, History
 from Geo import geoDict_key_code 
 from googleads import adwords

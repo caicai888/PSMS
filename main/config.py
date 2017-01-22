@@ -17,7 +17,6 @@ if PREFIX not in sys.path:
 
 class Config:
     SECRET_KEY = random_string()
-    BASE_API_URL = "http://api.beta.dev.careerdream.org/core/v1/"
 
     @staticmethod
     def init_app(app):
