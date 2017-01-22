@@ -1,4 +1,4 @@
-/**
+9/**
  * Created by sa on 16-12-15.
  */
 var webpack = require("webpack");
@@ -21,7 +21,7 @@ module.exports = {
         stats: { colors: true },
         proxy: {
             '/api/*': {
-                target:'http://35.161.236.80:5555',//'http://35.161.236.80:5555',//,//'http://192.168.0.3:5555',//0.39
+                target:'http://35.161.236.80:5556',//'http://35.161.236.80:5555',//,//'http://192.168.0.3:5555',//0.39
                 changeOrigin: true
             }
         }

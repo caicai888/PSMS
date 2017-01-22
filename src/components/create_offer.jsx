@@ -86,7 +86,8 @@ var CreateOffer = React.createClass({
         }
         ajax("post","/api/country_time_update",JSON.stringify({
             result:result,
-            country:_this.state.country
+            country:_this.state.country,
+            offer_id:_this.props.params.id?_this.props.params.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -108,7 +109,8 @@ var CreateOffer = React.createClass({
         }
         ajax("post","/api/country_time_show",JSON.stringify({
             date:(_this.state.date&&moment(this.state.date).format("YYYY-MM")) || moment().format("YYYY-MM"),
-            country:e?e.target.dataset.country:_this.state.country
+            country:e?e.target.dataset.country:_this.state.country,
+            offer_id:_this.props.params.id?_this.props.params.id:""
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -154,12 +156,12 @@ var CreateOffer = React.createClass({
             }
         });
     },
-    invalid(e){
-        e.target.value = e.target.value.replace(/[^\d\.]/gi,"");
+    parseFloat(e){
+        e.target.value = parseFloat(e.target.value);
     },
     componentDidMount(){
         var _this = this;
-        var customerPromise = ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
+        var userSelectPromise = ajax("post","/api/country_select",JSON.stringify({name:""})).then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
                 _this.setState({
@@ -169,21 +171,20 @@ var CreateOffer = React.createClass({
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
             }
-            if(_this.props.params.id){
-                return ajax("post","/api/customer_select",JSON.stringify({name:""}));
-            }else {
-                return ajax("get","/api/user_select");
-            }
+            return ajax("get","/api/user_select");
         });
-        customerPromise.then(function (data) {
+        var customerPromise =  userSelectPromise.then(function (data) {
             var data = JSON.parse(data);
-            if(data.code=="200"){
+            if (data.code == "200") {
                 _this.setState({
-                    userId:data.result
+                    userId: data.result
                 })
-            }else {
+            } else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
+            }
+            if(_this.props.params.id){
+                return ajax("post","/api/customer_select",JSON.stringify({name:""}))
             }
         });
         if(this.props.params.id){
@@ -206,6 +207,11 @@ var CreateOffer = React.createClass({
                     data.result.platform = data.result.platform.split(",");
                     data.result.country = data.result.country.split(",");
                     getForm("#create_offer",data.result);
+                    if(data.result&&data.result.contract_type=="2"){
+                        $("#bl").attr("readonly","true").val(0)
+                    }else {
+                        $("#bl").removeAttr("readonly")
+                    }
                     _this.setState({
                         result:data.result.country_detail,
                         country_detail:data.result.country_detail
@@ -213,6 +219,7 @@ var CreateOffer = React.createClass({
                     setTimeout(function () {
                         $(".tfpt").val(data.result.platform.toString().split(",")).trigger("change");
                         $(".tfdq").val(data.result.country.toString().split(",")).trigger("change");
+                        $(".khmc").val(data.result.customer_id.toString().split(",")).trigger("change");
                     });
                 }else {
                     $(".ajax_error").html(data.message);
@@ -220,7 +227,19 @@ var CreateOffer = React.createClass({
                 }
             });
         }
-        $(".tfdq").on("change",function () {
+        function tfdq_price_calendar(arr) {
+            let html ="";
+            arr.map(function (ele,index,array) {
+                html +=`<tr key=${index}>
+                    <td>${ele.country}</td>
+                    <td><input type="number"  value="${ele.price}" class="form-control" /></td>
+                    <td><img  data-country=${ele.country} class="calendar_img" style='cursor:pointer;width:24px' src="./src/img/calender.jpg"/></td>
+                </tr>`
+            });
+            return html;
+        }
+
+        $(".tfdq").unbind("change").bind("change",function () {
             var result=_this.state.result;
             var new_result = [];
             var val = $(".tfdq").val();
@@ -230,23 +249,17 @@ var CreateOffer = React.createClass({
                     price:(result.length>i)&&result[i].price?result[i].price:""
                 })
             }
-            setTimeout(function () {
-                _this.setState({
-                    result:new_result
-                });
+            $("#tfdq_price_calendar").html(tfdq_price_calendar(new_result));
+            $(".calendar_img").unbind("click").bind("click",function (e) {
+                _this.price(e);
             });
         });
-        $("#bulk_import_save").on("click",function () {
-            var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$(".tfdq").val().toString().toUpperCase();
-            $(".tfdq").val(text.toString().split(",")).trigger("change");
-        });
-
         /*合作方式*/
         $("#hzfs").on("change",function () {
-            if($(this).val()=="cpa"){
-                $("#bl").attr("readonly","true")
+            if($(this).val()=="2"){
+                $("#bl").attr("readonly","true").val(0);
             }else {
-                $("#bl").removeAttr("readonly")
+                $("#bl").removeAttr("readonly");
             }
         })
         /*邮件报告*/
@@ -255,6 +268,18 @@ var CreateOffer = React.createClass({
             html +=`<option value="${i<10?"0"+i:i}:00">${i<10?"0"+i:i}:00</option><option value="${i<10?"0"+i:i}:30">${i<10?"0"+i:i}:30</option>`
         }
         $("#email_report").html(html);
+    },
+    bulk_import_save(){
+        var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$(".tfdq").val().toString().toUpperCase();
+        ajax("post","/api/country_select",JSON.stringify({name:text})).then(function (data) {
+            var data = JSON.parse(data);
+            if(data.code=="200"){
+                $(".tfdq").val(data.namelist).trigger("change");
+            }else {
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
+            }
+        });
     },
     render:function () {
         var _this = this;
@@ -286,15 +311,18 @@ var CreateOffer = React.createClass({
                         </div>
                         <div className="col-sm-3">
                             <select id="hzfs" className="form-control" data-key="contract_type">
-                                <option value="服务费">服务费</option>
-                                <option value="cpa">cpa</option>
+                                <option value="1">服务费</option>
+                                <option value="2">CPA</option>
                             </select>
                         </div>
                         <div className="col-sm-3 text-right">
                             比例
                         </div>
                         <div className="col-sm-3">
-                            <input id="bl" type="number" className="form-control"  data-key="contract_scale"/>
+                            <div className="input-group">
+                                <input onBlur={_this.parseFloat} id="bl" type="number" className="form-control"  data-key="contract_scale"/>
+                                <div className="input-group-addon">%</div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -311,7 +339,7 @@ var CreateOffer = React.createClass({
                             <select className="form-control"  data-key="user_id">
                                 {
                                     this.state.userId.map(function (ele,index,array) {
-                                        return <option key={index} value={ele.id}>{ele.name+" ("+ele.id+") "}</option>
+                                        return <option key={index} value={ele.name+"("+ele.id+")"}>{ele.name+" ("+ele.id+") "}</option>
                                     })
                                 }
                             </select>
@@ -326,7 +354,7 @@ var CreateOffer = React.createClass({
                         </div>
                         <div className="col-sm-3">
                             <select className="form-control" data-key="os">
-                                <option value="ios">iOS</option>
+                                <option value="iOS">iOS</option>
                                 <option value="android">Android</option>
                             </select>
                         </div>
@@ -409,13 +437,18 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3 text-right">
                             投放地区
                         </div>
-                        <div className="col-sm-9">
+                        <div className="col-sm-6">
                             {
                                 <Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
                             }
                             {/*{
                                 this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
                             }*/}
+                        </div>
+                        <div className="col-md-3">
+                            <button data-target="#bulk_import" type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                                批量导入
+                            </button>
                         </div>
                     </div>
                     <div className="col-sm-10">
@@ -428,9 +461,6 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3">
                             <button type="button" className="btn btn-primary" style={{position:"relative"}}>
                                 Import<input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
-                            </button>
-                            <button style={{marginLeft:"15px",position:"relative",zIndex:2}} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
-                                批量导入
                             </button>
                         </div>
                     </div>
@@ -456,7 +486,7 @@ var CreateOffer = React.createClass({
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="button" id="bulk_import_save" className="btn btn-primary" data-dismiss="modal">Save</button>
+                                    <button onClick={_this.bulk_import_save} type="button" id="bulk_import_save" className="btn btn-primary" data-dismiss="modal">Save</button>
                                 </div>
                             </div>
                         </div>
@@ -465,8 +495,8 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3"> </div>
                         <div className="col-sm-9 table-responsive">
                             <table className="table table-bordered text-center" id="country_detail">
-                                <tbody>
-                                    {
+                                <tbody id="tfdq_price_calendar">
+                                    {/*{
                                         this.state.result.map(function (ele,index,array) {
                                             return <tr key={index}>
                                                         <td>{ele.country}</td>
@@ -474,7 +504,7 @@ var CreateOffer = React.createClass({
                                                         <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
                                                     </tr>
                                         })
-                                    }
+                                    }*/}
                                 </tbody>
                             </table>
                         </div>

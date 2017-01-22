@@ -8,7 +8,8 @@ var OfferList = React.createClass({
     getInitialState() {
         return {
             result:[],
-            result_search:[]
+            result_search:[],
+            permissions:sessionStorage.getItem("permissions")
         };
     },
     export_table(){
@@ -52,20 +53,7 @@ var OfferList = React.createClass({
         var _this = this ;
         ajax("get","/api/offer_show").then(function (data) {
             var data = JSON.parse(data);
-            /*var strToarr = function (arr) {
-                var newArr =[];
-                for(var i=0;i<arr.length;i++){
-                    var indexOf =arr[i].indexOf("'")+1;
-                    var lastIndexOf = arr[i].lastIndexOf("'");
-                    newArr.push(arr[i].substring(indexOf,lastIndexOf));
-                }
-                return newArr;
-            };*/
             if(data.code=="200"){
-                /*for(let index in data.result){
-                    let dataCountry =data.result[index].country.split(",");
-                    data.result[index].country =Array.from(strToarr(dataCountry)).join(",");
-                }*/
                 _this.setState({
                     result:data.result,
                     result_search:data.result
@@ -99,6 +87,7 @@ var OfferList = React.createClass({
                                 <th>应用名称</th>
                                 <th>系统</th>
                                 <th>客户名称</th>
+                                <th>销售名称</th>
                                 <th>合作模式</th>
                                 <th>投放地区</th>
                                 <th>单价</th>
@@ -120,13 +109,15 @@ var OfferList = React.createClass({
                                                 <td>{ele.app_name}</td>
                                                 <td>{ele.os}</td>
                                                 <td>{ele.customer_id}</td>
+                                                <td>{ele.sale_name}</td>
                                                 <td>{ele.contract_type}</td>
                                                 <td>{ele.country}</td>
                                                 <td>{ele.price}</td>
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
                                                 <td>
-                                                    <a href={"#/offer_detail/"+ele.offer_id+"/report"}><img src="./src/img/zx.jpg"/></a> <a href={"#/create_offer/"+ele.offer_id} className="btn btn-primary">Edit</a>
+                                                    <a href={"#/offer_detail/"+ele.offer_id+"/report"} className={_this.state.permissions.includes("report_query")?"":"none"}><img src="./src/img/zx.jpg"/></a>
+                                                    <a href={"#/create_offer/"+ele.offer_id} className={_this.state.permissions.includes("offer_edit")?"btn btn-primary":"none"}>Edit</a>
                                                 </td>
                                                 <td>{ele.updateTime}</td>
                                             </tr>

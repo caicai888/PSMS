@@ -25,7 +25,8 @@ var Login = React.createClass({
 
     },
     componentDidMount(){
-        debugger
+        sessionStorage.setItem("permissions","");
+        sessionStorage.removeItem("into");
         if($(".userId").html()!=""){
             location.hash="welcome"
         }
