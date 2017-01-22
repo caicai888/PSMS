@@ -32,7 +32,7 @@ class GoogleAdsUtils(object):
                                 cpi=dict(), cvr=dict(),)
 
     def __repr__(self):
-        return None
+        return self.__dict__.__repr__() 
 
     @staticmethod
     def date_range(start, stop, step):
@@ -367,7 +367,7 @@ class AdwordsRoutes(GoogleAdsUtils):
             "cvr": 0, "revenue": 0, "profit": 0,}
         offer_msg = Advertisers.query.filter(Advertisers.type=='facebook').all() 
         for offer in offer_msg:
-            offer.advertise_series = '296-153-6464'
+            # offer.advertise_series = '296-153-6464'
             ads = GoogleAdsUtils(offer.advertise_series, yesterday, yesterday, offer.offer_id)
             dashboard_data = ads.GetDashboard()
             for k, v in result.iteritems():
