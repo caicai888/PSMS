@@ -13,8 +13,7 @@ import requests
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
-time_now = "08:30"
-db = MySQLdb.connect("localhost","root","123456","psms")
+db = MySQLdb.connect("localhost","root","chizicheng521","psms")
 cursor = db.cursor()
 sql = "select * from offer where email_time='%s'"%(time_now)
 cursor.execute(sql)
