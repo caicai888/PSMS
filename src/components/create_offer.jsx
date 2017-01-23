@@ -232,7 +232,7 @@ var CreateOffer = React.createClass({
             arr.map(function (ele,index,array) {
                 html +=`<tr key=${index}>
                     <td>${ele.country}</td>
-                    <td><input type="number"  value="${ele.price}" class="form-control" /></td>
+                    <td><input type="number"  value="${ele.price}" class="tfdq_price form-control" /></td>
                     <td><img  data-country=${ele.country} class="calendar_img" style='cursor:pointer;width:24px' src="./src/img/calender.jpg"/></td>
                 </tr>`
             });
@@ -244,15 +244,41 @@ var CreateOffer = React.createClass({
             var new_result = [];
             var val = $(".tfdq").val();
             for (var i=0;i<val.length;i++){
-                new_result.push({
-                    country:val[i],
-                    price:(result.length>i)&&result[i].price?result[i].price:""
-                })
+                for (let ele of result){
+                    if(val[i]==ele.country){
+                        new_result.push({
+                            country:ele.country,
+                            price:ele.price?ele.price:""
+                        });
+                        break;
+                    }else if(!JSON.stringify(result).includes(val[i])){
+                        new_result.push({
+                            country:val[i],
+                            price:""
+                        });
+                        break;
+                    }
+                }
             }
             $("#tfdq_price_calendar").html(tfdq_price_calendar(new_result));
             $(".calendar_img").unbind("click").bind("click",function (e) {
                 _this.price(e);
             });
+            $(".tfdq_price").on("change",function () {
+                let result=_this.state.result;
+                let country_detail =[];
+                $("#country_detail tr").map(function (ele,index,array) {
+                    var country=$(this).find("td:first").html();
+                    var price = $(this).find("input").val();
+                    country_detail.push({
+                        country:country,
+                        price:price
+                    });
+                });
+                _this.setState({
+                    result:Object.assign(result,country_detail)
+                })
+            })
         });
         /*合作方式*/
         $("#hzfs").on("change",function () {
