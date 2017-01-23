@@ -251,13 +251,13 @@ var CreateOffer = React.createClass({
                             price:ele.price?ele.price:""
                         });
                         break;
-                    }else if(!JSON.stringify(result).includes(val[i])){
-                        new_result.push({
-                            country:val[i],
-                            price:""
-                        });
-                        break;
                     }
+                }
+                if(!JSON.stringify(result).includes(val[i])) {
+                    new_result.push({
+                        country: val[i],
+                        price: ""
+                    });
                 }
             }
             $("#tfdq_price_calendar").html(tfdq_price_calendar(new_result));
