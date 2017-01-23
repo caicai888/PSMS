@@ -371,7 +371,7 @@ for i in results:
                         ]
             #发送邮件
             wbk = xlwt.Workbook()
-            sheet = wbk.add_sheet(app_name.decode("utf-8")+u"数据详情")
+            sheet = wbk.add_sheet(app_name.encode("utf8")+u"数据详情")
             sheet.write(0, 0, "Date")
             sheet.write(0, 1, "Geo")
             sheet.write(0, 2, "Revenue")
@@ -399,7 +399,7 @@ for i in results:
                 sheet.write(j+1, 10, '%0.2f'%(float(cpc_list[j].get("cpc"))))
                 sheet.write(j+1, 11, '%0.2f'%(float(cpi_list[j].get("cpi"))))
                 continue
-            file_name = app_name.decode("utf-8")+"_data.xls"
+            file_name = app_name.encode("utf8")+"_data.xls"
             file_dir = '/home/ubuntu/code'
             wbk.save(file_name)
             mail_body="data"
@@ -410,13 +410,13 @@ for i in results:
             part = MIMEBase('application', 'octet-stream')
             part.set_payload(open(file_name, 'rb').read())
             Encoders.encode_base64(part)
-            part.add_header('Content-Disposition', 'attachment; filename="' + file_name + '"')
+            part.add_header('Content-Disposition', 'attachment; filename="' + file_name.encode("utf8") + '"')
             msg.attach(part)
 
             msg['From'] = mail_from
             msg['To'] = ';'.join(mail_to)
             msg['date'] = time.strftime('%Y-%m-%d')
-            msg['Subject'] = app_name+"_report Data"
+            msg['Subject'] = app_name.encode("utf8")+"_report Data"
             smtp = smtplib.SMTP()
             smtp.connect('smtp.exmail.qq.com',25)
             smtp.ehlo()
