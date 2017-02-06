@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from main.has_permission import *
 from flask import Blueprint, request
-from main import db, adwordsData
+# from main import db, adwordsData
+import adwordsData
 from models import Offer, Token, Advertisers, TimePrice, Country, History
 import json
 import os
@@ -535,7 +535,18 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             impressions_list_unique.append(j)
         else:
             pass
-    impressions_list = impressions_list_unique
+    tempList = []
+    impressions_list = []
+    for ele in impressions_list_unique:
+        key = ele['date_start'] + ele['country']
+        if key in tempList:
+            for x in impressions_list:
+                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    x['impressions'] += int(ele['impressions'])
+        else:
+            ele['impressions'] = int(ele['impressions'])
+            tempList.append(key)
+            impressions_list.append(ele)
 
     cost_list_unique = []
     for j in cost_list:
@@ -543,7 +554,18 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             cost_list_unique.append(j)
         else:
             pass
-    cost_list = cost_list_unique
+    tempList = []
+    cost_list = []
+    for ele in cost_list_unique:
+        key = ele['date_start'] + ele['country']
+        if key in tempList:
+            for x in cost_list:
+                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    x['spend'] += float(ele['spend'])
+        else:
+            ele['spend'] = float(ele['spend'])
+            tempList.append(key)
+            cost_list.append(ele)
 
     clicks_list_unique = []
     for j in clicks_list:
@@ -551,7 +573,18 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             clicks_list_unique.append(j)
         else:
             pass
-    clicks_list = clicks_list_unique
+    tempList = []
+    clicks_list = []
+    for ele in clicks_list_unique:
+        key = ele['date_start'] + ele['country']
+        if key in tempList:
+            for x in clicks_list:
+                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    x['clicks'] += float(ele['clicks'])
+        else:
+            ele['clicks'] = float(ele['clicks'])
+            tempList.append(key)
+            clicks_list.append(ele)
 
     conversions_list_unique = []
     for j in conversions_list:
@@ -559,7 +592,18 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             conversions_list_unique.append(j)
         else:
             pass
-    conversions_list = conversions_list_unique
+    tempList = []
+    conversions_list = []
+    for ele in conversions_list_unique:
+        key = ele['date_start'] + ele['country']
+        if key in tempList:
+            for x in conversions_list:
+                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    x['conversions'] += int(ele['conversions'])
+        else:
+            ele['conversions'] = int(ele['conversions'])
+            tempList.append(key)
+            conversions_list.append(ele)
 
     ctr_list_unique = []
     for j in ctr_list:
@@ -567,7 +611,18 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             ctr_list_unique.append(j)
         else:
             pass
-    ctr_list = ctr_list_unique
+    tempList = []
+    ctr_list = []
+    for ele in ctr_list_unique:
+        key = ele['date_start'] + ele['country']
+        if key in tempList:
+            for x in ctr_list:
+                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    x['ctr'] += float(ele['ctr'])
+        else:
+            ele['ctr'] = float(ele['ctr'])
+            tempList.append(key)
+            ctr_list.append(ele)
 
     cpc_list_unique = []
     for j in cpc_list:
@@ -575,7 +630,18 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             cpc_list_unique.append(j)
         else:
             pass
-    cpc_list = cpc_list_unique
+    tempList = []
+    cpc_list = []
+    for ele in cpc_list_unique:
+        key = ele['date_start'] + ele['country']
+        if key in tempList:
+            for x in cpc_list:
+                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    x['cpc'] += float(ele['cpc'])
+        else:
+            ele['cpc'] = float(ele['cpc'])
+            tempList.append(key)
+            cpc_list.append(ele)
 
     if len(conversions_list) >= len(clicks_list):
         count = len(clicks_list)
@@ -817,6 +883,7 @@ def geo_data_detail(offerId,accessToken,advertise_groups,time_ranges):
     count_revenue = 0
     for a in revenue_list:
         count_revenue += float(a["revenue"])
+
     data_geo_table = {
         "impressions_list": impressions_list,
         "cost_list": cost_list,
@@ -970,7 +1037,7 @@ def date_data_detail(offerId,accessToken,advertise_groups,time_ranges):
             data = result.json()["data"]
 
             if data != []:
-                if data[0]["actions"] != []:
+                if data[0].get("actions",[]) != []:
                     for action in data[0]["actions"]:
                         if "mobile_app_install" in action["action_type"]:
                             conversions = action["value"]
@@ -1271,7 +1338,6 @@ def faceReport():
         end_date = data["end_date"]
         dimension = data["dimension"]
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId)).first()
-        type = advertiser.type
         if not advertiser:
             return json.dumps({
                 "code":500,
@@ -1281,6 +1347,7 @@ def faceReport():
                 "data_date_table": {},
                 "data_range": {},
             })
+        type = advertiser.type
         if type == "facebook":
             advertise_groups = advertiser.advertise_series.split(",")
             all_date = []
