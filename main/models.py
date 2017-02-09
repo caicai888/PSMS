@@ -304,8 +304,8 @@ class Advertisers(db.Model):
     def __repr__(self):
         return '<Advertisers {}>'.format(self.id)
 #拉取facebook数据到本地
-class Dates(db.Model):
-    __tablename__ = 'dates'
+class Datas(db.Model):
+    __tablename__ = 'datas'
     id = db.Column(db.Integer, primary_key=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     type = db.Column(db.String(100), nullable=False)
@@ -340,3 +340,8 @@ class Dates(db.Model):
 
     def __repr__(self):
         return '<Dates {}>'.format(self.id)
+
+#fb campaign id与name的对应表
+class CampaignRelations(db.Model):
+    __tablename__ = "campaignRelations"
+    id = db.Column(db.Integer, primary_key=True)
