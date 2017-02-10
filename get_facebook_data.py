@@ -14,7 +14,7 @@ start_date = datetime.datetime.now()-datetime.timedelta(hours=720)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
-db = MySQLdb.connect("localhost","root","123456","psms",charset='utf8')
+db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select offer_id,advertise_series from advertisers where type='facebook'"
 cursor.execute(sql)
@@ -38,7 +38,13 @@ for i in results:
     revenue_list = []
     profit_list = []
     offerId = i[0]
-    advertise_series = i[1].split(",")
+    advertise_names = i[1].split(",")
+    advertise_series = []
+    for name in advertise_names:
+        campaignRelation_sql = "select campaignId from CampaignRelations where campaignName='%s'"%name
+        cursor.execute(campaignRelation_sql)
+        campaign_name =  cursor.fetchone()
+        advertise_series.append(campaign_name[0])
 
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from offer where id='%d'"%offerId   #获取offer投放的时间
     cursor.execute(sql_offer)
@@ -76,7 +82,23 @@ for i in results:
             time_ranges = []
             for day in all_date[::-1]:
                 time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
+    else:
+        if start_date <= endTime:
+            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(endTime, '%Y-%m-%d')
+            date_timelta = datetime.timedelta(days=1)
+            all_date.append(start_date)
+            while date_timelta < (date2 - date1):
+                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                date_timelta += datetime.timedelta(days=1)
+            all_date.append(endTime)
 
+            time_ranges = []
+            for day in all_date[::-1]:
+                time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
+        else:
+            time_ranges = []
+    if time_ranges != []:
         for campaignId in advertise_series:
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
@@ -126,6 +148,7 @@ for i in results:
             data = result.json()["data"]
             for j in data:
                 actions = j.get("actions", [])
+                conversions = 0
                 for action in actions:
                     if "mobile_app_install" in action["action_type"]:
                         conversions = int(action["value"])
@@ -371,16 +394,6 @@ for i in results:
                     ]
 
         for l in range(len(impressions_list)):
-            print impressions_list[l]
-            print cost_list[l]
-            print revenue_list[l]
-            print profit_list[l]
-            print clicks_list[l]
-            print conversions_list[l]
-            print ctr_list[l]
-            print cvr_list[l]
-            print cpc_list[l]
-            print cpi_list[l]
             country_fb = impressions_list[l].get("country")
             date_fb = impressions_list[l].get("date_start")
             revenue_fb = revenue_list[l].get("revenue")
@@ -397,10 +410,10 @@ for i in results:
             cursor.execute(data_sql)
             result = cursor.fetchone()
             if not result:
-                insert_sql = "insert into datas(offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country) values('%d','%s','%s','%s','%d','%d','%d','%d','%d','%s','%d','%s','%s','%s')"%(offerId,"facebook",revenue_fb,profit_fb,cost_fb,impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,date_fb,country_fb)
+                insert_sql = "insert into datas(offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country) values('%d','%s','%f','%f','%f','%d','%d','%d','%s','%s','%s','%s','%s','%s')"%(offerId,"facebook",float(revenue_fb),float(profit_fb),float(cost_fb),impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,date_fb,country_fb)
                 cursor.execute(insert_sql)
                 db.commit()
             else:
-                update_sql = "update datas set revenue='%s',profit='%s',cost='%s',impressions='%d',clicks='%d',conversions='%d',ctr='%d',cvr='%s',cpc='%d',cpi='%s' where offer_id='%d' and type='facebook' and country='%s'"%(revenue_fb,profit_fb,cost_fb,impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,offerId,country_fb)
+                update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'"%(float(revenue_fb),float(profit_fb),float(cost_fb),impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,result[0])
                 cursor.execute(update_sql)
                 db.commit()

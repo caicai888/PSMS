@@ -345,3 +345,12 @@ class Datas(db.Model):
 class CampaignRelations(db.Model):
     __tablename__ = "campaignRelations"
     id = db.Column(db.Integer, primary_key=True)
+    campaignId = db.Column(db.String(100), nullable=False)
+    campaignName = db.Column(db.String(150), nullable=False)
+
+    def __init__(self,campaignId,campaignName):
+        self.campaignId = campaignId
+        self.campaignName = campaignName
+
+    def __repr__(self):
+        return '<CampaignRelations {}>'.format(self.id)
