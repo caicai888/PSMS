@@ -8,9 +8,9 @@ import MySQLdb
 import requests
 import datetime, time
 
-# time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
-time_now = datetime.datetime.now()
-start_date = datetime.datetime.now()-datetime.timedelta(hours=720)
+time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
+# time_now = datetime.datetime.now()
+start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=720)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
@@ -43,7 +43,7 @@ for i in results:
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
-        campaignRelation_sql = "select campaignId from campaignRelations where campaignName like '%s'"%("%"+name+"%")
+        campaignRelation_sql = "select campaignId from campaignRelations where campaignName like '%s'"%(name+"%")
         cursor.execute(campaignRelation_sql)
         campaign_name = cursor.fetchall()
         for n in campaign_name:
