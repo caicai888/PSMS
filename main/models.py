@@ -347,10 +347,12 @@ class CampaignRelations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     campaignId = db.Column(db.String(100), nullable=False)
     campaignName = db.Column(db.String(150), nullable=False)
+    account_id = db.Column(db.String(100), nullable=False)
 
-    def __init__(self,campaignId,campaignName):
+    def __init__(self,campaignId,campaignName,account_id):
         self.campaignId = campaignId
         self.campaignName = campaignName
+        self.account_id = account_id
 
     def __repr__(self):
         return '<CampaignRelations {}>'.format(self.id)
