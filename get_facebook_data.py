@@ -26,6 +26,8 @@ token_result = cursor.fetchone()
 accessToken = token_result[0]
 
 for i in results:
+    print "****"*10
+    print i
     all_date = []
     impressions_list = []
     cost_list = []
@@ -46,6 +48,7 @@ for i in results:
         campaign_name = cursor.fetchall()
         for n in campaign_name:
             advertise_series.append(n[0])
+    advertise_series = list(set(advertise_series))
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from offer where id='%d'"%offerId   #获取offer投放的时间
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
@@ -70,7 +73,7 @@ for i in results:
             for day in all_date[::-1]:
                 time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
         else:
-            date1 = startTime
+            date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
             date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
             date_timelta = datetime.timedelta(days=1)
             all_date.append(startTime)
