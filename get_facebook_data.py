@@ -41,11 +41,11 @@ for i in results:
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
-        campaignRelation_sql = "select campaignId from CampaignRelations where campaignName='%s'"%name
+        campaignRelation_sql = "select campaignId from CampaignRelations where campaignName like '%s'"%("%"+name+"%")
         cursor.execute(campaignRelation_sql)
-        campaign_name =  cursor.fetchone()
-        advertise_series.append(campaign_name[0])
-
+        campaign_name = cursor.fetchall()
+        for n in campaign_name:
+            advertise_series.append(n[0])
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from offer where id='%d'"%offerId   #获取offer投放的时间
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
@@ -100,6 +100,8 @@ for i in results:
             time_ranges = []
     if time_ranges != []:
         for campaignId in advertise_series:
+            print "++++"*10
+            print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,

@@ -45,7 +45,7 @@ for account in accountIds:
             if exists:
                 pass
             else:
-                insert_sql = "insert into campaignRelations(campaignId,campaignName) values('%s','%s')" % (campaignId,campaignName)
+                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id) values('%s','%s','%s')" % (campaignId,campaignName,account)
                 cursor.execute(insert_sql)
                 db.commit()
     except Exception:
