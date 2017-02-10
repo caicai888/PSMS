@@ -41,7 +41,7 @@ for i in results:
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
-        campaignRelation_sql = "select campaignId from CampaignRelations where campaignName like '%s'"%("%"+name+"%")
+        campaignRelation_sql = "select campaignId from campaignRelations where campaignName like '%s'"%("%"+name+"%")
         cursor.execute(campaignRelation_sql)
         campaign_name = cursor.fetchall()
         for n in campaign_name:
