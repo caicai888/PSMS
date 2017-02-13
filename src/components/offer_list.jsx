@@ -1,5 +1,6 @@
 import React from "react";
 import {ajax} from "../lib/ajax";
+import {Page} from "./page";
 require("../js/FileSaver");
 var tableExport = require("../js/tableExport");
 var time = null;
@@ -22,7 +23,7 @@ var OfferList = React.createClass({
             ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
-                    _this.componentDidMount();
+                    _this.offerList();
                 }else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -56,7 +57,7 @@ var OfferList = React.createClass({
             ajax("post","/api/create_offer",JSON.stringify({offer_id:offer_id})).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
-                    _this.componentDidMount();
+                    _this.offerList();
                 }else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -64,20 +65,28 @@ var OfferList = React.createClass({
             });
         }
     },
-    componentDidMount(){
-        var _this = this ;
-        ajax("get","/api/offer_show").then(function (data) {
+    offerList(page,limit){
+        let _this = this ;
+        ajax("post","/api/offer_show",JSON.stringify({
+            page:page||1,
+            limit:limit||15
+        })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
                 _this.setState({
                     result:data.result,
-                    result_search:data.result
+                    result_search:data.result,
+                    totalPages:data.totalPages,
+                    page:page||1
                 })
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
             }
         });
+    },
+    componentDidMount(){
+        this.offerList();
     },
     render:function () {
         let _this = this;
@@ -142,6 +151,7 @@ var OfferList = React.createClass({
                         </tbody>
                     </table>
                 </div>
+                <Page id="offerListPage" limit="15" totalPages={_this.state.totalPages} onClick={_this.offerList} page={_this.state.page}/>
             </div>
         )
     }
