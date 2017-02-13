@@ -392,3 +392,6 @@ table tr td{
 #create_customer textarea,#adwords_form textarea{
     height: 114px;
 }
+.table-responsive table tr th,.table-responsive table tr td{
+    max-width: 200px;
+}
