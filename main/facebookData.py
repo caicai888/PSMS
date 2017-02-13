@@ -3,7 +3,7 @@ from __future__ import division
 from flask import Blueprint, request
 # from main import db, adwordsData
 import adwordsData
-from models import Offer, Token, Advertisers, TimePrice, Country, History
+from models import Offer, Token, Advertisers, TimePrice, Country, History, Datas
 import json
 import os
 import datetime, time
@@ -14,183 +14,50 @@ facebookDate = Blueprint('facebookDate', __name__)
 @facebookDate.route('/api/dashboard')
 def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
-    token = Token.query.filter_by(account="rongchangzhang@gmail.com").first()
-    accessToken = token.accessToken
-    time_range = "{'since': "+"'"+str(yesterday)+"'"+", 'until': "+"'"+str(yesterday)+"'"+"}"
 
-    advertisers = Advertisers.query.filter(Advertisers.type=="facebook").all()
-    advertisers_group = []
-    for i in advertisers:
-        advertise_group = i.advertise_series
-        offer_id = i.offer_id
+    facebook_datas = Datas.query.filter_by(type="facebook",date=yesterday).all()
+    revenue = 0
+    profit = 0
+    cost = 0
+    impressions = 0
+    clicks = 0
+    conversions = 0
+    ctr = 0
+    cvr = 0
+    cpc = 0
+    cpi = 0
+    for i in facebook_datas:
+        revenue += float(i.revenue)
+        profit += float(i.profit)
+        cost += float(i.cost)
+        impressions += int(i.impressions)
+        clicks += int(i.clicks)
+        conversions += int(i.conversions)
+        ctr += float(i.ctr)
 
-        for j in advertise_group.split(','):
-            group_result = {
-                "offer_id": offer_id,
-                "account": j
-            }
-            advertisers_group += [group_result]
+    if conversions != 0:
+        cpi = '%0.2f' % (cost / float(conversions))
 
-    impressions_count = 0
-    conversions_count = 0
-    spend_count = 0
-    clicks_count = 0
-    cpc_count = 0
-    ctr_count = 0
-    revenue_count = 0
+    if clicks != 0:
+        cvr = '%0.2f' % (float(conversions) / float(clicks) * 100)
 
-    for ad in advertisers_group:
-        try:
-            url = "https://graph.facebook.com/v2.8/"+str(ad["account"])+"/insights"
-            params_impressions = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["impressions"],
-                "time_range": str(time_range)
-            }
-            result_impressions = requests.get(url=url, params=params_impressions)
-            data_impressions = result_impressions.json()["data"]
-            for i in data_impressions:
-                impressions_count += int(i["impressions"])
+    if cost != float(0):
+        cpc = '%0.2f' % (float(clicks) / float(cost))
 
-            params_conversions = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["actions"],
-                "time_range": str(time_range)
-            }
-            result_conversions = requests.get(url=url, params=params_conversions)
-            data_conversions = result_conversions.json()["data"]
-            if data_conversions != []:
-                for j in data_conversions:
-                    actions = j.get("actions", [])
-                    for action in actions:
-                        if "mobile_app_install" in action["action_type"]:
-                            conversions = action["value"]
-                        else:
-                            conversions = 0
-                        conversions_count += int(conversions)
+    if impressions != 0:
+        ctr = '%0.2f' % (clicks / impressions * 100)
 
-            params_spend = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["spend"],
-                "time_range": str(time_range)
-            }
-            result_spend = requests.get(url=url, params=params_spend)
-            data_spend = result_spend.json()["data"]
-            for i in data_spend:
-                spend_count += float(i["spend"])
-
-            params_clicks = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["clicks"],
-                "time_range": str(time_range)
-            }
-            result_clicks = requests.get(url=url, params=params_clicks)
-            data_clicks = result_clicks.json()["data"]
-            for i in data_clicks:
-                clicks_count += int(i["clicks"])
-
-            params_cpc = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["cpc"],
-                "time_range": str(time_range)
-            }
-            result_cpc = requests.get(url=url, params=params_cpc)
-            data_cpc = result_cpc.json()["data"]
-            for i in data_cpc:
-                cpc_count += float(i["cpc"])
-
-            params_ctr = {
-                "access_token": accessToken,
-                "level": "campaign",
-                "fields": ["ctr"],
-                "time_range": str(time_range)
-            }
-            result_ctr = requests.get(url=url, params=params_ctr)
-            data_ctr = result_ctr.json()["data"]
-            for i in data_ctr:
-                ctr_count += float(i["ctr"])
-
-            offer = Offer.query.filter_by(id=int(ad["offer_id"])).first()
-            contract_type = offer.contract_type
-            if contract_type == "1":
-                contract_scale = float(offer.contract_scale)
-                params_spend = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["spend"],
-                    "time_range": str(time_range)
-                }
-                result_spend = requests.get(url=url, params=params_spend)
-                data_spend = result_spend.json()["data"]
-                for i in data_spend:
-                    revenue_count += float(i["spend"])*(1+contract_scale/100)
-            else:
-                params_revenue = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["actions"],
-                    "breakdowns": ["country"],
-                    "time_range": str(time_range)
-                }
-                result_revenue = requests.get(url=url, params=params_revenue)
-                data_revenue = result_revenue.json()["data"]
-                if data_revenue != []:
-                    for action in data_revenue:
-                        country = action["country"]
-                        date = action["date_start"]
-                        countries = Country.query.filter_by(shorthand=country).first()
-                        country_id = countries.id
-                        startTime = offer.startTime
-                        prices = TimePrice.query.filter(TimePrice.country_id==country_id,TimePrice.offer_id == int(ad["offer_id"]),TimePrice.date <= date,TimePrice.date>=startTime).order_by(TimePrice.date.desc()).first()
-                        if not prices:
-                            prices_history = History.query.filter(History.country==country, History.offer_id==ad["offer_id"]).order_by(History.createdTime.desc()).first()
-                            if not prices_history:
-                                price = offer.price
-                            else:
-                                price = prices_history.country_price
-                        else:
-                            price = prices.price
-                        actions = action.get("actions", [])
-                        for j in actions:
-                            if "mobile_app_install" in j["action_type"]:
-                                conversions_revenue = float(j["value"])
-                            else:
-                                conversions_revenue = 0
-                            revenue_count += (conversions_revenue * float(price))
-        except Exception as e:
-            print e
-            impressions_count = 0
-            conversions_count = 0
-            spend_count = 0
-            clicks_count = 0
-            cpc_count = 0
-            ctr_count = 0
-            revenue_count = 0
-
-    if float(conversions_count) != 0:
-        cpi = '%0.2f' % ((float(spend_count)) / float(conversions_count))
-    else:
-        cpi = 0
-    if float(clicks_count) != 0:
-        cvr = '%0.2f' %(float(conversions_count)/float(clicks_count)*100)
-    else:
-        cvr = 0
     result = {
-        "impressions": str(impressions_count),
-        "spend": '%0.2f'%(float(spend_count)),
-        "clicks": str(clicks_count),
-        "conversions": str(conversions_count),
-        "cpc": '%0.2f'%(float(cpc_count)),
-        "ctr": '%0.2f'%(float(ctr_count)),
+        "impressions": str(impressions),
+        "spend": '%0.2f'%(cost),
+        "clicks": str(clicks),
+        "conversions": str(conversions),
+        "cpc": str(cpc),
+        "ctr": str(ctr),
         "cpi": str(cpi),
         "cvr": str(cvr),
-        "revenue": '%0.2f'%(revenue_count),
-        "profit": '%0.2f'%(float(revenue_count)-float(spend_count))
+        "revenue": '%0.2f'%(revenue),
+        "profit": '%0.2f'%(profit)
     }
     response = {
         "code": 200,
@@ -198,6 +65,7 @@ def dashboard():
         "result": result
     }
     return json.dumps(response)
+
 
 #geo维度的总和
 def geo_data_total(offerId,accessToken,advertise_groups,start_date, end_date):
