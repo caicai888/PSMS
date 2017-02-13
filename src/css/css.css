@@ -395,3 +395,6 @@ table tr td{
 .table-responsive table tr th,.table-responsive table tr td{
     max-width: 200px;
 }
+#page {
+    text-align: center;
+}
