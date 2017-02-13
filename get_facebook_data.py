@@ -26,8 +26,6 @@ token_result = cursor.fetchone()
 accessToken = token_result[0]
 
 for i in results:
-    print "****"*10
-    print i
     all_date = []
     impressions_list = []
     cost_list = []
@@ -103,8 +101,6 @@ for i in results:
             time_ranges = []
     if time_ranges != []:
         for campaignId in advertise_series:
-            print "++++"*10
-            print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
