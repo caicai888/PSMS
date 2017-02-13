@@ -152,11 +152,12 @@ def createOffer():
                 return json.dumps({"code": 500, "message": "fail"})
 
 
-@offers.route('/api/offer_show', methods=["POST", "GET"])
-def offerShow():
-    offers = Offer.query.all()
+@offers.route('/api/offer_show/<page>', methods=["POST", "GET"])
+def offerShow(page):
+    offers = Offer.query.order_by(Offer.id.desc()).paginate(int(page), per_page=15, error_out = False)
+    count = Offer.query.count()
     result = []
-    for i in offers:
+    for i in offers.items:
         customerId = i.customer_id
         customer = Customers.query.filter_by(id=customerId).first()
         customerName = customer.company_name  # 客户名称
@@ -185,6 +186,7 @@ def offerShow():
         }
         result += [data]
     response = {
+        "count": count,
         "code": 200,
         "result": result,
         "message": "success"
