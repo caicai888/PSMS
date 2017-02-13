@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 from main.has_permission import *
 from flask import Blueprint, request, safe_join, Response, send_file, make_response
 
@@ -154,42 +155,52 @@ def createOffer():
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
 def offerShow():
-    offers = Offer.query.all()
-    result = []
-    for i in offers:
-        customerId = i.customer_id
-        customer = Customers.query.filter_by(id=customerId).first()
-        customerName = customer.company_name  # 客户名称
-        status = i.status
-        contract_type = i.contract_type
-        sales = User.query.filter_by(id=int(i.user_id)).first()
-        if contract_type == "1":
-            contract_type = u"服务费"
-        elif contract_type == "2":
-            contract_type = "cpa"
-        os = i.os
-        app_name = i.app_name
-        data = {
-            "offer_id": i.id,
-            "status": status,
-            "contract_type": contract_type,
-            "os": os,
-            "customer_id": customerName,
-            "app_name": app_name,
-            "startTime": i.startTime,
-            "endTime": i.endTime,
-            "country": str(i.country),
-            "price": i.price,
-            "updateTime": i.updateTime,
-            "sale_name":sales.name
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        page = data["page"]
+        limit = int(data["limit"])
+        offers = Offer.query.order_by(Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        count = Offer.query.count()
+        if (count % limit) == 0:
+            totalPages = count/limit
+        else:
+            totalPages = count/limit + 1
+        result = []
+        for i in offers.items:
+            customerId = i.customer_id
+            customer = Customers.query.filter_by(id=customerId).first()
+            customerName = customer.company_name  # 客户名称
+            status = i.status
+            contract_type = i.contract_type
+            sales = User.query.filter_by(id=int(i.user_id)).first()
+            if contract_type == "1":
+                contract_type = u"服务费"
+            elif contract_type == "2":
+                contract_type = "cpa"
+            os = i.os
+            app_name = i.app_name
+            data = {
+                "offer_id": i.id,
+                "status": status,
+                "contract_type": contract_type,
+                "os": os,
+                "customer_id": customerName,
+                "app_name": app_name,
+                "startTime": i.startTime,
+                "endTime": i.endTime,
+                "country": str(i.country),
+                "price": i.price,
+                "updateTime": i.updateTime,
+                "sale_name":sales.name
+            }
+            result += [data]
+        response = {
+            "totalPages": int(totalPages),
+            "code": 200,
+            "result": result,
+            "message": "success"
         }
-        result += [data]
-    response = {
-        "code": 200,
-        "result": result,
-        "message": "success"
-    }
-    return json.dumps(response)
+        return json.dumps(response)
 
 
 @offers.route('/api/offer_detail/<id>', methods=["GET"])
