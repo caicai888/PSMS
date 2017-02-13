@@ -110,7 +110,6 @@ def createOffer():
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         if data["offer_id"]:
-            print "hello"
             offer_id = int(data["offer_id"])
             oldOffer = Offer.query.filter_by(id=offer_id).first()
             offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_type,oldOffer.contract_num,oldOffer.contract_scale,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.material,oldOffer.startTime,oldOffer.endTime,oldOffer.platform,oldOffer.country,oldOffer.price,oldOffer.daily_budget,oldOffer.daily_type,oldOffer.total_budget,oldOffer.total_type,oldOffer.distribution,oldOffer.authorized,oldOffer.named_rule,oldOffer.KPI,oldOffer.settlement,oldOffer.period,oldOffer.remark,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
@@ -121,7 +120,6 @@ def createOffer():
 
                 oldHistorty = History.query.filter_by(offer_id=offer_id).all()
                 for i in oldHistorty:
-                    print i
                     historty = History(offer.id, i.user_id,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
                     db.session.add(historty)
                     db.session.commit()
