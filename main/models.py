@@ -142,7 +142,7 @@ class Offer(db.Model):
     remark = db.Column(db.String(1000), nullable=True)  # 备注
     email_time = db.Column(db.String(100), nullable=True)  # 邮件发送时间
     email_users = db.Column(db.String(500), nullable=True)  # 邮件收件人
-    email_tempalte = db.Column(db.Integer, nullable=True)  # 报告模版
+    email_template = db.Column(db.Integer, nullable=True)  # 报告模版
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
@@ -152,7 +152,7 @@ class Offer(db.Model):
                  material="yes", startTime=None, endTime=None, platform=None, country=None, price=0, daily_budget=0,
                  daily_type="install", total_budget=0, total_type="cost", distribution=None, authorized=None,
                  named_rule=None, KPI=None, settlement=None, period=None, remark=None, email_time=None, email_users=None,
-                 email_tempalte=1, createdTime=None, updateTime=None):
+                 email_template=1, createdTime=None, updateTime=None):
         self.user_id = user_id
         self.customer_id = customer_id
         self.status = status
@@ -184,7 +184,7 @@ class Offer(db.Model):
         self.remark = remark
         self.email_time = email_time
         self.email_users = email_users
-        self.email_tempalte = email_tempalte
+        self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
 
@@ -303,3 +303,56 @@ class Advertisers(db.Model):
 
     def __repr__(self):
         return '<Advertisers {}>'.format(self.id)
+#拉取facebook数据到本地
+class Datas(db.Model):
+    __tablename__ = 'datas'
+    id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    type = db.Column(db.String(100), nullable=False)
+    revenue = db.Column(db.Float, nullable=True)
+    profit = db.Column(db.Float, nullable=True)
+    cost = db.Column(db.Float, nullable=True)
+    impressions = db.Column(db.Integer, nullable=True)
+    clicks = db.Column(db.Integer, nullable=True)
+    conversions = db.Column(db.Integer, nullable=True)
+    ctr = db.Column(db.String(100), nullable=True)
+    cvr = db.Column(db.String(100), nullable=True)
+    cpc = db.Column(db.String(100), nullable=True)
+    cpi = db.Column(db.String(100), nullable=True)
+    date = db.Column(db.String(100), nullable=True)
+    country = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country):
+        self.offer_id = offer_id
+        self.type = type
+        self.revenue = revenue
+        self.profit = profit
+        self.cost = cost
+        self.impressions = impressions
+        self.clicks = clicks
+        self.conversions = conversions
+        self.ctr = ctr
+        self.cvr = cvr
+        self.cpc = cpc
+        self.cpi = cpi
+        self.date = date
+        self.country = country
+
+    def __repr__(self):
+        return '<Dates {}>'.format(self.id)
+
+#fb campaign id与name的对应表
+class CampaignRelations(db.Model):
+    __tablename__ = "campaignRelations"
+    id = db.Column(db.Integer, primary_key=True)
+    campaignId = db.Column(db.String(100), nullable=False)
+    campaignName = db.Column(db.String(150), nullable=False)
+    account_id = db.Column(db.String(100), nullable=False)
+
+    def __init__(self,campaignId,campaignName,account_id):
+        self.campaignId = campaignId
+        self.campaignName = campaignName
+        self.account_id = account_id
+
+    def __repr__(self):
+        return '<CampaignRelations {}>'.format(self.id)

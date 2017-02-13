@@ -109,39 +109,47 @@ def createOffer():
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-        contract_type = data["contract_type"]
-
-        user_id= data["user_id"].split("(")[1].split(')')[0]
-        customer_id = data["customer_id"].split("(")[1].split(')')[0]
-
-        offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,
-                      data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],
-                      data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
-                      data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),
-                      float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],
-                      float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],
-                      data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),
-                      data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],
-                      str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
-        try:
-            db.session.add(offer)
-            db.session.commit()
-            db.create_all()
-
-            for i in data['country_detail']:
-                history = History(offer.id, int(user_id), "default", createdTime, status=data["status"],
-                                  country=i["country"], country_price=i["price"], price=data["price"],
-                                  daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
-                                  total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
-                                  KPI=data["KPI"], contract_type=contract_type,
-                                  contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
-                db.session.add(history)
+        if data["offer_id"]:
+            offer_id = int(data["offer_id"])
+            oldOffer = Offer.query.filter_by(id=offer_id).first()
+            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_type,oldOffer.contract_num,oldOffer.contract_scale,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.material,oldOffer.startTime,oldOffer.endTime,oldOffer.platform,oldOffer.country,oldOffer.price,oldOffer.daily_budget,oldOffer.daily_type,oldOffer.total_budget,oldOffer.total_type,oldOffer.distribution,oldOffer.authorized,oldOffer.named_rule,oldOffer.KPI,oldOffer.settlement,oldOffer.period,oldOffer.remark,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
+            try:
+                db.session.add(offer)
                 db.session.commit()
                 db.create_all()
-            return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
-        except Exception as e:
-            print e
-            return json.dumps({"code": 500, "message": "fail"})
+
+                oldHistorty = History.query.filter_by(offer_id=offer_id).all()
+                for i in oldHistorty:
+                    historty = History(offer.id, i.user_id,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
+                    db.session.add(historty)
+                    db.session.commit()
+                    db.create_all()
+                return json.dumps({"code":200,"message":"success","offerId":offer.id})
+            except Exception as e:
+                print e
+                return json.dumps({"code":500,"message":"fail"})
+
+        else:
+            contract_type = data["contract_type"]
+
+            user_id= data["user_id"].split("(")[1].split(')')[0]
+            customer_id = data["customer_id"].split("(")[1].split(')')[0]
+
+            offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
+            try:
+                db.session.add(offer)
+                db.session.commit()
+                db.create_all()
+
+                for i in data['country_detail']:
+                    history = History(offer.id, int(user_id), "default", createdTime, status=data["status"],country=i["country"], country_price=i["price"], price=data["price"],daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],KPI=data["KPI"], contract_type=contract_type,contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
+                    db.session.add(history)
+                    db.session.commit()
+                    db.create_all()
+                return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
+            except Exception as e:
+                print e
+                return json.dumps({"code": 500, "message": "fail"})
 
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
@@ -230,7 +238,7 @@ def offerDetail(id):
         "remark": offer.remark,
         "email_time": offer.email_time,
         "email_users": offer.email_users,
-        "email_tempalte": offer.email_tempalte
+        "email_tempalte": offer.email_template
     }
     historties = History.query.filter(History.offer_id == id, History.country != "").all()
     countries = []
@@ -350,7 +358,7 @@ def updateOffer():
                 offer.remark = data["remark"].encode("utf-8") if data["remark"] != "" else offer.remark
                 offer.email_time = data["email_time"]
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
-                offer.email_tempalte = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_tempalte
+                offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
                 db.session.add(offer)
                 db.session.commit()
                 if "country_detail" in flag:

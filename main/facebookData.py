@@ -1338,7 +1338,6 @@ def faceReport():
         end_date = data["end_date"]
         dimension = data["dimension"]
         advertiser = Advertisers.query.filter_by(offer_id=int(offerId)).first()
-        type = advertiser.type
         if not advertiser:
             return json.dumps({
                 "code":500,
@@ -1348,6 +1347,7 @@ def faceReport():
                 "data_date_table": {},
                 "data_range": {},
             })
+        type = advertiser.type
         if type == "facebook":
             advertise_groups = advertiser.advertise_series.split(",")
             all_date = []

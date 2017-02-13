@@ -49,6 +49,21 @@ var OfferList = React.createClass({
             }
         },500);
     },
+    copy(e){
+        let offer_id = e.target.dataset.offer_id;
+        let _this = this;
+        if(confirm("确认复制id为"+offer_id+"的Offer吗？")){
+            ajax("post","/api/create_offer",JSON.stringify({offer_id:offer_id})).then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    _this.componentDidMount();
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $("#modal").modal("toggle");
+                }
+            });
+        }
+    },
     componentDidMount(){
         var _this = this ;
         ajax("get","/api/offer_show").then(function (data) {
@@ -118,6 +133,7 @@ var OfferList = React.createClass({
                                                 <td>
                                                     <a href={"#/offer_detail/"+ele.offer_id+"/report"} className={_this.state.permissions.includes("report_query")?"":"none"}><img src="./src/img/zx.jpg"/></a>
                                                     <a href={"#/create_offer/"+ele.offer_id} className={_this.state.permissions.includes("offer_edit")?"btn btn-primary":"none"}>Edit</a>
+                                                    <a data-offer_id={ele.offer_id} onClick={_this.copy}  style={{marginLeft:"15px"}} className={_this.state.permissions.includes("offer_edit")?"btn btn-warning":"none"}>Copy</a>
                                                 </td>
                                                 <td>{ele.updateTime}</td>
                                             </tr>
