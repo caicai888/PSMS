@@ -41,8 +41,8 @@ def dashboard():
     if clicks != 0:
         cvr = '%0.2f' % (float(conversions) / float(clicks) * 100)
 
-    if cost != float(0):
-        cpc = '%0.2f' % (float(clicks) / float(cost))
+    if clicks != 0:
+        cpc = '%0.2f' % (float(cost) / float(clicks))
 
     if impressions != 0:
         ctr = '%0.2f' % (clicks / impressions * 100)
