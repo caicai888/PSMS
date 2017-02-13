@@ -142,7 +142,7 @@ class Offer(db.Model):
     remark = db.Column(db.String(1000), nullable=True)  # 备注
     email_time = db.Column(db.String(100), nullable=True)  # 邮件发送时间
     email_users = db.Column(db.String(500), nullable=True)  # 邮件收件人
-    email_tempalte = db.Column(db.Integer, nullable=True)  # 报告模版
+    email_template = db.Column(db.Integer, nullable=True)  # 报告模版
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
@@ -152,7 +152,7 @@ class Offer(db.Model):
                  material="yes", startTime=None, endTime=None, platform=None, country=None, price=0, daily_budget=0,
                  daily_type="install", total_budget=0, total_type="cost", distribution=None, authorized=None,
                  named_rule=None, KPI=None, settlement=None, period=None, remark=None, email_time=None, email_users=None,
-                 email_tempalte=1, createdTime=None, updateTime=None):
+                 email_template=1, createdTime=None, updateTime=None):
         self.user_id = user_id
         self.customer_id = customer_id
         self.status = status
@@ -184,7 +184,7 @@ class Offer(db.Model):
         self.remark = remark
         self.email_time = email_time
         self.email_users = email_users
-        self.email_tempalte = email_tempalte
+        self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
 
