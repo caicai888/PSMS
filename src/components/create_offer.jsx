@@ -49,6 +49,13 @@ var CreateOffer = React.createClass({
             data.country=data.country.join(",");
             data.platform=data.platform.join(",");
 
+            if($(".tbd").prop("checked")){
+                var newDateArr = data.endTime.toString().split("-");
+                newDateArr[0] = parseInt(newDateArr[0])+30;
+                data.endTime = newDateArr.join("-");
+            }
+            console.log(data)
+
             var country_detail=[];
             $("#country_detail tr").map(function (ele,index,array) {
                 var country=$(this).find("td:first").html();
@@ -442,13 +449,20 @@ var CreateOffer = React.createClass({
                             投放起始
                         </div>
                         <div className="col-sm-3">
-                            <DateSingle minDate="" maxDate="end_date" id="start_date" keyword="startTime"/>
+                            <DateSingle minDate="" maxDate="end_date" id="start_date" require="true" keyword="startTime"/>
                         </div>
-                        <div className="col-sm-3 text-right">
+                        <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
                             投放截止
                         </div>
                         <div className="col-sm-3">
-                            <DateSingle maxDate="" minDate="start_date" id="end_date" keyword="endTime"/>
+                            <DateSingle maxDate="" minDate="start_date" id="end_date" require="true" keyword="endTime"/>
+                        </div>
+                        <div className="col-sm-1 text-right">
+                            <div className="checkbox" style={{marginTop:"3px"}}>
+                                <label>
+                                    <input type="checkbox" className="tbd"/> TBD
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-10">
