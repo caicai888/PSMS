@@ -72,7 +72,7 @@ var DateSingle = React.createClass({
     },
     render() {
         return (
-            <input id={this.props.id} data-maxDate={this.props.maxDate} data-minDate={this.props.minDate} data-key={this.props.keyword} type="text" className="form-control" readOnly="readOnly"/>
+            <input id={this.props.id} data-maxDate={this.props.maxDate} data-minDate={this.props.minDate} data-required={this.props.require} data-key={this.props.keyword} type="text" className="form-control" readOnly="readOnly"/>
         )
     }
 });
