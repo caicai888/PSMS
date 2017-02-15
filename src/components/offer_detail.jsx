@@ -260,7 +260,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Facebook 广告系列
+                                        Facebook 广告系列关键字
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable" data-key="advertise_series" placeholder="Enter key or comma separated">
@@ -272,7 +272,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Facebook　广告组
+                                        Facebook　AccountId
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable" data-key="advertise_groups" placeholder="Enter key or comma separated">
@@ -300,7 +300,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Adwords 广告系列
+                                        Adwords 广告系列关键字
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable"  data-key="advertise_series" placeholder="Enter key or comma separated">
@@ -312,7 +312,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Adwords　广告组
+                                        Adwords　AccountId
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable"  data-key="advertise_groups" placeholder="Enter key or comma separated">

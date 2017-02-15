@@ -18,9 +18,11 @@ var OfferList = React.createClass({
     },
     status(e){
         let offer_id = e.target.dataset.offer_id;
+        let confirmMessage = e.target.dataset.isDelete?"确认删除吗？":"确认修改状态吗？";
+        let method =e.target.dataset.isDelete?"post":"get";
         let _this = this;
-        if(confirm("确认修改状态吗？")){
-            ajax("get","/api/update_offer_status/"+offer_id).then(function (data) {
+        if(confirm(confirmMessage)){
+            ajax(method,"/api/update_offer_status/"+offer_id).then(function (data) {
                 var data = JSON.parse(data);
                 if(data.code=="200"){
                     _this.offerList();
@@ -143,6 +145,7 @@ var OfferList = React.createClass({
                                                     <a href={"#/offer_detail/"+ele.offer_id+"/report"} className={_this.state.permissions.includes("report_query")?"":"none"}><img src="./src/img/zx.jpg"/></a>
                                                     <a href={"#/create_offer/"+ele.offer_id} className={_this.state.permissions.includes("offer_edit")?"btn btn-primary":"none"}>Edit</a>
                                                     <a data-offer_id={ele.offer_id} onClick={_this.copy}  style={{marginLeft:"15px"}} className={_this.state.permissions.includes("offer_edit")?"btn btn-warning":"none"}>Copy</a>
+                                                    <a data-is-delete="true" data-offer_id={ele.offer_id} onClick={_this.status} style={{marginLeft:"15px"}} className={_this.state.permissions.includes("offer_edit")?"btn btn-danger":"none"}>Delete</a>
                                                 </td>
                                                 <td>{ele.updateTime}</td>
                                             </tr>
