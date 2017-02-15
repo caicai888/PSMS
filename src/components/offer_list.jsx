@@ -81,6 +81,10 @@ var OfferList = React.createClass({
                     totalPages:data.totalPages,
                     page:page||1
                 })
+
+                $(" table td span.allPrice").on("click",function () {
+                    $(this).toggleClass("allPrice_active");
+                });
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
@@ -138,7 +142,7 @@ var OfferList = React.createClass({
                                                 <td>{ele.sale_name}</td>
                                                 <td>{ele.contract_type}</td>
                                                 <td>{ele.country}</td>
-                                                <td>{ele.price}</td>
+                                                <td><span className="onePrice">{ele.price}</span> <span className="allPrice">&lt;</span></td>
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
                                                 <td>

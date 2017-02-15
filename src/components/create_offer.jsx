@@ -48,14 +48,11 @@ var CreateOffer = React.createClass({
             var data = setForm("#create_offer","data-key");
             data.country=data.country.join(",");
             data.platform=data.platform.join(",");
-
             if($(".tbd").prop("checked")){
                 var newDateArr = data.endTime.toString().split("-");
                 newDateArr[0] = parseInt(newDateArr[0])+30;
                 data.endTime = newDateArr.join("-");
             }
-            console.log(data)
-
             var country_detail=[];
             $("#country_detail tr").map(function (ele,index,array) {
                 var country=$(this).find("td:first").html();
