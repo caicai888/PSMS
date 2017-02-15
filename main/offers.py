@@ -179,6 +179,10 @@ def offerShow():
                 contract_type = "cpa"
             os = i.os
             app_name = i.app_name
+            if i.endTime >= (datetime.datetime.now()+datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+                endTime = "TBD"
+            else:
+                endTime = i.endTime
             data = {
                 "offer_id": i.id,
                 "status": status,
@@ -187,7 +191,7 @@ def offerShow():
                 "customer_id": customerName,
                 "app_name": app_name,
                 "startTime": i.startTime,
-                "endTime": i.endTime,
+                "endTime": endTime,
                 "country": str(i.country),
                 "price": i.price,
                 "updateTime": i.updateTime,
