@@ -159,7 +159,7 @@ def offerShow():
         data = request.get_json(force=True)
         page = data["page"]
         limit = int(data["limit"])
-        offers = Offer.query.order_by(Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
         count = Offer.query.count()
         if (count % limit) == 0:
             totalPages = count/limit
@@ -277,33 +277,55 @@ def offerDetail(id):
     return json.dumps(response)
 
 #更新offer的状态
-@offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
+@offers.route('/api/update_offer_status/<offer_id>', methods=["GET","POST"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
-    if offer.status == "active":
-        offer.status = "inactive"
-        status = offer.status
-        db.session.add(offer)
-        db.session.commit()
-        history = History(offer.id, offer.user_id, "update",
-                          (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
-                              "%Y-%m-%d %H:%M:%S"),
-                          price=offer.price,
-                          status=status,
-                          daily_budget=offer.daily_budget,
-                          daily_type=offer.daily_type,
-                          total_budget=offer.total_budget,
-                          total_type=offer.total_type,
-                          KPI=offer.KPI,
-                          contract_type=offer.contract_type,
-                          contract_scale=offer.contract_scale)
-        db.session.add(history)
-        db.session.commit()
-        db.create_all()
-        return json.dumps({"code": 200, "message":"success"})
-    elif offer.status == "inactive":
-        offer.status = "active"
+    if request.method == "GET":
+        if offer.status == "active":
+            offer.status = "inactive"
+            status = offer.status
+            db.session.add(offer)
+            db.session.commit()
+            history = History(offer.id, offer.user_id, "update",
+                              (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                                  "%Y-%m-%d %H:%M:%S"),
+                              price=offer.price,
+                              status=status,
+                              daily_budget=offer.daily_budget,
+                              daily_type=offer.daily_type,
+                              total_budget=offer.total_budget,
+                              total_type=offer.total_type,
+                              KPI=offer.KPI,
+                              contract_type=offer.contract_type,
+                              contract_scale=offer.contract_scale)
+            db.session.add(history)
+            db.session.commit()
+            db.create_all()
+            return json.dumps({"code": 200, "message":"success"})
+        elif offer.status == "inactive":
+            offer.status = "active"
+            status = offer.status
+            db.session.add(offer)
+            db.session.commit()
+            history = History(offer.id, offer.user_id, "update",
+                              (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                                  "%Y-%m-%d %H:%M:%S"),
+                              price=offer.price,
+                              status=status,
+                              daily_budget=offer.daily_budget,
+                              daily_type=offer.daily_type,
+                              total_budget=offer.total_budget,
+                              total_type=offer.total_type,
+                              KPI=offer.KPI,
+                              contract_type=offer.contract_type,
+                              contract_scale=offer.contract_scale)
+            db.session.add(history)
+            db.session.commit()
+            db.create_all()
+            return json.dumps({"code": 200, "message": "success"})
+    else:
+        offer.status = "deleted"
         status = offer.status
         db.session.add(offer)
         db.session.commit()
@@ -323,8 +345,6 @@ def updateStatus(offer_id):
         db.session.commit()
         db.create_all()
         return json.dumps({"code": 200, "message": "success"})
-    else:
-        return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
