@@ -160,7 +160,7 @@ def offerShow():
         page = data["page"]
         limit = int(data["limit"])
         offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
-        count = Offer.query.count()
+        count = Offer.query.filter(Offer.status != "deleted").count()
         if (count % limit) == 0:
             totalPages = count/limit
         else:
