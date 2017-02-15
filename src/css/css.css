@@ -393,7 +393,7 @@ table tr td{
     height: 114px;
 }
 .table-responsive table tr th,.table-responsive table tr td{
-    max-width: 200px;
+    white-space: nowrap;
 }
 #page {
     text-align: center;
