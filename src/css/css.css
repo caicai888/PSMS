@@ -398,3 +398,19 @@ table tr td{
 #page {
     text-align: center;
 }
+.onePrice{
+    display: inline-block;
+    width: 60px;
+}
+.allPrice{
+    display: inline-block;
+    font-size: 16px;
+    transform: rotate(-90deg);
+    color: #ff0000;
+    cursor: pointer;
+    transition: all 0.1s linear;
+    user-select: none;
+}
+.allPrice_active{
+    transform: rotate(90deg);
+}
