@@ -87,7 +87,7 @@ var OfferList = React.createClass({
         let offer_id = e.target.dataset.offer_id;
         if(eleObj.hasClass("allPrice_active")){
             eleObj.removeClass("allPrice_active");
-            $(".country_price").remove();
+            eleObj.parents("tr").nextAll(".country_price").remove();
             return false;
         }else {
             eleObj.addClass("allPrice_active");
@@ -96,7 +96,7 @@ var OfferList = React.createClass({
                 if(data.code=="200"){
                     var html ="";
                     for(let obj of data.result){
-                        html+=`<tr class='country_price'><td colspan='7'></td><td>${obj.country}</td><td>${obj.price}</td><td colspan='4'></td></tr>`;
+                        html+=`<tr class='country_price'><td colspan='6'></td><td>${obj.country}</td><td>${obj.price}</td><td colspan='5'></td></tr>`;
                     }
                     eleObj.parents("tr").after(html)
                 }else {
@@ -156,12 +156,12 @@ var OfferList = React.createClass({
                                 <th>应用名称</th>
                                 <th>系统</th>
                                 <th>客户名称</th>
-                                <th>销售名称</th>
                                 <th>合作模式</th>
                                 <th>投放地区</th>
                                 <th>单价</th>
                                 <th>投放起始</th>
                                 <th>投放截止</th>
+                                <th>销售名称</th>
                                 <th>操作</th>
                                 <th>最后修改</th>
                             </tr>
@@ -175,15 +175,15 @@ var OfferList = React.createClass({
                                                     <span style={{display:'none'}}>{ele.status=='active'?'Active':'Inactive'}</span>
                                                 </td>
                                                 <td><a href={"#/offer_detail/"+ele.offer_id}>{ele.offer_id}</a></td>
-                                                <td>{ele.app_name}</td>
+                                                <td title={ele.app_name}>{ele.app_name}</td>
                                                 <td>{ele.os}</td>
                                                 <td>{ele.customer_id}</td>
-                                                <td>{ele.sale_name}</td>
                                                 <td>{ele.contract_type}</td>
                                                 <td>{ele.country}</td>
                                                 <td><span className="onePrice">{ele.price}</span> <span data-offer_id={ele.offer_id} onClick={_this.allPrice} className="allPrice">&lt;</span></td>
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
+                                                <td>{ele.sale_name}</td>
                                                 <td>
                                                     <a href={"#/offer_detail/"+ele.offer_id+"/report"} className={_this.state.permissions.includes("report_query")?"":"none"}><img src="./src/img/zx.jpg"/></a>
                                                     <a href={"#/create_offer/"+ele.offer_id} className={_this.state.permissions.includes("offer_edit")?"btn btn-primary":"none"}>Edit</a>
