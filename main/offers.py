@@ -4,7 +4,7 @@ from main.has_permission import *
 from flask import Blueprint, request, safe_join, Response, send_file, make_response
 
 from main import db
-from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role
+from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role,CampaignRelations
 import json
 import os
 import datetime, time
@@ -280,6 +280,33 @@ def offerDetail(id):
     }
     return json.dumps(response)
 
+#offer国家对应的价钱
+@offers.route('/api/country_price/<offerId>', methods=["GET"])
+def countryPrice(offerId):
+    historties = History.query.filter(History.offer_id == int(offerId), History.country != "").all()
+    countries = []
+    for i in historties:
+        country = i.country
+        countries.append(country)
+    countries = list(set(countries))
+    country_price_list = []
+    for i in countries:
+        historty = History.query.filter(History.offer_id == int(offerId), History.country == i).order_by(
+            desc(History.createdTime)).first()
+        country = historty.country
+        country_price = historty.country_price
+        detail = {
+            "country": country,
+            "price": country_price
+        }
+        country_price_list += [detail]
+    response = {
+        "code": 200,
+        "result": country_price_list,
+        "message": "success"
+    }
+    return json.dumps(response)
+
 #更新offer的状态
 @offers.route('/api/update_offer_status/<offer_id>', methods=["GET","POST"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
@@ -514,6 +541,26 @@ def bindUpdate():
         except Exception as e:
             print e
             return json.dumps({"code": 500, "message": "fail"})
+
+#显示绑定的所有的campaign name
+@offers.route("/api/bind_detail", methods=["POST","GET"])
+def bindDetail():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        offerId = int(data["offer_id"])
+        bind_advertisers = Advertisers.query.filter_by(offer_id=offerId).first()
+        advertisers = bind_advertisers.advertise_series
+        campaignNames = []
+        for i in advertisers.split(','):
+            campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
+            for j in campaigns:
+                campaignNames.append(j.campaignName)
+
+        return json.dumps({
+            "code": 200,
+            "campaignNames": campaignNames,
+            "message": "success"
+        })
 
 @offers.route("/api/history", methods=["POST", "GET"])
 def historty():
@@ -936,17 +983,6 @@ def updateContryTime():
             pass
     return json.dumps({"code": 200, "message": "success"})
 
-
-# @offers.route('/static/<path:filename>')
-# def static_file_for_console(filename):
-#     filename = safe_join("../static", filename)
-#     if not os.path.isabs(filename):
-#         filename = os.path.join(offers.root_path, filename)
-#     if not os.path.isfile(filename):
-#         return Response(), 404
-#     return send_file(filename, conditional=True)
-#
-#
 @offers.route('/<path>')
 def today(path):
     # base_dir = os.path.abspath(__file__)

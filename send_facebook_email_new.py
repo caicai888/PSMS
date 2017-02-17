@@ -80,6 +80,7 @@ try:
             continue
 
         file_name = app_name.encode("utf8")+"_data.xls"
+        file_name = '=?UTF-8?B?' + base64Encode('标题文字') + '?='
         file_dir = '/home/ubuntu/code'
         wbk.save(file_name)
         mail_body="data"
