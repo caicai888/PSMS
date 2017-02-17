@@ -563,7 +563,7 @@ def bindDetail():
             })
         else:
             return json.dumps({
-                "code": 500,
+                "code": 200,
                 "campaignNames": campaignNames,
                 "message": "no bind datas"
             })
