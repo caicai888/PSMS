@@ -16,7 +16,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select offer_id,advertise_series from advertisers where type='facebook'"
+sql = "select offer_id,advertise_series from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
 cursor.execute(sql)
 results = cursor.fetchall()
 

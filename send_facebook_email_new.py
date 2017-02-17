@@ -13,13 +13,14 @@ from email.MIMEBase import MIMEBase
 from email import Encoders
 import datetime,time
 import requests
+import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
 time_now = "08:30"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select * from offer where email_time='%s'"%(time_now)
+sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now)
 cursor.execute(sql)
 results = cursor.fetchall()
 startTime = ((datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=120)).strftime("%Y-%m-%d")
@@ -79,8 +80,7 @@ try:
             sheet.write(count, 11, data[11])
             continue
 
-        file_name = app_name.encode("utf8")+"_data.xls"
-        file_name = '=?UTF-8?B?' + base64Encode('标题文字') + '?='
+        file_name = '=?UTF-8?B?' +base64.b64encode(app_name)+'?='+ "_data.xls"
         file_dir = '/home/ubuntu/code'
         wbk.save(file_name)
         mail_body="data"
@@ -97,7 +97,8 @@ try:
         msg['From'] = mail_from
         msg['To'] = ';'.join(mail_to)
         msg['date'] = time.strftime('%Y-%m-%d')
-        msg['Subject'] = app_name.encode("utf8")+"_report Data"
+        # msg['Subject'] = app_name.encode("utf8")+"_report Data"
+        msg['Subject'] = '=?UTF-8?B?' + base64.b64encode(app_name) + '?='+"_report Data"
         smtp = smtplib.SMTP()
         smtp.connect('smtp.exmail.qq.com',25)
         smtp.ehlo()
