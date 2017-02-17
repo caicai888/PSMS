@@ -549,18 +549,18 @@ def bindDetail():
         data = request.get_json(force=True)
         offerId = int(data["offer_id"])
         bind_advertisers = Advertisers.query.filter_by(offer_id=offerId).first()
-        advertisers = bind_advertisers.advertise_series
         campaignNames = []
-        for i in advertisers.split(','):
-            campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
-            for j in campaigns:
-                campaignNames.append(j.campaignName)
-
-        return json.dumps({
-            "code": 200,
-            "campaignNames": campaignNames,
-            "message": "success"
-        })
+        if bind_advertisers:
+            advertisers = bind_advertisers.advertise_series
+            for i in advertisers.split(','):
+                campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
+                for j in campaigns:
+                    campaignNames.append(j.campaignName)
+            return json.dumps({
+                "code": 200,
+                "campaignNames": campaignNames,
+                "message": "success"
+            })
 
 @offers.route("/api/history", methods=["POST", "GET"])
 def historty():
@@ -990,8 +990,8 @@ def offerSearch():
         data = request.get_json(force=True)
         key = data["key"]
         offer_result_list = []
-        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"),Offer.status != "deleted").all()  #应用名称
-        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").all()   #投放的系统
+        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc()).all()  #应用名称
+        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc()).all()   #投放的系统
         customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).all()   #客户名称
         sales = User.query.filter(User.name.like("%"+key+"%")).all()    #销售名称
         result_appname = offer_search_detail(appnames)
@@ -1003,13 +1003,13 @@ def offerSearch():
         for i in customers:
             customer_ids.append(i.id)
         for i in customer_ids:
-            customers_offer = Offer.query.filter(Offer.customer_id==i,Offer.status != "deleted").all()
+            customers_offer = Offer.query.filter(Offer.customer_id==i,Offer.status != "deleted").order_by(Offer.id.desc()).all()
             result_customer = offer_search_detail(customers_offer)
             offer_result_list.extend(result_customer)
         for i in sales:
             sales_ids.append(i.id)
         for i in sales_ids:
-            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").all()
+            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc()).all()
             result_sales = offer_search_detail(sales_offer)
             offer_result_list.extend(result_sales)
         offer_result_list_unique = []
