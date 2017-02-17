@@ -414,3 +414,9 @@ table tr td{
 .allPrice_active{
     transform: rotate(90deg);
 }
+#export_table td:nth-child(3){
+    max-width: 200px;
+    overflow: hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+}
