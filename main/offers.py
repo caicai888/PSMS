@@ -983,6 +983,80 @@ def updateContryTime():
             pass
     return json.dumps({"code": 200, "message": "success"})
 
+#offer list search
+@offers.route('/api/offer_search', methods=["POST","GET"])
+def offerSearch():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        key = data["key"]
+        offer_result_list = []
+        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"),Offer.status != "deleted").all()  #应用名称
+        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").all()   #投放的系统
+        customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).all()   #客户名称
+        sales = User.query.filter(User.name.like("%"+key+"%")).all()    #销售名称
+        result_appname = offer_search_detail(appnames)
+        result_system = offer_search_detail(systems)
+        offer_result_list.extend(result_appname)
+        offer_result_list.extend(result_system)
+        customer_ids = []
+        sales_ids = []
+        for i in customers:
+            customer_ids.append(i.id)
+        for i in customer_ids:
+            customers_offer = Offer.query.filter(Offer.customer_id==i,Offer.status != "deleted").all()
+            result_customer = offer_search_detail(customers_offer)
+            offer_result_list.extend(result_customer)
+        for i in sales:
+            sales_ids.append(i.id)
+        for i in sales_ids:
+            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").all()
+            result_sales = offer_search_detail(sales_offer)
+            offer_result_list.extend(result_sales)
+        offer_result_list_unique = []
+        for j in offer_result_list:
+            if j not in offer_result_list_unique:
+                offer_result_list_unique.append(j)
+            else:
+                pass
+        return json.dumps({
+            "code": 200,
+            "result": offer_result_list_unique
+        })
+
+def offer_search_detail(offers):
+    offer_result_list = []
+    for i in offers:
+        contract_type = i.contract_type
+        sales = User.query.filter_by(id=int(i.user_id)).first()
+        if contract_type == "1":
+            contract_type = u"服务费"
+        elif contract_type == "2":
+            contract_type = "cpa"
+        if i.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+            endTime = "TBD"
+        else:
+            endTime = i.endTime
+        customerId = i.customer_id
+        customer = Customers.query.filter_by(id=customerId).first()
+        customerName = customer.company_name
+        offer_result_list += [
+            {
+                "offer_id": i.id,
+                "status": i.status,
+                "contract_type": contract_type,
+                "os": i.os,
+                "customer_id": customerName,
+                "app_name": i.app_name,
+                "startTime": i.startTime,
+                "endTime": endTime,
+                "country": str(i.country),
+                "price": i.price,
+                "updateTime": i.updateTime,
+                "sale_name": sales.name
+            }
+        ]
+    return offer_result_list
+
 @offers.route('/<path>')
 def today(path):
     # base_dir = os.path.abspath(__file__)
