@@ -13,6 +13,7 @@ from email.MIMEBase import MIMEBase
 from email import Encoders
 import datetime,time
 import requests
+import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
@@ -21,9 +22,22 @@ cursor = db.cursor()
 sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now)
 cursor.execute(sql)
 results = cursor.fetchall()
-yesterday = (datetime.datetime.now()-datetime.timedelta(hours=16)).strftime("%Y-%m-%d")
+
+startTime = ((datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=168)).strftime("%Y-%m-%d")
 today = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime("%Y-%m-%d")
-time_ranges = ["{'since': " + "'" + str(yesterday) + "'" + ", 'until': " + "'" + str(yesterday) + "'" + "}","{'since': " + "'" + str(today) + "'" + ", 'until': " + "'" + str(today) + "'" + "}"]
+date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
+date2 = datetime.datetime.strptime(today, '%Y-%m-%d')
+date_timelta = datetime.timedelta(days=1)
+all_date = []
+all_date.append(startTime)
+while date_timelta < (date2 - date1):
+    all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+    date_timelta += datetime.timedelta(days=1)
+all_date.append(time_now)
+
+time_ranges = []
+for day in all_date[::-1]:
+    time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
 
 accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 for i in results:
@@ -399,11 +413,11 @@ for i in results:
                 sheet.write(j+1, 10, '%0.2f'%(float(cpc_list[j].get("cpc"))))
                 sheet.write(j+1, 11, '%0.2f'%(float(cpi_list[j].get("cpi"))))
                 continue
-            file_name = app_name.encode("utf8")+"_data.xls"
+            file_name = '=?UTF-8?B?' +base64.b64encode(app_name)+'?='+ "_data.xls"
             file_dir = '/home/ubuntu/code'
             wbk.save(file_name)
             mail_body="data"
-            mail_from="liyin@newborn-town.com"
+            mail_from="ads_reporting@newborn-town.com"
             msg = MIMEMultipart()
             body = MIMEText(mail_body)
             msg.attach(body)
@@ -416,13 +430,13 @@ for i in results:
             msg['From'] = mail_from
             msg['To'] = ';'.join(mail_to)
             msg['date'] = time.strftime('%Y-%m-%d')
-            msg['Subject'] = app_name.encode("utf8")+"_report Data"
+            msg['Subject'] = '=?UTF-8?B?' + base64.b64encode(app_name) + '?='+"_report Data"
             smtp = smtplib.SMTP()
             smtp.connect('smtp.exmail.qq.com',25)
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
-            smtp.login('liyin@newborn-town.com', '920130LiY')
+            smtp.login('ads_reporting@newborn-town.com', '5igmKD3F0cLScrS5')
             smtp.sendmail(mail_from, mail_to, msg.as_string())
             smtp.quit()
             print("ok")
