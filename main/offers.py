@@ -561,6 +561,12 @@ def bindDetail():
                 "campaignNames": campaignNames,
                 "message": "success"
             })
+        else:
+            return json.dumps({
+                "code": 200,
+                "campaignNames": campaignNames,
+                "message": "no bind datas"
+            })
 
 @offers.route("/api/history", methods=["POST", "GET"])
 def historty():
