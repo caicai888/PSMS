@@ -129,6 +129,10 @@ var OfferList = React.createClass({
     componentDidMount(){
         this.offerList();
     },
+    componentWillUpdate(){
+        $(".allPrice").removeClass("allPrice_active");
+        $(".country_price").remove();
+    },
     render:function () {
         let _this = this;
         return (
