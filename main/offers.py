@@ -1063,10 +1063,10 @@ def offer_search_detail(offers):
         ]
     return offer_result_list
 
-@offers.route('/<path>')
-def today(path):
-    # base_dir = os.path.abspath(__file__)
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
-    resp = make_response(open(os.path.join(base_dir, path)))
-    resp.headers["Content-type"] = "application/json;charset=UTF-8"
-    return resp
+# @offers.route('/<path>')
+# def today(path):
+#     # base_dir = os.path.abspath(__file__)
+#     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
+#     resp = make_response(open(os.path.join(base_dir, path)))
+#     resp.headers["Content-type"] = "application/json;charset=UTF-8"
+#     return resp
