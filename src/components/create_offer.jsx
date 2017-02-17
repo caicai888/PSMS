@@ -385,7 +385,7 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-3">
                             <select className="form-control" data-key="os">
                                 <option value="iOS">iOS</option>
-                                <option value="android">Android</option>
+                                <option value="Android">Android</option>
                             </select>
                         </div>
                         <div className="col-sm-3 text-right">
