@@ -549,18 +549,18 @@ def bindDetail():
         data = request.get_json(force=True)
         offerId = int(data["offer_id"])
         bind_advertisers = Advertisers.query.filter_by(offer_id=offerId).first()
-        advertisers = bind_advertisers.advertise_series
         campaignNames = []
-        for i in advertisers.split(','):
-            campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
-            for j in campaigns:
-                campaignNames.append(j.campaignName)
-
-        return json.dumps({
-            "code": 200,
-            "campaignNames": campaignNames,
-            "message": "success"
-        })
+        if bind_advertisers:
+            advertisers = bind_advertisers.advertise_series
+            for i in advertisers.split(','):
+                campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
+                for j in campaigns:
+                    campaignNames.append(j.campaignName)
+            return json.dumps({
+                "code": 200,
+                "campaignNames": campaignNames,
+                "message": "success"
+            })
 
 @offers.route("/api/history", methods=["POST", "GET"])
 def historty():
