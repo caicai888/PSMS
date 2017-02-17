@@ -36,8 +36,22 @@ var OfferList = React.createClass({
     search_table(e){
         clearTimeout(time);
         var _this = this;
-        var val = $(e.target).val() || $(e.target).prev().val();
+        var val = $(e.target).val();
         time = setTimeout(function () {
+            ajax("post","/api/offer_search",JSON.stringify({key:val})).then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    _this.setState({
+                        result:data.result,
+                        totalPages:data.totalPages || 1,
+                        page:1
+                    })
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $("#modal").modal("toggle");
+                }
+            });
+            /* 前端搜索
             if(val){
                 var newResult = [];
                 for (let elem of _this.state.result_search){
@@ -50,6 +64,7 @@ var OfferList = React.createClass({
             }else{
                 _this.setState({result:_this.state.result_search});
             }
+            */
         },500);
     },
     copy(e){
@@ -60,6 +75,30 @@ var OfferList = React.createClass({
                 var data = JSON.parse(data);
                 if(data.code=="200"){
                     _this.offerList();
+                }else {
+                    $(".ajax_error").html(data.message);
+                    $("#modal").modal("toggle");
+                }
+            });
+        }
+    },
+    allPrice(e){
+        let eleObj = $(e.target);
+        let offer_id = e.target.dataset.offer_id;
+        if(eleObj.hasClass("allPrice_active")){
+            eleObj.removeClass("allPrice_active");
+            $(".country_price").remove();
+            return false;
+        }else {
+            eleObj.addClass("allPrice_active");
+            ajax("get","/api/country_price/"+offer_id).then(function (data) {
+                var data = JSON.parse(data);
+                if(data.code=="200"){
+                    var html ="";
+                    for(let obj of data.result){
+                        html+=`<tr class='country_price'><td colspan='7'></td><td>${obj.country}</td><td>${obj.price}</td><td colspan='4'></td></tr>`;
+                    }
+                    eleObj.parents("tr").after(html)
                 }else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -81,10 +120,6 @@ var OfferList = React.createClass({
                     totalPages:data.totalPages,
                     page:page||1
                 })
-
-                $(" table td span.allPrice").on("click",function () {
-                    $(this).toggleClass("allPrice_active");
-                });
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
@@ -142,7 +177,7 @@ var OfferList = React.createClass({
                                                 <td>{ele.sale_name}</td>
                                                 <td>{ele.contract_type}</td>
                                                 <td>{ele.country}</td>
-                                                <td><span className="onePrice">{ele.price}</span> <span className="allPrice">&lt;</span></td>
+                                                <td><span className="onePrice">{ele.price}</span> <span data-offer_id={ele.offer_id} onClick={_this.allPrice} className="allPrice">&lt;</span></td>
                                                 <td>{ele.startTime}</td>
                                                 <td>{ele.endTime}</td>
                                                 <td>
