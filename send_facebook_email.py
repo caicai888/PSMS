@@ -85,6 +85,7 @@ for i in results:
                 "time_ranges": str(time_ranges)
             }
             result = requests.get(url=url, params=params)
+            print result
             data = result.json()["data"]
             for j in data:
                 impressions_list.append(j)
