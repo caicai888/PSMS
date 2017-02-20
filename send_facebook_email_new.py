@@ -82,7 +82,7 @@ try:
         file_dir = '/home/ubuntu/code'
         wbk.save(file_name)
         mail_body="data"
-        mail_from="liyin@newborn-town.com"
+        mail_from="ads_reporting@newborn-town.com"
         msg = MIMEMultipart()
         body = MIMEText(mail_body)
         msg.attach(body)
