@@ -35,7 +35,7 @@ all_date.append(startTime)
 while date_timelta < (date2 - date1):
     all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
     date_timelta += datetime.timedelta(days=1)
-all_date.append(time_now)
+all_date.append(today)
 
 time_ranges = []
 for day in all_date[::-1]:
