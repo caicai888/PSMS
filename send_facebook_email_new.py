@@ -12,12 +12,10 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email import Encoders
 import datetime,time
-import requests
 import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
-time_now = "16:00"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now)
@@ -93,7 +91,6 @@ try:
         Encoders.encode_base64(part)
         part.add_header('Content-Disposition', 'attachment; filename="' + file_name.encode("utf8") + '"')
         msg.attach(part)
-
         msg['From'] = mail_from
         msg['To'] = ';'.join(mail_to)
         msg['date'] = time.strftime('%Y-%m-%d')
@@ -103,8 +100,7 @@ try:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-        mail_to = "liyin@newborn-town.com"
-        smtp.login('liyin@newborn-town.com', '920130LiY')
+        smtp.login('ads_reporting@newborn-town.com', '5igmKD3F0cLScrS5')
         smtp.sendmail(mail_from, mail_to, msg.as_string())
         smtp.quit()
         print("ok")
