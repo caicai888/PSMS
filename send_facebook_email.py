@@ -77,6 +77,7 @@ for i in results:
         print advertise_groups
         for i in advertise_groups:
             print i
+            print time_ranges
             url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
             params = {
                 "access_token": accessToken,
