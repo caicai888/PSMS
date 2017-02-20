@@ -33,7 +33,7 @@ all_date.append(startTime)
 while date_timelta < (date2 - date1):
     all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
     date_timelta += datetime.timedelta(days=1)
-all_date.append(time_now)
+all_date.append(today)
 
 time_ranges = []
 for day in all_date[::-1]:
@@ -68,13 +68,13 @@ try:
             count += 1
             sheet.write(count, 0, data[0])
             sheet.write(count, 1, data[1])
-            sheet.write(count, 2, data[2])
-            sheet.write(count, 3, data[3])
-            sheet.write(count, 4, data[4])
+            sheet.write(count, 2, '%0.2f'%float(data[2]))
+            sheet.write(count, 3, '%0.2f'%float(data[3]))
+            sheet.write(count, 4, '%0.2f'%float(data[4]))
             sheet.write(count, 5, data[5])
             sheet.write(count, 6, data[6])
             sheet.write(count, 7, data[7])
-            sheet.write(count, 8, data[8])
+            sheet.write(count, 8, '%0.2f'%float(data[8]))
             sheet.write(count, 9, data[9])
             sheet.write(count, 10, data[10])
             sheet.write(count, 11, data[11])
@@ -97,7 +97,6 @@ try:
         msg['From'] = mail_from
         msg['To'] = ';'.join(mail_to)
         msg['date'] = time.strftime('%Y-%m-%d')
-        # msg['Subject'] = app_name.encode("utf8")+"_report Data"
         msg['Subject'] = '=?UTF-8?B?' + base64.b64encode(app_name) + '?='+"_report Data"
         smtp = smtplib.SMTP()
         smtp.connect('smtp.exmail.qq.com',25)
