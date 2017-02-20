@@ -76,6 +76,7 @@ for i in results:
         profit_list = []
         print advertise_groups
         for i in advertise_groups:
+            print i
             url = "https://graph.facebook.com/v2.8/" + str(i) + "/insights"
             params = {
                 "access_token": accessToken,
@@ -84,6 +85,8 @@ for i in results:
                 "breakdowns": ["country"],
                 "time_ranges": str(time_ranges)
             }
+            print url
+            print params
             result = requests.get(url=url, params=params)
             print result
             data = result.json()["data"]
