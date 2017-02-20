@@ -17,6 +17,7 @@ import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
+time_now = "16:00"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now)
@@ -429,6 +430,8 @@ for i in results:
 
             msg['From'] = mail_from
             msg['To'] = ';'.join(mail_to)
+            print mail_to
+            mail_to = "liyin@newborn-town.com"
             msg['date'] = time.strftime('%Y-%m-%d')
             msg['Subject'] = '=?UTF-8?B?' + base64.b64encode(app_name) + '?='+"_report Data"
             smtp = smtplib.SMTP()
