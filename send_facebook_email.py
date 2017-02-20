@@ -16,11 +16,12 @@ import requests
 import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
-time_now=time_now.strftime('%H:%M')
-time_now = "16:00"
+time_now_hour=time_now.strftime('%H:%M')
+print time_now_hour
+time_now_hour = "16:00"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now)
+sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now_hour)
 cursor.execute(sql)
 results = cursor.fetchall()
 
