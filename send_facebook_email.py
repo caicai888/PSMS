@@ -436,7 +436,6 @@ for i in results:
 
             msg['From'] = mail_from
             msg['To'] = ';'.join(mail_to)
-            mail_to = "liyin@newborn-town.com"
             msg['date'] = time.strftime('%Y-%m-%d')
             msg['Subject'] = '=?UTF-8?B?' + base64.b64encode(app_name) + '?='+"_report Data"
             smtp = smtplib.SMTP()
