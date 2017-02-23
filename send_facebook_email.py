@@ -39,9 +39,10 @@ all_date.append(today)
 time_ranges = []
 for day in all_date[::-1]:
     time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-
+print all_date
 accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 for i in results:
+    print i
     mail_to = i[31].split(",")
     offerId = i[0]
     contract_type = i[4]
