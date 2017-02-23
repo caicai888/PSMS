@@ -22,8 +22,10 @@ class GoogleAdsUtils(object):
         self.tempf = tempfile.NamedTemporaryFile(delete=True)
         self.offerId = int(offer_id)
         self.day_price = dict()
-        self.fields = ['CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
-        self.REPORT = 'GEO_PERFORMANCE_REPORT'
+        self.fields = ['CampaignId', 'CampaignName', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
+        # self.fields = ['CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
+        self.REPORT = 'CAMPAIGN_LOCATION_TARGET_REPORT'
+        # self.REPORT = 'GEO_PERFORMANCE_REPORT'
         self.DATE_RANGE = ','.join((start_date.replace('-', ''), end_date.replace('-', '')))
         self.DateList = self.get_DateList(start_date, end_date)
         self.report_data = dict(impressions=dict(), clicks=dict(), conversions=dict(), profit=dict(),
@@ -302,6 +304,7 @@ class GoogleAdsUtils(object):
         ColumnList = ','.join(self.fields)
         report_downloader = self.adwords_client.GetReportDownloader(version='v201609')
         report_query = ('SELECT %s FROM %s DURING %s' % (ColumnList, self.REPORT, self.DATE_RANGE))
+        # report_query = "SELECT %s FROM %s WHERE CampaignName = 'D-Kittylive-TH-0203-video-1' DURING %s" % (ColumnList, self.REPORT, self.DATE_RANGE)
  
         try:
             report_downloader.DownloadReportWithAwql(
@@ -310,6 +313,9 @@ class GoogleAdsUtils(object):
             self.tempf.seek(0)
             with open(self.tempf.name, 'r') as csv_file:
                 reader = csv.DictReader(csv_file)
+                for r in reader:
+                    print r
+                return
                 map(self.generate_report, reader)
 
             self.calculate_report()
@@ -336,27 +342,24 @@ class GoogleAdsUtils(object):
 
 class AdwordsRoutes(GoogleAdsUtils): 
 
-    # @adwordsData.route('/api/googleads', methods=['POST', 'GET'])
-    # def get_report():
-        # if request.method == 'POST':
-        # _args = request.get_json(force=True)
-        # dimen = 'geo' in _args.get("dimension")  # date: 0, geo: 1
-        # offer_id = _args.get('offer_id')
-        # start = _args.get('start_date')
-        # end = _args.get('end_date')
-        # self.dimen = 'geo' in dimension
-        # self.start = start_date
-        # self.end = end_date
+    @adwordsData.route('/api/googleads', methods=['POST', 'GET'])
+    def get_report():
+        if request.method == 'POST':
+            _args = request.get_json(force=True)
+            dimen = 'geo' in _args.get("dimension")  # date: 0, geo: 1
+            offer_id = _args.get('offer_id')
+            start_date = _args.get('start_date')
+            end_date = _args.get('end_date')
 
-        # ads = GoogleAdsUtils('296-153-6464', start_date, end_date, offer_id)
-        # total, table_data, chart_data = ads.GetDataFromGads(dimen)
-        # if dimen:
-        #     response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
-        #                 "data_date_table": {}, 'data_range': chart_data}
-        # else:
-        #     response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
-        #                 "data_geo_table": {}, 'data_range': chart_data}
-        # return json.dumps(response)
+            ads = GoogleAdsUtils('929-311-9549', start_date, end_date, offer_id)
+            total, table_data, chart_data = ads.GetDataFromGads(dimen)
+            if dimen:
+                response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success",
+                            "data_date_table": {}, 'data_range': chart_data}
+            else:
+                response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success",
+                            "data_geo_table": {}, 'data_range': chart_data}
+            return json.dumps(response)
 
     @adwordsData.route('/api/adwords/dashboard')
     def get_dashboard():
@@ -382,7 +385,8 @@ class AdwordsRoutes(GoogleAdsUtils):
         return json.dumps(response)
 
 if __name__ == '__main__':
-    ads = GoogleAdsUtils('296-153-6464', '2016-12-30', '2017-01-03')
+    ads = GoogleAdsUtils('898-940-9725', '2016-12-30', '2017-01-03')
+    dashboard_data = ads.GetDashboard()
     # PATH = '/tmp/report_download.csv'
     # ads.export_csv(PATH)
     # ads.query()

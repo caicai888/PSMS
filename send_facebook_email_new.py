@@ -82,7 +82,7 @@ try:
         file_dir = '/home/ubuntu/code'
         wbk.save(file_name)
         mail_body="data"
-        mail_from="ads_reporting@newborn-town.com"
+        mail_from="ads_reporting@newborntown.com"
         msg = MIMEMultipart()
         body = MIMEText(mail_body)
         msg.attach(body)
@@ -100,7 +100,7 @@ try:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-        smtp.login('ads_reporting@newborn-town.com', '5igmKD3F0cLScrS5')
+        smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
         smtp.sendmail(mail_from, mail_to, msg.as_string())
         smtp.quit()
         print("ok")

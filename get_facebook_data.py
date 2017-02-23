@@ -341,7 +341,6 @@ for i in results:
                         price = offer_price
                     else:
                         price = history_result[0]
-
                 revenue_list += [
                     {
                         "country": country,

@@ -17,6 +17,7 @@ import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now_hour=time_now.strftime('%H:%M')
+time_now_hour = "22:30"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now_hour)
@@ -38,9 +39,10 @@ all_date.append(today)
 time_ranges = []
 for day in all_date[::-1]:
     time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-
+print all_date
 accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 for i in results:
+    print i
     mail_to = i[31].split(",")
     offerId = i[0]
     contract_type = i[4]
@@ -359,7 +361,7 @@ for i in results:
                     if time_price:
                         price = time_price[0]
                     else:
-                        sql_history = "select country_price from history where country='%s' and offer_id='%d'order by createdTime"%(country,offerId)
+                        sql_history = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc"%(country,offerId)
                         cursor.execute(sql_history)
                         prices_history = cursor.fetchone()
                         if not prices_history:
@@ -424,7 +426,7 @@ for i in results:
             file_dir = '/home/ubuntu/code'
             wbk.save(file_name)
             mail_body="data"
-            mail_from="ads_reporting@newborn-town.com"
+            mail_from="ads_reporting@newborntown.com"
             msg = MIMEMultipart()
             body = MIMEText(mail_body)
             msg.attach(body)
@@ -443,7 +445,9 @@ for i in results:
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
-            smtp.login('ads_reporting@newborn-town.com', '5igmKD3F0cLScrS5')
+            print mail_to
+            mail_to = "liyin@newborntown.com"
+            smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
             smtp.sendmail(mail_from, mail_to, msg.as_string())
             smtp.quit()
             print("ok")
