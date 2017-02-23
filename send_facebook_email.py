@@ -361,7 +361,7 @@ for i in results:
                     if time_price:
                         price = time_price[0]
                     else:
-                        sql_history = "select country_price from history where country='%s' and offer_id='%d'order by createdTime"%(country,offerId)
+                        sql_history = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc"%(country,offerId)
                         cursor.execute(sql_history)
                         prices_history = cursor.fetchone()
                         if not prices_history:
