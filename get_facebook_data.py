@@ -18,7 +18,7 @@ db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 # sql = "select offer_id,advertise_series from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
 ids=60
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id='%d'"%(ids)
+sql = "select offer_id,advertise_series from advertisers where type='facebook' and offer_id='%d'"%(ids)
 cursor.execute(sql)
 results = cursor.fetchall()
 
