@@ -580,3 +580,13 @@ def faceReport():
                    "code": 500,
                    "message": "no bind data or bind wrong data"
                })
+            advertise_groups = advertiser.advertiser_series.split(",")
+            for a in advertise_groups:
+                ads = adwordsData.GoogleAdsUtils(a, start_date, end_date, offerId)
+                dimen = 'geo' in dimension
+                total, table_data, chart_data = ads.GetDataFromGads(dimen)
+                if dimen:
+                    response = {'code': 200, 'data_geo': total, 'data_geo_table': table_data, 'message': "success","data_date_table": {}, 'data_range': chart_data}
+                else:
+                    response = {'code': 200, 'data_geo': total, 'data_date_table': table_data, 'message': "success","data_geo_table": {}, 'data_range': chart_data}
+            return json.dumps(response)
