@@ -17,7 +17,6 @@ if PREFIX not in sys.path:
 
 class Config:
     SECRET_KEY = random_string()
-    BASE_API_URL = "http://api.beta.dev.careerdream.org/core/v1/"
 
     @staticmethod
     def init_app(app):
@@ -28,7 +27,7 @@ class ProductionConfig(Config):
     MYSQL_USER = "root"
     MYSQL_PASS = "chizicheng521"
     MYSQL_HOST = "localhost"
-    MYSQL_PORT = 3306
+    MYSQL_PORT = "3306"
     MYSQL_DB = "psms"
 
 config = {

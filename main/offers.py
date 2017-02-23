@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 from main.has_permission import *
 from flask import Blueprint, request, safe_join, Response, send_file, make_response
 
 from main import db
-from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role
+from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role,CampaignRelations
 import json
 import os
 import datetime, time
@@ -109,79 +110,101 @@ def createOffer():
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-        contract_type = data["contract_type"]
-
-        user_id= data["user_id"].split("(")[1].split(')')[0]
-        customer_id = data["customer_id"].split("(")[1].split(')')[0]
-
-        offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,
-                      data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],
-                      data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
-                      data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),
-                      float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],
-                      float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],
-                      data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),
-                      data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],
-                      str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
-        try:
-            db.session.add(offer)
-            db.session.commit()
-            db.create_all()
-
-            for i in data['country_detail']:
-                history = History(offer.id, int(user_id), "default", createdTime, status=data["status"],
-                                  country=i["country"], country_price=i["price"], price=data["price"],
-                                  daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],
-                                  total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],
-                                  KPI=data["KPI"], contract_type=contract_type,
-                                  contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
-                db.session.add(history)
+        if data["offer_id"]:
+            offer_id = int(data["offer_id"])
+            oldOffer = Offer.query.filter_by(id=offer_id).first()
+            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_type,oldOffer.contract_num,oldOffer.contract_scale,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.material,oldOffer.startTime,oldOffer.endTime,oldOffer.platform,oldOffer.country,oldOffer.price,oldOffer.daily_budget,oldOffer.daily_type,oldOffer.total_budget,oldOffer.total_type,oldOffer.distribution,oldOffer.authorized,oldOffer.named_rule,oldOffer.KPI,oldOffer.settlement,oldOffer.period,oldOffer.remark,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
+            try:
+                db.session.add(offer)
                 db.session.commit()
                 db.create_all()
-            return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
-        except Exception as e:
-            print e
-            return json.dumps({"code": 500, "message": "fail"})
+
+                oldHistorty = History.query.filter_by(offer_id=offer_id).all()
+                for i in oldHistorty:
+                    historty = History(offer.id, i.user_id,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
+                    db.session.add(historty)
+                    db.session.commit()
+                    db.create_all()
+                return json.dumps({"code":200,"message":"success","offerId":offer.id})
+            except Exception as e:
+                print e
+                return json.dumps({"code":500,"message":"fail"})
+
+        else:
+            contract_type = data["contract_type"]
+
+            user_id= data["user_id"].split("(")[1].split(')')[0]
+            customer_id = data["customer_id"].split("(")[1].split(')')[0]
+
+            offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
+            try:
+                db.session.add(offer)
+                db.session.commit()
+                db.create_all()
+
+                for i in data['country_detail']:
+                    history = History(offer.id, int(user_id), "default", createdTime, status=data["status"],country=i["country"], country_price=i["price"], price=data["price"],daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],KPI=data["KPI"], contract_type=contract_type,contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
+                    db.session.add(history)
+                    db.session.commit()
+                    db.create_all()
+                return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
+            except Exception as e:
+                print e
+                return json.dumps({"code": 500, "message": "fail"})
 
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
 def offerShow():
-    offers = Offer.query.all()
-    result = []
-    for i in offers:
-        customerId = i.customer_id
-        customer = Customers.query.filter_by(id=customerId).first()
-        customerName = customer.company_name  # 客户名称
-        status = i.status
-        contract_type = i.contract_type
-        sales = User.query.filter_by(id=int(i.user_id)).first()
-        if contract_type == "1":
-            contract_type = u"服务费"
-        elif contract_type == "2":
-            contract_type = "cpa"
-        os = i.os
-        app_name = i.app_name
-        data = {
-            "offer_id": i.id,
-            "status": status,
-            "contract_type": contract_type,
-            "os": os,
-            "customer_id": customerName,
-            "app_name": app_name,
-            "startTime": i.startTime,
-            "endTime": i.endTime,
-            "country": str(i.country),
-            "price": i.price,
-            "updateTime": i.updateTime,
-            "sale_name":sales.name
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        page = data["page"]
+        limit = int(data["limit"])
+        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        count = Offer.query.filter(Offer.status != "deleted").count()
+        if (count % limit) == 0:
+            totalPages = count/limit
+        else:
+            totalPages = count/limit + 1
+        result = []
+        for i in offers.items:
+            customerId = i.customer_id
+            customer = Customers.query.filter_by(id=customerId).first()
+            customerName = customer.company_name  # 客户名称
+            status = i.status
+            contract_type = i.contract_type
+            sales = User.query.filter_by(id=int(i.user_id)).first()
+            if contract_type == "1":
+                contract_type = u"服务费"
+            elif contract_type == "2":
+                contract_type = "cpa"
+            os = i.os
+            app_name = i.app_name
+            if i.endTime >= (datetime.datetime.now()+datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+                endTime = "TBD"
+            else:
+                endTime = i.endTime
+            data = {
+                "offer_id": i.id,
+                "status": status,
+                "contract_type": contract_type,
+                "os": os,
+                "customer_id": customerName,
+                "app_name": app_name,
+                "startTime": i.startTime,
+                "endTime": endTime,
+                "country": str(i.country),
+                "price": i.price,
+                "updateTime": i.updateTime,
+                "sale_name":sales.name
+            }
+            result += [data]
+        response = {
+            "totalPages": int(totalPages),
+            "code": 200,
+            "result": result,
+            "message": "success"
         }
-        result += [data]
-    response = {
-        "code": 200,
-        "result": result,
-        "message": "success"
-    }
-    return json.dumps(response)
+        return json.dumps(response)
 
 
 @offers.route('/api/offer_detail/<id>', methods=["GET"])
@@ -230,7 +253,7 @@ def offerDetail(id):
         "remark": offer.remark,
         "email_time": offer.email_time,
         "email_users": offer.email_users,
-        "email_tempalte": offer.email_tempalte
+        "email_tempalte": offer.email_template
     }
     historties = History.query.filter(History.offer_id == id, History.country != "").all()
     countries = []
@@ -257,34 +280,83 @@ def offerDetail(id):
     }
     return json.dumps(response)
 
+#offer国家对应的价钱
+@offers.route('/api/country_price/<offerId>', methods=["GET"])
+def countryPrice(offerId):
+    historties = History.query.filter(History.offer_id == int(offerId), History.country != "").all()
+    countries = []
+    for i in historties:
+        country = i.country
+        countries.append(country)
+    countries = list(set(countries))
+    country_price_list = []
+    for i in countries:
+        historty = History.query.filter(History.offer_id == int(offerId), History.country == i).order_by(
+            desc(History.createdTime)).first()
+        country = historty.country
+        country_price = historty.country_price
+        detail = {
+            "country": country,
+            "price": country_price
+        }
+        country_price_list += [detail]
+    response = {
+        "code": 200,
+        "result": country_price_list,
+        "message": "success"
+    }
+    return json.dumps(response)
+
 #更新offer的状态
-@offers.route('/api/update_offer_status/<offer_id>', methods=["GET"])
+@offers.route('/api/update_offer_status/<offer_id>', methods=["GET","POST"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateStatus(offer_id):
     offer = Offer.query.filter_by(id=int(offer_id)).first()
-    if offer.status == "active":
-        offer.status = "inactive"
-        status = offer.status
-        db.session.add(offer)
-        db.session.commit()
-        history = History(offer.id, offer.user_id, "update",
-                          (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
-                              "%Y-%m-%d %H:%M:%S"),
-                          price=offer.price,
-                          status=status,
-                          daily_budget=offer.daily_budget,
-                          daily_type=offer.daily_type,
-                          total_budget=offer.total_budget,
-                          total_type=offer.total_type,
-                          KPI=offer.KPI,
-                          contract_type=offer.contract_type,
-                          contract_scale=offer.contract_scale)
-        db.session.add(history)
-        db.session.commit()
-        db.create_all()
-        return json.dumps({"code": 200, "message":"success"})
-    elif offer.status == "inactive":
-        offer.status = "active"
+    if request.method == "GET":
+        if offer.status == "active":
+            offer.status = "inactive"
+            status = offer.status
+            db.session.add(offer)
+            db.session.commit()
+            history = History(offer.id, offer.user_id, "update",
+                              (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                                  "%Y-%m-%d %H:%M:%S"),
+                              price=offer.price,
+                              status=status,
+                              daily_budget=offer.daily_budget,
+                              daily_type=offer.daily_type,
+                              total_budget=offer.total_budget,
+                              total_type=offer.total_type,
+                              KPI=offer.KPI,
+                              contract_type=offer.contract_type,
+                              contract_scale=offer.contract_scale)
+            db.session.add(history)
+            db.session.commit()
+            db.create_all()
+            return json.dumps({"code": 200, "message":"success"})
+        elif offer.status == "inactive":
+            offer.status = "active"
+            status = offer.status
+            db.session.add(offer)
+            db.session.commit()
+            history = History(offer.id, offer.user_id, "update",
+                              (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime(
+                                  "%Y-%m-%d %H:%M:%S"),
+                              price=offer.price,
+                              status=status,
+                              daily_budget=offer.daily_budget,
+                              daily_type=offer.daily_type,
+                              total_budget=offer.total_budget,
+                              total_type=offer.total_type,
+                              KPI=offer.KPI,
+                              contract_type=offer.contract_type,
+                              contract_scale=offer.contract_scale)
+            db.session.add(history)
+            db.session.commit()
+            db.create_all()
+            return json.dumps({"code": 200, "message": "success"})
+    else:
+        offer.status = "deleted"
         status = offer.status
         db.session.add(offer)
         db.session.commit()
@@ -304,8 +376,6 @@ def updateStatus(offer_id):
         db.session.commit()
         db.create_all()
         return json.dumps({"code": 200, "message": "success"})
-    else:
-        return json.dumps({"code": 500, "message": "fail"})
 
 @offers.route('/api/update_offer', methods=["POST", "GET"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
@@ -350,7 +420,7 @@ def updateOffer():
                 offer.remark = data["remark"].encode("utf-8") if data["remark"] != "" else offer.remark
                 offer.email_time = data["email_time"]
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
-                offer.email_tempalte = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_tempalte
+                offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
                 db.session.add(offer)
                 db.session.commit()
                 if "country_detail" in flag:
@@ -471,6 +541,32 @@ def bindUpdate():
         except Exception as e:
             print e
             return json.dumps({"code": 500, "message": "fail"})
+
+#显示绑定的所有的campaign name
+@offers.route("/api/bind_detail", methods=["POST","GET"])
+def bindDetail():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        offerId = int(data["offer_id"])
+        bind_advertisers = Advertisers.query.filter_by(offer_id=offerId).first()
+        campaignNames = []
+        if bind_advertisers:
+            advertisers = bind_advertisers.advertise_series
+            for i in advertisers.split(','):
+                campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
+                for j in campaigns:
+                    campaignNames.append(j.campaignName)
+            return json.dumps({
+                "code": 200,
+                "campaignNames": campaignNames,
+                "message": "success"
+            })
+        else:
+            return json.dumps({
+                "code": 200,
+                "campaignNames": campaignNames,
+                "message": "no bind datas"
+            })
 
 @offers.route("/api/history", methods=["POST", "GET"])
 def historty():
@@ -893,21 +989,84 @@ def updateContryTime():
             pass
     return json.dumps({"code": 200, "message": "success"})
 
+#offer list search
+@offers.route('/api/offer_search', methods=["POST","GET"])
+def offerSearch():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        key = data["key"]
+        offer_result_list = []
+        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc()).all()  #应用名称
+        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc()).all()   #投放的系统
+        customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).all()   #客户名称
+        sales = User.query.filter(User.name.like("%"+key+"%")).all()    #销售名称
+        result_appname = offer_search_detail(appnames)
+        result_system = offer_search_detail(systems)
+        offer_result_list.extend(result_appname)
+        offer_result_list.extend(result_system)
+        customer_ids = []
+        sales_ids = []
+        for i in customers:
+            customer_ids.append(i.id)
+        for i in customer_ids:
+            customers_offer = Offer.query.filter(Offer.customer_id==i,Offer.status != "deleted").order_by(Offer.id.desc()).all()
+            result_customer = offer_search_detail(customers_offer)
+            offer_result_list.extend(result_customer)
+        for i in sales:
+            sales_ids.append(i.id)
+        for i in sales_ids:
+            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc()).all()
+            result_sales = offer_search_detail(sales_offer)
+            offer_result_list.extend(result_sales)
+        offer_result_list_unique = []
+        for j in offer_result_list:
+            if j not in offer_result_list_unique:
+                offer_result_list_unique.append(j)
+            else:
+                pass
+        return json.dumps({
+            "code": 200,
+            "result": offer_result_list_unique
+        })
 
-# @offers.route('/static/<path:filename>')
-# def static_file_for_console(filename):
-#     filename = safe_join("../static", filename)
-#     if not os.path.isabs(filename):
-#         filename = os.path.join(offers.root_path, filename)
-#     if not os.path.isfile(filename):
-#         return Response(), 404
-#     return send_file(filename, conditional=True)
-#
-#
-@offers.route('/<path>')
-def today(path):
-    # base_dir = os.path.abspath(__file__)
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
-    resp = make_response(open(os.path.join(base_dir, path)))
-    resp.headers["Content-type"] = "application/json;charset=UTF-8"
-    return resp
+def offer_search_detail(offers):
+    offer_result_list = []
+    for i in offers:
+        contract_type = i.contract_type
+        sales = User.query.filter_by(id=int(i.user_id)).first()
+        if contract_type == "1":
+            contract_type = u"服务费"
+        elif contract_type == "2":
+            contract_type = "cpa"
+        if i.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+            endTime = "TBD"
+        else:
+            endTime = i.endTime
+        customerId = i.customer_id
+        customer = Customers.query.filter_by(id=customerId).first()
+        customerName = customer.company_name
+        offer_result_list += [
+            {
+                "offer_id": i.id,
+                "status": i.status,
+                "contract_type": contract_type,
+                "os": i.os,
+                "customer_id": customerName,
+                "app_name": i.app_name,
+                "startTime": i.startTime,
+                "endTime": endTime,
+                "country": str(i.country),
+                "price": i.price,
+                "updateTime": i.updateTime,
+                "sale_name": sales.name
+            }
+        ]
+    return offer_result_list
+
+# @offers.route('/<path>')
+# def today(path):
+#     # base_dir = os.path.abspath(__file__)
+#     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
+#     resp = make_response(open(os.path.join(base_dir, path)))
+#     resp.headers["Content-type"] = "application/json;charset=UTF-8"
+#     return resp

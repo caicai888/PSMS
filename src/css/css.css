@@ -392,3 +392,34 @@ table tr td{
 #create_customer textarea,#adwords_form textarea{
     height: 114px;
 }
+.table-responsive table tr th,.table-responsive table tr td{
+    white-space: nowrap;
+}
+#page {
+    text-align: center;
+}
+.onePrice{
+    display: inline-block;
+    width: 60px;
+}
+.allPrice{
+    display: inline-block;
+    font-size: 16px;
+    transform: rotate(-90deg);
+    color: #ff0000;
+    cursor: pointer;
+    transition: all 0.1s linear;
+    user-select: none;
+}
+.allPrice_active{
+    transform: rotate(90deg);
+}
+.country_price{
+    background: #eee;
+}
+#export_table td:nth-child(3){
+    max-width: 200px;
+    overflow: hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+}

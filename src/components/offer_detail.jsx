@@ -30,7 +30,19 @@ var OfferDetail = React.createClass({
     export_table(){
         tableExport("export_table",'ReportTable', 'csv');
     },
+    campaignNames(){
+        ajax("post","/api/bind_detail", JSON.stringify({offer_id:this.props.params.id})).then(function (data) {
+            var data = JSON.parse(data);
+            if (data.code == "200") {
+                $("#campaignName").val(data.campaignNames.join(",").replace(/,/g,"\n"))
+            } else {
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
+            }
+        });
+    },
     submit(e){
+        var _this = this;
         var id= e.target.dataset.form_id;
         if(valid(id,"data-required")) {
             var data = setForm(id, "data-key");
@@ -56,6 +68,7 @@ var OfferDetail = React.createClass({
                 if (data.code == "200") {
                     let facebook_form_id = id+" .disable";
                     $(facebook_form_id).attr("disabled",true);
+                    _this.campaignNames();
                 } else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -75,6 +88,7 @@ var OfferDetail = React.createClass({
         if(this.props.params.three){
             $("#myTab li:last a").tab("show");
         }
+        _this.campaignNames();
         ajax("post","/api/bind_show/"+this.props.params.id).then(function (data) {
             var data = JSON.parse(data);
             if (data.code == "200") {
@@ -260,19 +274,27 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Facebook 广告系列
+                                        Facebook 广告系列关键字
                                     </div>
-                                    <div className="col-sm-9">
-                                    <textarea className="form-control disable" data-key="advertise_series" placeholder="Enter key or comma separated">
+                                    <div className="col-sm-3">
+                                        <textarea className="form-control disable" data-key="advertise_series" placeholder="Enter key or comma separated">
 
-                                    </textarea>
+                                        </textarea>
+                                    </div>
+                                    <div className="col-sm-2 text-right">
+                                        绑定的campaign name列表
+                                    </div>
+                                    <div className="col-sm-4">
+                                        <textarea disabled="disabled" id="campaignName" className="form-control"  data-key="campaignNames">
+
+                                        </textarea>
                                     </div>
                                 </div>
                             </div>
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Facebook　广告组
+                                        Facebook　AccountId
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable" data-key="advertise_groups" placeholder="Enter key or comma separated">
@@ -300,7 +322,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Adwords 广告系列
+                                        Adwords 广告系列关键字
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable"  data-key="advertise_series" placeholder="Enter key or comma separated">
@@ -312,7 +334,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Adwords　广告组
+                                        Adwords　AccountId
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable"  data-key="advertise_groups" placeholder="Enter key or comma separated">
