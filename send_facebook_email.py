@@ -17,6 +17,7 @@ import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now_hour=time_now.strftime('%H:%M')
+time_now_hour = "22:30"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now_hour)
@@ -443,6 +444,8 @@ for i in results:
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
+            print mail_to
+            mail_to = "liyin@newborntown.com"
             smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
             smtp.sendmail(mail_from, mail_to, msg.as_string())
             smtp.quit()
