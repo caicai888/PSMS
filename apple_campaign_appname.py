@@ -12,8 +12,8 @@ db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
 url = "https://api.searchads.apple.com/api/v1/reports/campaigns"
-pem = "/home/centos/code/PSMS/appleapi.pem"
-key = "/home/centos/code/PSMS/appleapi.key"
+pem = "/home/centos/appleapi.pem"
+key = "/home/centos/appleapi.key"
 
 headers = {}
 headers["Authorization"] = "orgId=152120"
