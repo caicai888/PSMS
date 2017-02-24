@@ -18,8 +18,8 @@ sql = "select offer_id,apple_appname from advertisers where type='apple' and off
 cursor.execute(sql)
 results = cursor.fetchall()
 
-pem = "/home/centos/code/PSMS/appleapi.pem"
-key = "/home/centos/code/PSMS/appleapi.key"
+pem = "/home/centos/appleapi.pem"
+key = "/home/centos/appleapi.key"
 
 headers = {}
 headers["Authorization"] = "orgId=152120"
@@ -105,7 +105,7 @@ for i in results:
                     "groupBy":["COUNTRY_CODE", "DEVICE_CLASS"],
                     "returnRowTotals": True
                 }
-                result = requests.post(campaign_url, cert=(pem, key),headers=headers, data=json.dumps(params))
+                result = requests.post(campaign_url, cert=(pem, key),headers=headers, data=json.dumps(params),verify=False)
                 rows = result.json()["data"].get("reportingDataResponse")["row"]
                 if rows is not None:
                     for row in rows:
