@@ -3,7 +3,7 @@ from __future__ import division
 from flask import Blueprint, request
 # from main import db, adwordsData
 import adwordsData
-from models import Advertisers, Datas
+from models import Advertisers, Datas, Adwords
 import json
 import os
 import datetime
@@ -13,6 +13,36 @@ facebookDate = Blueprint('facebookDate', __name__)
 @facebookDate.route('/api/dashboard')
 def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=16)).strftime("%Y-%m-%d")
+
+    apple_datas = Datas.query.filter_by(type="apple",date=yesterday).all()
+    revenue_apple = 0
+    profit_apple = 0
+    cost_apple = 0
+    impressions_apple = 0
+    clicks_apple = 0
+    conversions_apple = 0
+    ctr_apple = 0
+    cvr_apple = 0
+    cpc_apple = 0
+    cpi_apple = 0
+    for j in apple_datas:
+        revenue_apple += float(j.revenue)
+        profit_apple += float(j.profit)
+        cost_apple += float(j.cost)
+        impressions_apple += int(j.impressions)
+        clicks_apple += int(j.clicks)
+        conversions_apple += int(j.conversions)
+    if conversions_apple != 0:
+        cpi_apple = '%0.2f' % (cost_apple / float(conversions_apple))
+
+    if clicks_apple != 0:
+        cvr_apple = '%0.2f' % (float(conversions_apple) / float(clicks_apple) * 100)
+
+    if clicks_apple != 0:
+        cpc_apple = '%0.2f' % (float(cost_apple) / float(clicks_apple))
+
+    if impressions_apple != 0:
+        ctr_apple = '%0.2f' % (clicks_apple / impressions_apple * 100)
 
     facebook_datas = Datas.query.filter_by(type="facebook",date=yesterday).all()
     revenue = 0
@@ -32,7 +62,6 @@ def dashboard():
         impressions += int(i.impressions)
         clicks += int(i.clicks)
         conversions += int(i.conversions)
-        ctr += float(i.ctr)
 
     if conversions != 0:
         cpi = '%0.2f' % (cost / float(conversions))
@@ -46,6 +75,36 @@ def dashboard():
     if impressions != 0:
         ctr = '%0.2f' % (clicks / impressions * 100)
 
+    adwords_datas = Adwords.query.filter_by(date=yesterday).all()
+    revenue_adwords = 0
+    profit_adwords = 0
+    cost_adwords = 0
+    impressions_adwords = 0
+    clicks_adwords = 0
+    conversions_adwords = 0
+    ctr_adwords = 0
+    cvr_adwords = 0
+    cpc_adwords = 0
+    cpi_adwords = 0
+    for ad in adwords_datas:
+        revenue_adwords += float(ad.revenue)
+        profit_adwords += float(ad.profit)
+        cost_adwords += float(ad.cost)
+        impressions_adwords += int(ad.impressions)
+        clicks_adwords += int(ad.clicks)
+        conversions_adwords += int(ad.conversions)
+    if conversions_adwords != 0:
+        cpi_adwords = '%0.2f' % (cost_adwords / float(conversions_adwords))
+
+    if clicks_adwords != 0:
+        cvr_adwords = '%0.2f' % (float(conversions_adwords) / float(clicks_adwords) * 100)
+
+    if clicks_adwords != 0:
+        cpc_adwords = '%0.2f' % (float(cost_adwords) / float(clicks_adwords))
+
+    if impressions_adwords != 0:
+        ctr_adwords = '%0.2f' % (clicks_adwords / impressions_adwords * 100)
+
     result = {
         "impressions": str(impressions),
         "spend": '%0.2f'%(cost),
@@ -56,7 +115,27 @@ def dashboard():
         "cpi": str(cpi),
         "cvr": str(cvr),
         "revenue": '%0.2f'%(revenue),
-        "profit": '%0.2f'%(profit)
+        "profit": '%0.2f'%(profit),
+        "impressions_apple": str(impressions_apple),
+        "spend_apple": '%0.2f'%(cost_apple),
+        "clicks_apple": str(clicks_apple),
+        "conversions_apple": str(conversions_apple),
+        "cpc_apple": str(cpc_apple),
+        "ctr_apple": str(ctr_apple),
+        "cpi_apple": str(cpi_apple),
+        "cvr_apple": str(cvr_apple),
+        "revenue_apple": '%0.2f'%(revenue_apple),
+        "profit_apple": '%0.2f'%(profit_apple),
+        "impressions_adwords": str(impressions_adwords),
+        "spend_adwords": '%0.2f' % (cost_adwords),
+        "clicks_adwords": str(clicks_adwords),
+        "conversions_adwords": str(conversions_adwords),
+        "cpc_adwords": str(cpc_adwords),
+        "ctr_adwords": str(ctr_adwords),
+        "cpi_adwords": str(cpi_adwords),
+        "cvr_adwords": str(cvr_adwords),
+        "revenue_adwords": '%0.2f' % (revenue_adwords),
+        "profit_adwords": '%0.2f' % (profit_adwords)
     }
     response = {
         "code": 200,
