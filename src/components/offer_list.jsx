@@ -109,17 +109,19 @@ var OfferList = React.createClass({
     offerList(page,limit){
         let _this = this ;
         ajax("post","/api/offer_show",JSON.stringify({
-            page:page||1,
-            limit:limit||15
+            page:page || sessionStorage.getItem("offer_list_page") || 1,
+            limit:limit || 15
         })).then(function (data) {
             var data = JSON.parse(data);
+            //存储page为当前第几页
             if(data.code=="200"){
                 _this.setState({
                     result:data.result,
                     result_search:data.result,
                     totalPages:data.totalPages,
-                    page:page||1
+                    page:page || parseInt(sessionStorage.getItem("offer_list_page")) || 1
                 })
+                sessionStorage.setItem("offer_list_page",page || 1);
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
