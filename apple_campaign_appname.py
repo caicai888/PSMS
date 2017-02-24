@@ -32,49 +32,49 @@ while date_timelta < (date2 - date1):
     date_timelta += datetime.timedelta(days=1)
 all_date.append(time_now)
 print all_date
-# for i in all_date:
-params = {
-    "startTime": "2017-02-21",
-    "endTime": "2017-02-22",
-    "selector":{
-        "fields": ["campaignId","campaignName","appName"],
-        "orderBy":[{"field":"campaignId","sortOrder":"DESCENDING"}],
-        "pagination": { "offset": 0, "limit": 1000}
-    },
-    "groupBy":["COUNTRY_CODE", "DEVICE_CLASS"],
-    "returnRowTotals": True
-}
-result = requests.post(url, cert=(pem, key),headers=headers, data=json.dumps(params),verify=False)
+for i in all_date:
+    params = {
+        "startTime": i,
+        "endTime": i,
+        "selector":{
+            "fields": ["campaignId","campaignName","appName"],
+            "orderBy":[{"field":"campaignId","sortOrder":"DESCENDING"}],
+            "pagination": { "offset": 0, "limit": 1000}
+        },
+        "groupBy":["COUNTRY_CODE", "DEVICE_CLASS"],
+        "returnRowTotals": True
+    }
+    result = requests.post(url, cert=(pem, key),headers=headers, data=json.dumps(params),verify=False)
 
-rows = result.json()['data'].get('reportingDataResponse')['row']
-apple_campaign_app =[]
-apple_campaign_appname = []
-if rows is not None:
-    for i in rows:
-        campaignId = str(i['metadata'].get('campaignId'))
-        campaignName = i['metadata'].get('campaignName')
-        appId = str(i['metadata'].get('app')['adamId'])
-        appName = i['metadata'].get('app')['appName']
-        result = {
-            "campaignId": campaignId,
-            "campaignName": campaignName,
-            "appId": appId,
-            "appName": appName
-        }
-        apple_campaign_app += [result]
+    rows = result.json()['data'].get('reportingDataResponse')['row']
+    apple_campaign_app =[]
+    apple_campaign_appname = []
+    if rows is not None:
+        for i in rows:
+            campaignId = str(i['metadata'].get('campaignId'))
+            campaignName = i['metadata'].get('campaignName')
+            appId = str(i['metadata'].get('app')['adamId'])
+            appName = i['metadata'].get('app')['appName']
+            result = {
+                "campaignId": campaignId,
+                "campaignName": campaignName,
+                "appId": appId,
+                "appName": appName
+            }
+            apple_campaign_app += [result]
 
-for j in apple_campaign_app:
-    if j not in apple_campaign_appname:
-        apple_campaign_appname.append(j)
+    for j in apple_campaign_app:
+        if j not in apple_campaign_appname:
+            apple_campaign_appname.append(j)
 
-print apple_campaign_appname
-for i in apple_campaign_appname:
-    search_sql = "select id from campaignAppName where appName='%s' and campaignId='%s'" %(i["appName"],i["campaignId"])
-    cursor.execute(search_sql)
-    exists = cursor.fetchone()
-    if exists:
-        pass
-    else:
-        insert_sql = "insert into campaignAppName(campaignId,campaignName,appId,appName) values('%s','%s','%s','%s')"%(i["campaignId"],i["campaignName"],i["appId"],i["appName"])
-        cursor.execute(insert_sql)
-        db.commit()
+    print apple_campaign_appname
+    for i in apple_campaign_appname:
+        search_sql = "select id from campaignAppName where appName='%s' and campaignId='%s'" %(i["appName"],i["campaignId"])
+        cursor.execute(search_sql)
+        exists = cursor.fetchone()
+        if exists:
+            pass
+        else:
+            insert_sql = "insert into campaignAppName(campaignId,campaignName,appId,appName) values('%s','%s','%s','%s')"%(i["campaignId"],i["campaignName"],i["appId"],i["appName"])
+            cursor.execute(insert_sql)
+            db.commit()
