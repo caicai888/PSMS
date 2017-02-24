@@ -469,9 +469,14 @@ def offerBind():
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-        token = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
+        if data["type"] == "facebook":
+            token = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 
-        advertisers = Advertisers(token,int(data["offer_id"]), type=data["type"], facebook_keywords=data["advertise_series"], facebook_accountId=data["advertise_groups"], createdTime=createdTime, updateTime=updateTime)
+            advertisers = Advertisers(token,int(data["offer_id"]), type=data["type"], facebook_keywords=data["advertise_series"], facebook_accountId=data["advertise_groups"], createdTime=createdTime, updateTime=updateTime)
+        elif data["type"] == "apple":
+            advertisers = Advertisers("",int(data["offer_id"]),"apple",apple_appname=data["advertise_series"],createdTime=createdTime,updateTime=updateTime)
+        else:
+            advertisers = Advertisers("", int(data["offer_id"]), "adwords", adwords_notuac=data["advertise_series"], adwords_uac=data["advertise_groups"],createdTime=createdTime,updateTime=updateTime)
         try:
             db.session.add(advertisers)
             db.session.commit()
