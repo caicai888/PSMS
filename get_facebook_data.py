@@ -16,7 +16,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select offer_id,advertise_series from advertisers where type='facebook'"
+sql = "select offer_id,advertise_series from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -334,13 +334,14 @@ for i in results:
                 if timePrice_result:
                     price = timePrice_result[0]
                 else:
-                    history_sql = "select country_price from history where country='%s' and offer_id='%d'order by createdTime"%(country,offerId)
+                    history_sql = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc"%(country,offerId)
                     cursor.execute(history_sql)
                     history_result = cursor.fetchone()
                     if not history_result:
                         price = offer_price
                     else:
                         price = history_result[0]
+                
                 revenue_list += [
                     {
                         "country": country,

@@ -13,20 +13,36 @@ from email.MIMEBase import MIMEBase
 from email import Encoders
 import datetime,time
 import requests
+import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
-time_now=time_now.strftime('%H:%M')
+time_now_hour=time_now.strftime('%H:%M')
+time_now_hour = "22:30"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select * from offer where email_time='%s'"%(time_now)
+sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now_hour)
 cursor.execute(sql)
 results = cursor.fetchall()
-yesterday = (datetime.datetime.now()-datetime.timedelta(hours=16)).strftime("%Y-%m-%d")
-today = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime("%Y-%m-%d")
-time_ranges = ["{'since': " + "'" + str(yesterday) + "'" + ", 'until': " + "'" + str(yesterday) + "'" + "}","{'since': " + "'" + str(today) + "'" + ", 'until': " + "'" + str(today) + "'" + "}"]
 
+startTime = ((datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=168)).strftime("%Y-%m-%d")
+today = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime("%Y-%m-%d")
+date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
+date2 = datetime.datetime.strptime(today, '%Y-%m-%d')
+date_timelta = datetime.timedelta(days=1)
+all_date = []
+all_date.append(startTime)
+while date_timelta < (date2 - date1):
+    all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+    date_timelta += datetime.timedelta(days=1)
+all_date.append(today)
+
+time_ranges = []
+for day in all_date[::-1]:
+    time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
+print all_date
 accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 for i in results:
+    print i
     mail_to = i[31].split(",")
     offerId = i[0]
     contract_type = i[4]
@@ -41,7 +57,14 @@ for i in results:
     result = cursor.fetchone()
     if result is not None:
         try:
-            advertise_groups = result[0].split(",")
+            advertise_series_all = result[0].split(",")
+            advertise_groups = []
+            for j in advertise_series_all:
+                campaign_name_id_sql = "select campaignId from campaignRelations where campaignName like '%s'"%(j+"%")
+                cursor.execute(campaign_name_id_sql)
+                campaign_name_id_results = cursor.fetchall()
+                for r in campaign_name_id_results:
+                    advertise_groups.append(r[0])
             impressions_list = []
             cost_list = []
             clicks_list = []
@@ -338,7 +361,7 @@ for i in results:
                     if time_price:
                         price = time_price[0]
                     else:
-                        sql_history = "select country_price from history where country='%s' and offer_id='%d'order by createdTime"%(country,offerId)
+                        sql_history = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc"%(country,offerId)
                         cursor.execute(sql_history)
                         prices_history = cursor.fetchone()
                         if not prices_history:
@@ -399,11 +422,11 @@ for i in results:
                 sheet.write(j+1, 10, '%0.2f'%(float(cpc_list[j].get("cpc"))))
                 sheet.write(j+1, 11, '%0.2f'%(float(cpi_list[j].get("cpi"))))
                 continue
-            file_name = app_name.encode("utf8")+"_data.xls"
+            file_name = '=?UTF-8?B?' +base64.b64encode(app_name)+'?='+ "_data.xls"
             file_dir = '/home/ubuntu/code'
             wbk.save(file_name)
             mail_body="data"
-            mail_from="liyin@newborn-town.com"
+            mail_from="ads_reporting@newborntown.com"
             msg = MIMEMultipart()
             body = MIMEText(mail_body)
             msg.attach(body)
@@ -416,13 +439,15 @@ for i in results:
             msg['From'] = mail_from
             msg['To'] = ';'.join(mail_to)
             msg['date'] = time.strftime('%Y-%m-%d')
-            msg['Subject'] = app_name.encode("utf8")+"_report Data"
+            msg['Subject'] = '=?UTF-8?B?' + base64.b64encode(app_name) + '?='+"_report Data"
             smtp = smtplib.SMTP()
             smtp.connect('smtp.exmail.qq.com',25)
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
-            smtp.login('liyin@newborn-town.com', '920130LiY')
+            print mail_to
+            mail_to = "liyin@newborntown.com"
+            smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
             smtp.sendmail(mail_from, mail_to, msg.as_string())
             smtp.quit()
             print("ok")
