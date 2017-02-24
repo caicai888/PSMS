@@ -44,7 +44,7 @@ params = {
     "groupBy":["COUNTRY_CODE", "DEVICE_CLASS"],
     "returnRowTotals": True
 }
-result = requests.post(url, cert=(pem, key),headers=headers, data=json.dumps(params))
+result = requests.post(url, cert=(pem, key),headers=headers, data=json.dumps(params),verify=False)
 
 rows = result.json()['data'].get('reportingDataResponse')['row']
 apple_campaign_app =[]
