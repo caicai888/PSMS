@@ -23,6 +23,7 @@ date1 = "2016-10-01"
 all_date = []
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
+date1 = datetime.datetime.strptime(date1, '%Y-%m-%d')
 date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
 date_timelta = datetime.timedelta(days=1)
 all_date.append(date1)
