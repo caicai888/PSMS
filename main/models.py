@@ -387,16 +387,22 @@ class Adwords(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     account_id = db.Column(db.String(100), nullable=False)
-    is_UAC = db.Column(db.Boolean,default=0)
+    is_UAC = db.Column(db.Integer,default=1)
     campaignId = db.Column(db.Integer, nullable=False)
     campaignName = db.Column(db.String(150), nullable=False)
     impressions = db.Column(db.String(100), nullable=True)
     clicks = db.Column(db.Integer, nullable=True)
+    revenue = db.Column(db.Float, nullable=True)
     cost = db.Column(db.Float, nullable=True)
+    profit = db.Column(db.Float, nullable=True)
     conversions = db.Column(db.String(100), nullable=True)
+    cpc = db.Column(db.String(100), nullable=True)
+    cvr = db.Column(db.String(100), nullable=True)
+    cpi = db.Column(db.String(100), nullable=True)
+    ctr = db.Column(db.String(100), nullable=True)
     date = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,cost,conversions,date):
+    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date):
         self.offer_id = offer_id
         self.account_id = account_id
         self.is_UAC = is_UAC
@@ -404,9 +410,29 @@ class Adwords(db.Model):
         self.campaignName = campaignName
         self.impressions = impressions
         self.clicks = clicks
+        self.revenue = revenue
         self.cost = cost
+        self.profit = profit
         self.conversions = conversions
+        self.cpc = cpc
+        self.cvr = cvr
+        self.cpi = cpi
+        self.ctr = ctr
         self.date = date
 
     def __repr__(self):
         return '<Adwords {}>'.format(self.id)
+
+#adwords非uac,国家编码对应表
+class AdwordsGeo(db.Model):
+    __tablename__="adwordsGeo"
+    id = db.Column(db.Integer, primary_key=True)
+    countryNumber = db.Column(db.String(100), nullable=True)
+    countryName = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,countryNumber,countryName):
+        self.countryNumber = countryNumber
+        self.countryName = countryName
+
+    def __repr__(self):
+        return '<AdwordsGeo {}>'.format(self.id)

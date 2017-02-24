@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c868e10dabf6
-Revises: 
-Create Date: 2017-02-23 16:49:12.437046
+Revision ID: 6f6d895d07d5
+Revises: d8b757403f98
+Create Date: 2017-02-24 14:32:07.785685
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c868e10dabf6'
-down_revision = None
+revision = '6f6d895d07d5'
+down_revision = 'd8b757403f98'
 branch_labels = None
 depends_on = None
 
@@ -22,13 +22,19 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('offer_id', sa.Integer(), nullable=True),
     sa.Column('account_id', sa.String(length=100), nullable=False),
-    sa.Column('is_UAC', sa.Boolean(), nullable=True),
+    sa.Column('is_UAC', sa.Integer(), nullable=True),
     sa.Column('campaignId', sa.Integer(), nullable=False),
     sa.Column('campaignName', sa.String(length=150), nullable=False),
     sa.Column('impressions', sa.String(length=100), nullable=True),
     sa.Column('clicks', sa.Integer(), nullable=True),
+    sa.Column('revenue', sa.Float(), nullable=True),
     sa.Column('cost', sa.Float(), nullable=True),
+    sa.Column('profit', sa.Float(), nullable=True),
     sa.Column('conversions', sa.String(length=100), nullable=True),
+    sa.Column('cpc', sa.String(length=100), nullable=True),
+    sa.Column('cvr', sa.String(length=100), nullable=True),
+    sa.Column('cpi', sa.String(length=100), nullable=True),
+    sa.Column('ctr', sa.String(length=100), nullable=True),
     sa.Column('date', sa.String(length=100), nullable=True),
     sa.ForeignKeyConstraint(['offer_id'], ['offer.id'], ),
     sa.PrimaryKeyConstraint('id')

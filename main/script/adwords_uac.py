@@ -1,11 +1,11 @@
+#!/usr/bin/env python
+#coding: utf-8
 from __future__ import division
-from flask import Blueprint, request
+from flask import Blueprint
 from datetime import datetime, timedelta
 from googleads import adwords
 import threading
 import MySQLdb
-import os, sys, string
-import time
 import csv
 import tempfile
 import re
@@ -15,7 +15,7 @@ conn = MySQLdb.connect(
     host='localhost',
     port=3306,
     user='root',
-    passwd='12345',
+    passwd='chizicheng521',
     db='psms')
 
 
@@ -26,7 +26,7 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, advertise_series, advertise_groups from advertisers where type = 'adwords'"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords'"
         try:
             cursor.execute(query_string)
         finally:
@@ -53,7 +53,7 @@ class AdwordsSQL(object):
 
     def insert_sql(self, *args):
         cursor = conn.cursor()
-        data_string = 'insert into adwords values %s' % str(args)
+        data_string = 'insert into adwords (offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date) values %s' % str(args)
         cursor.execute(data_string)
         conn.commit()
         cursor.close()
@@ -61,7 +61,8 @@ class AdwordsSQL(object):
     def select_campaign_geo(self, campaign_name):
         selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
         selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
-        return selected_msg, selected_geo
+        # return selected_msg, selected_geo
+        return selected_geo
 
 
 class AdwordsUac(AdwordsSQL):
@@ -71,7 +72,7 @@ class AdwordsUac(AdwordsSQL):
         self.client = adwords.AdWordsClient.LoadFromStorage()
         self.tempf = tempfile.NamedTemporaryFile(delete=True)
         self.is_uac = kw.get('is_UAC')
-        self.REPORT = 'CAMPAIGN_LOCATION_TARGET_REPORT' if self.is_uac else 'CAMPAIGN_LOCATION_TARGET_REPORT'
+        self.REPORT = 'CAMPAIGN_LOCATION_TARGET_REPORT' if self.is_uac else 'GEO_PERFORMANCE_REPORT'
         self.fields = kw.get('fields', [])
         start = kw.get('start', '2017-01-01')
         end = kw.get('end', '2017-01-01')
@@ -114,10 +115,71 @@ class AdwordsUac(AdwordsSQL):
             self.tempf.seek(0)
             with open(self.tempf.name, 'r') as csv_file:
                 reader = csv.DictReader(csv_file)
+                cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
                 for read in reader:
                     if read['Campaign ID'] != 'Total':
-                        self.insert_sql(int(offer_id), customer_id, self.is_uac, read['Campaign ID'], read['Campaign'], read['Impressions'], read['Clicks'],
-                                        round(float(read['Cost'])/(10**6), 2), read['Conversions'], read['Day'])
+                        if self.is_uac == False:
+                            countryNumber = read["Country/Territory"]
+                            country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
+                            cursor.execute(country_sql)
+                            country_result = cursor.fetchone()
+                            countryName = country_result["countryName"]
+                            country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
+                            cursor.execute(country_sql_notadwords)
+                            country_notadwords_result = cursor.fetchone()
+                            countryId = country_notadwords_result["id"]
+                        else:
+                            countryName = self.select_campaign_geo(read["Campaign"])
+                            country_sql_notadwords = "select id from country where shorthand='%s'" % (countryName)
+                            cursor.execute(country_sql_notadwords)
+                            country_notadwords_result = cursor.fetchone()
+                            if country_notadwords_result is None:
+                                pass
+                            else:
+                                countryId = country_notadwords_result["id"]
+                        offer_sql = "select price,startTime from offer where id='%d'"%(int(offer_id))
+                        cursor.execute(offer_sql)
+                        offer_result = cursor.fetchone()
+                        offer_price = offer_result["price"]
+                        timePrice_sql = "select price from timePrice where country_id='%d' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (countryId, int(offer_id), read['Day'], offer_result["startTime"])
+                        cursor.execute(timePrice_sql)
+                        timePrice_result = cursor.fetchone()
+                        if timePrice_result:
+                            price = timePrice_result["price"]
+                        else:
+                            history_sql = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc" % (countryName, int(offer_id))
+                            cursor.execute(history_sql)
+                            history_result = cursor.fetchone()
+                            if not history_result:
+                                price = offer_price
+                            else:
+                                price = history_result["country_price"]
+
+                        if self.is_uac == False:
+                            is_uac = 0
+                        else:
+                            is_uac = 1
+                        if ',' in read['Conversions']:
+                            conversions = read['Conversions'].replace(',','')
+                        else:
+                            conversions = read['Conversions']
+                        cpc = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(read['Clicks'])) if float(read['Clicks']) != 0 else 0
+                        cvr = '%0.2f'%(float(conversions)/float(read['Clicks'])*100) if float(read['Clicks']) != 0 else 0
+                        cpi = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(conversions)) if float(conversions) != 0 else 0
+                        ctr = '%0.2f'%(float(read['Clicks'])/float(read['Impressions'])*100) if float(read['Impressions']) != 0 else 0
+                        revenue = '%0.2f' % (float(price)*float(conversions))
+                        profit = '%0.2f'%(float(revenue)-(round(float(read['Cost'])/(10**6), 2)))
+                        sql_ad = "select id from adwords where offer_id='%d' and account_id='%s' and date='%s' and campaignId='%d'" % (int(offer_id), str(customer_id), str(read['Day']),int(read['Campaign ID']))
+                        cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+                        cursor.execute(sql_ad)
+                        result_ad = cursor.fetchone()
+                        if not result_ad:
+                            self.insert_sql(int(offer_id), str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']),str(read['Impressions']), int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2),float(profit), str(conversions), cpc, cvr, cpi, ctr, str(read['Day']))
+                        else:
+                            update_sql = "update adwords set account_id='%s',is_UAC='%d',campaignId='%d',campaignName='%s',impressions='%s',clicks='%d',revenue='%f',cost='%f',profit='%f',conversions='%s',cpc='%s',cvr='%s',cpi='%s',ctr='%s',date='%s' where id='%d'" % (str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']), str(read['Impressions']),int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2), float(profit), str(conversions), cpc, cvr,cpi, ctr, str(read['Day']),result_ad["id"])
+                            cursor.execute(update_sql)
+                            conn.commit()
+
         finally:
             self.tempf.close()
 
@@ -145,9 +207,12 @@ class MyProcess(object):
 
     @staticmethod
     def get_uac_account_msg(self, account_id, offer_id, is_UAC=False):
-        today = datetime.now().strftime("%Y-%m-%d")
-        a_month_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-        fields = ['CampaignId', 'CampaignName', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
+        today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
+        a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        if is_UAC == False:
+            fields = ['CampaignId', 'CampaignName', 'CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
+        else:
+            fields = ['CampaignId', 'CampaignName', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
         ad = AdwordsUac(fields=fields, start=a_month_ago, end=today, is_UAC=is_UAC)
         ad.query(account_id, offer_id)
         return
@@ -155,8 +220,8 @@ class MyProcess(object):
 def main():
     p = PSMSOffer()
     offer_msg = p.get_campaigns()
-    account_dict = { ele['offer_id']: { 'NotUAC': ele['advertise_series'].split(','),
-                                        'UAC': ele['advertise_groups'].split(',') }
+    account_dict = { ele['offer_id']: { 'NotUAC': ele['adwords_notuac'].split(','),
+                                        'UAC': ele['adwords_uac'].split(',') }
                     for ele in offer_msg }
     my_process = MyProcess(account_dict)
     my_process.build_thread_task()
@@ -164,5 +229,3 @@ def main():
 
 if __name__ == '__main__':
      main()
-     #a = AdwordsSQL()
-     #a.create_table()

@@ -9,8 +9,8 @@ import datetime
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
-time_now = datetime.datetime.now()
-start_date = datetime.datetime.now()-datetime.timedelta(hours=240)
+time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
+start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
@@ -18,8 +18,8 @@ sql = "select offer_id,apple_appname from advertisers where type='apple' and off
 cursor.execute(sql)
 results = cursor.fetchall()
 
-pem = "/Users/liyin/appleapi.pem"
-key = "/Users/liyin/appleapi.key"
+pem = "/home/centos/code/PSMS/appleapi.pem"
+key = "/home/centos/code/PSMS/appleapi.key"
 
 headers = {}
 headers["Authorization"] = "orgId=152120"
@@ -187,23 +187,3 @@ for i in results:
             update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi, result_apple[0])
             cursor.execute(update_sql)
             db.commit()
-
-# count = 0
-# count_taps = 0
-# count_impressions = 0
-# cost = 0
-# rows = result.json()["data"].get("reportingDataResponse")["row"]
-# print rows
-# for i in rows:
-#     conversions = i["total"].get("conversions")
-#     taps = i["total"].get("taps")
-#     impressions = i["total"].get("impressions")
-#     spend = float(i["total"].get("localSpend")["amount"])
-#     count += conversions
-#     count_taps += taps
-#     count_impressions += impressions
-#     cost += spend
-# print count
-# print count_taps
-# print count_impressions
-# print cost
