@@ -8,7 +8,7 @@ import requests
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select advertise_groups from advertisers where type='facebook'"
+sql = "select facebook_accountId from advertisers where type='facebook'"
 cursor.execute(sql)
 results = cursor.fetchall()
 accountIds = []

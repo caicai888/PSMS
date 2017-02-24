@@ -287,17 +287,23 @@ class Advertisers(db.Model):
     token = db.Column(db.String(10000), nullable=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     type = db.Column(db.String(100), default="facebook")
-    advertise_series = db.Column(db.Text, nullable=True)
-    advertise_groups = db.Column(db.Text, nullable=True)
+    facebook_keywords = db.Column(db.Text, nullable=True)
+    facebook_accountId = db.Column(db.Text, nullable=True)
+    adwords_notuac = db.Column(db.Text, nullable=True)
+    adwords_uac = db.Column(db.Text, nullable=True)
+    apple_appname = db.Column(db.Text, nullable=True)
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, token, offer_id, type="facebook", advertise_series=None, advertise_groups=None,createdTime=None,updateTime=None):
+    def __init__(self, token, offer_id, type="facebook", facebook_keywords=None, facebook_accountId=None,adwords_notuac=None,adwords_uac=None,apple_appname=None,createdTime=None,updateTime=None):
         self.token = token
         self.offer_id = offer_id
         self.type = type
-        self.advertise_series = advertise_series
-        self.advertise_groups = advertise_groups
+        self.facebook_keywords = facebook_keywords
+        self.facebook_accountId = facebook_accountId
+        self.adwords_notuac = adwords_notuac
+        self.adwords_uac = adwords_uac
+        self.apple_appname = apple_appname
         self.createdTime = createdTime
         self.updateTime = updateTime
 
@@ -356,3 +362,77 @@ class CampaignRelations(db.Model):
 
     def __repr__(self):
         return '<CampaignRelations {}>'.format(self.id)
+
+#Apple search平台campaign与app name的对应表
+class CampaignAppName(db.Model):
+    __tablename__ = "campaignAppName"
+    id = db.Column(db.Integer, primary_key=True)
+    campaignId = db.Column(db.String(100), nullable=False)
+    campaignName = db.Column(db.String(150), nullable=False)
+    appId = db.Column(db.String(100), nullable=False)
+    appName = db.Column(db.String(100), nullable=False)
+
+    def __init__(self,campaignId,campaignName,appId,appName):
+        self.campaignId = campaignId
+        self.campaignName = campaignName
+        self.appId = appId
+        self.appName = appName
+
+    def __repr__(self):
+        return '<CampaignAppName {}>'.format(self.id)
+
+#adwords平台数据
+class Adwords(db.Model):
+    __tablename__ = "adwords"
+    id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    account_id = db.Column(db.String(100), nullable=False)
+    is_UAC = db.Column(db.Integer,default=1)
+    campaignId = db.Column(db.Integer, nullable=False)
+    campaignName = db.Column(db.String(150), nullable=False)
+    impressions = db.Column(db.String(100), nullable=True)
+    clicks = db.Column(db.Integer, nullable=True)
+    revenue = db.Column(db.Float, nullable=True)
+    cost = db.Column(db.Float, nullable=True)
+    profit = db.Column(db.Float, nullable=True)
+    conversions = db.Column(db.String(100), nullable=True)
+    cpc = db.Column(db.String(100), nullable=True)
+    cvr = db.Column(db.String(100), nullable=True)
+    cpi = db.Column(db.String(100), nullable=True)
+    ctr = db.Column(db.String(100), nullable=True)
+    date = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date):
+        self.offer_id = offer_id
+        self.account_id = account_id
+        self.is_UAC = is_UAC
+        self.campaignId = campaignId
+        self.campaignName = campaignName
+        self.impressions = impressions
+        self.clicks = clicks
+        self.revenue = revenue
+        self.cost = cost
+        self.profit = profit
+        self.conversions = conversions
+        self.cpc = cpc
+        self.cvr = cvr
+        self.cpi = cpi
+        self.ctr = ctr
+        self.date = date
+
+    def __repr__(self):
+        return '<Adwords {}>'.format(self.id)
+
+#adwords非uac,国家编码对应表
+class AdwordsGeo(db.Model):
+    __tablename__="adwordsGeo"
+    id = db.Column(db.Integer, primary_key=True)
+    countryNumber = db.Column(db.String(100), nullable=True)
+    countryName = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,countryNumber,countryName):
+        self.countryNumber = countryNumber
+        self.countryName = countryName
+
+    def __repr__(self):
+        return '<AdwordsGeo {}>'.format(self.id)

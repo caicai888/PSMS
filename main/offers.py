@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from main.has_permission import *
-from flask import Blueprint, request, safe_join, Response, send_file, make_response
-
+from flask import Blueprint, request
 from main import db
 from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role,CampaignRelations
 import json
@@ -472,7 +471,7 @@ def offerBind():
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         token = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 
-        advertisers = Advertisers(token,int(data["offer_id"]), type=data["type"], advertise_series=data["advertise_series"], advertise_groups=data["advertise_groups"], createdTime=createdTime, updateTime=updateTime)
+        advertisers = Advertisers(token,int(data["offer_id"]), type=data["type"], facebook_keywords=data["advertise_series"], facebook_accountId=data["advertise_groups"], createdTime=createdTime, updateTime=updateTime)
         try:
             db.session.add(advertisers)
             db.session.commit()
@@ -487,8 +486,8 @@ def offerBind():
 def bindShow(offer_id):
     advertiser_facebook = Advertisers.query.filter_by(offer_id=int(offer_id), type="facebook").first()
     if advertiser_facebook:
-        advertise_series_facebook = advertiser_facebook.advertise_series
-        advertise_groups_facebook = advertiser_facebook.advertise_groups
+        advertise_series_facebook = advertiser_facebook.facebook_keywords
+        advertise_groups_facebook = advertiser_facebook.facebook_accountId
         type_facebook = advertiser_facebook.type
         result_facebook = {
             "facebook_id": advertiser_facebook.id,
@@ -501,8 +500,8 @@ def bindShow(offer_id):
 
     advertiser_adwords = Advertisers.query.filter_by(offer_id=int(offer_id), type="adwords").first()
     if advertiser_adwords:
-        advertise_series_adwords = advertiser_adwords.advertise_series
-        advertise_groups_adwords = advertiser_adwords.advertise_groups
+        advertise_series_adwords = advertiser_adwords.adwords_notuac
+        advertise_groups_adwords = advertiser_adwords.adwords_uac
         type_adwords = advertiser_adwords.type
         result_adwords = {
             "adwords_id": advertiser_adwords.id,
@@ -531,8 +530,8 @@ def bindUpdate():
 
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         try:
-            advertise.advertise_series = data["advertise_series"]
-            advertise.advertise_groups = data["advertise_groups"]
+            advertise.facebook_keywords = data["facebook_keywords"]
+            advertise.facebook_accountId = data["facebook_accountId"]
             advertise.type = data["type"]
             advertise.updateTime = updateTime
             db.session.add(advertise)
@@ -551,7 +550,7 @@ def bindDetail():
         bind_advertisers = Advertisers.query.filter_by(offer_id=offerId).first()
         campaignNames = []
         if bind_advertisers:
-            advertisers = bind_advertisers.advertise_series
+            advertisers = bind_advertisers.facebook_keywords
             for i in advertisers.split(','):
                 campaigns = CampaignRelations.query.filter(CampaignRelations.campaignName.like(i+'%')).all()
                 for j in campaigns:
