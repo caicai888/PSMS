@@ -345,6 +345,7 @@ def faceReport():
         profit_list = []
         if "geo" in dimension:
             try:
+                # adwords_result = Adwords.query.filter(Adwords.offer_id==offerId,D)
                 data_results = Datas.query.filter(Datas.offer_id==offerId,Datas.date >= start_date, Datas.date<=end_date).order_by(Datas.date.desc()).all()
                 for i in data_results:
                     country = i.country
