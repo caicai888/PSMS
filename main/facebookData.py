@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from flask import Blueprint, request
-# from main import db, adwordsData
-import adwordsData
 from models import Advertisers, Datas, Adwords
 import json
-import os
 import datetime
 
 facebookDate = Blueprint('facebookDate', __name__)
@@ -13,7 +10,6 @@ facebookDate = Blueprint('facebookDate', __name__)
 @facebookDate.route('/api/dashboard')
 def dashboard():
     yesterday = (datetime.datetime.now()-datetime.timedelta(hours=16)).strftime("%Y-%m-%d")
-
     apple_datas = Datas.query.filter_by(type="apple",date=yesterday).all()
     revenue_apple = 0
     profit_apple = 0
@@ -92,12 +88,12 @@ def dashboard():
         cost_adwords += float(ad.cost)
         impressions_adwords += int(ad.impressions)
         clicks_adwords += int(ad.clicks)
-        conversions_adwords += int(ad.conversions)
+        conversions_adwords += float(ad.conversions)
     if conversions_adwords != 0:
-        cpi_adwords = '%0.2f' % (cost_adwords / float(conversions_adwords))
+        cpi_adwords = '%0.2f' % (cost_adwords / conversions_adwords)
 
     if clicks_adwords != 0:
-        cvr_adwords = '%0.2f' % (float(conversions_adwords) / float(clicks_adwords) * 100)
+        cvr_adwords = '%0.2f' % (conversions_adwords / float(clicks_adwords) * 100)
 
     if clicks_adwords != 0:
         cpc_adwords = '%0.2f' % (float(cost_adwords) / float(clicks_adwords))
