@@ -518,6 +518,9 @@ var OfferDetail = React.createClass({
                                                     {
                                                         ele.country?<td>{ele.country}</td>:""
                                                     }
+                                                    {
+                                                        ele.source?<td>{ele.source}</td>:""
+                                                    }
                                                     <td>{ _this.state.data_geo_table_revenue_list[index].revenue }</td>
                                                     <td>{ _this.state.data_geo_table_profit_list[index].profit }</td>
                                                     <td>{ _this.state.data_geo_table_cost_list[index].spend }</td>
