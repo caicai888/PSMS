@@ -523,7 +523,7 @@ def bindShow(offer_id):
         advertise_groups_apple = ""
         type_apple = advertiser_apple.type
         result_apple = {
-            "adwords_id": advertiser_apple.id,
+            "apple_id": advertiser_apple.id,
             "advertise_series": advertise_series_apple,
             "advertise_groups": advertise_groups_apple,
             "type": type_apple
