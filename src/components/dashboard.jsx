@@ -4,8 +4,7 @@ import {ajax} from "../lib/ajax";
 var Dashboard = React.createClass({
     getInitialState() {
         return {
-            result:[],
-            adwordsResult:[]
+            result:[]
         };
     },
     componentDidMount(){
@@ -15,18 +14,6 @@ var Dashboard = React.createClass({
             if(data.code=="200"){
                 _this.setState({
                     result: [data.result]
-                })
-            }else {
-                $(".ajax_error").html(data.message);
-                $("#modal").modal("toggle");
-            }
-        });
-        return;
-        ajax("get","/api/adwords/dashboard").then(function (data) {
-            var data = JSON.parse(data);
-            if(data.code=="200"){
-                _this.setState({
-                    adwordsResult: [data.result]
                 })
             }else {
                 $(".ajax_error").html(data.message);
@@ -91,54 +78,107 @@ var Dashboard = React.createClass({
                         })
                     }
                 </div>
-                <div className="row none">
+                <div className="row">
                     <div className="col-md-12" style={{padding:"15px"}}>
                         Adwords Dashboard
                     </div>
                 </div>
-                <div className="row none dashboard_data">
+                <div className="row dashboard_data">
                     {
-                        this.state.adwordsResult.map(function (ele,index,array) {
+                        this.state.result.map(function (ele,index,array) {
                             return <div className="col-md-12" key={index}>
                                 <div className="box_20">
                                     <p>Revenue($)</p>
-                                    <p>{ele.revenue}</p>
+                                    <p>{ele.revenue_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>Profit($)</p>
-                                    <p>{ele.profit}</p>
+                                    <p>{ele.profit_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>Cost($)</p>
-                                    <p>{ele.spend}</p>
+                                    <p>{ele.spend_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>Impressions</p>
-                                    <p>{ele.impressions}</p>
+                                    <p>{ele.impressions_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>Clicks</p>
-                                    <p>{ele.clicks}</p>
+                                    <p>{ele.clicks_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>Conversions</p>
-                                    <p>{ele.conversions}</p>
+                                    <p>{ele.conversions_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>CTR(%)</p>
-                                    <p>{ele.ctr}</p>
+                                    <p>{ele.ctr_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>CVR(%)</p>
-                                    <p>{ele.cvr}</p>
+                                    <p>{ele.cvr_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>CPC</p>
-                                    <p>{ele.cpc}</p>
+                                    <p>{ele.cpc_adwords}</p>
                                 </div>
                                 <div className="box_20">
                                     <p>CPI</p>
-                                    <p>{ele.cpi}</p>
+                                    <p>{ele.cpi_adwords}</p>
+                                </div>
+                            </div>
+                        })
+                    }
+                </div>
+                <div className="row">
+                    <div className="col-md-12" style={{padding:"15px"}}>
+                        Apple Dashboard
+                    </div>
+                </div>
+                <div className="row dashboard_data">
+                    {
+                        this.state.result.map(function (ele,index,array) {
+                            return <div className="col-md-12" key={index}>
+                                <div className="box_20">
+                                    <p>Revenue($)</p>
+                                    <p>{ele.revenue_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>Profit($)</p>
+                                    <p>{ele.profit_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>Cost($)</p>
+                                    <p>{ele.spend_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>Impressions</p>
+                                    <p>{ele.impressions_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>Clicks</p>
+                                    <p>{ele.clicks_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>Conversions</p>
+                                    <p>{ele.conversions_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>CTR(%)</p>
+                                    <p>{ele.ctr_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>CVR(%)</p>
+                                    <p>{ele.cvr_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>CPC</p>
+                                    <p>{ele.cpc_apple}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>CPI</p>
+                                    <p>{ele.cpi_apple}</p>
                                 </div>
                             </div>
                         })
