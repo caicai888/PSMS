@@ -517,9 +517,24 @@ def bindShow(offer_id):
     else:
         result_adwords = {}
 
+    advertiser_apple = Advertisers.query.filter_by(offer_id=int(offer_id), type="apple").first()
+    if advertiser_apple:
+        advertise_series_apple = advertiser_apple.apple_appname
+        advertise_groups_apple = ""
+        type_apple = advertiser_apple.type
+        result_apple = {
+            "adwords_id": advertiser_apple.id,
+            "advertise_series": advertise_series_apple,
+            "advertise_groups": advertise_groups_apple,
+            "type": type_apple
+        }
+    else:
+        result_apple = {}
+
     response = {
         "facebook": result_facebook,
         "adwords": result_adwords,
+        "apple": result_apple,
         "code": 200,
         "message": "success"
     }
