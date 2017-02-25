@@ -546,12 +546,18 @@ def bindShow(offer_id):
 def bindUpdate():
     if request.method == "POST":
         data = request.get_json(force=True)
-        advertise = Advertisers.query.filter_by(id=int(data["ad_id"])).first()
+        advertise = Advertisers.query.filter_by(id=int(data["ad_id"]),type=data["type"]).first()
 
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         try:
-            advertise.facebook_keywords = data["facebook_keywords"]
-            advertise.facebook_accountId = data["facebook_accountId"]
+            if data["type"] == "facebook":
+                advertise.facebook_keywords = data["advertise_series"]
+                advertise.facebook_accountId = data["advertise_groups"]
+            elif data["type"] == "adwords":
+                advertise.adwords_notuac = data["advertise_series"]
+                advertise.adwords_uac = data["advertise_groups"]
+            else:
+                advertise.apple_appname = data['advertise_series']
             advertise.type = data["type"]
             advertise.updateTime = updateTime
             db.session.add(advertise)
