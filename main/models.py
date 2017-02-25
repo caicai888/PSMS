@@ -401,8 +401,9 @@ class Adwords(db.Model):
     cpi = db.Column(db.String(100), nullable=True)
     ctr = db.Column(db.String(100), nullable=True)
     date = db.Column(db.String(100), nullable=True)
+    country = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date):
+    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date,country):
         self.offer_id = offer_id
         self.account_id = account_id
         self.is_UAC = is_UAC
@@ -419,6 +420,7 @@ class Adwords(db.Model):
         self.cpi = cpi
         self.ctr = ctr
         self.date = date
+        self.country = country
 
     def __repr__(self):
         return '<Adwords {}>'.format(self.id)

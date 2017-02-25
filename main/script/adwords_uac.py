@@ -53,7 +53,7 @@ class AdwordsSQL(object):
 
     def insert_sql(self, *args):
         cursor = conn.cursor()
-        data_string = 'insert into adwords (offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date) values %s' % str(args)
+        data_string = 'insert into adwords (offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date,country) values %s' % str(args)
         cursor.execute(data_string)
         conn.commit()
         cursor.close()
@@ -174,9 +174,9 @@ class AdwordsUac(AdwordsSQL):
                         cursor.execute(sql_ad)
                         result_ad = cursor.fetchone()
                         if not result_ad:
-                            self.insert_sql(int(offer_id), str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']),str(read['Impressions']), int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2),float(profit), str(conversions), cpc, cvr, cpi, ctr, str(read['Day']))
+                            self.insert_sql(int(offer_id), str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']),str(read['Impressions']), int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2),float(profit), str(conversions), cpc, cvr, cpi, ctr, str(read['Day']),countryName)
                         else:
-                            update_sql = "update adwords set account_id='%s',is_UAC='%d',campaignId='%d',campaignName='%s',impressions='%s',clicks='%d',revenue='%f',cost='%f',profit='%f',conversions='%s',cpc='%s',cvr='%s',cpi='%s',ctr='%s',date='%s' where id='%d'" % (str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']), str(read['Impressions']),int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2), float(profit), str(conversions), cpc, cvr,cpi, ctr, str(read['Day']),result_ad["id"])
+                            update_sql = "update adwords set account_id='%s',is_UAC='%d',campaignId='%d',campaignName='%s',impressions='%s',clicks='%d',revenue='%f',cost='%f',profit='%f',conversions='%s',cpc='%s',cvr='%s',cpi='%s',ctr='%s',date='%s',country='%s' where id='%d'" % (str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']), str(read['Impressions']),int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2), float(profit), str(conversions), cpc, cvr,cpi, ctr, str(read['Day']),str(countryName),result_ad["id"])
                             cursor.execute(update_sql)
                             conn.commit()
 
