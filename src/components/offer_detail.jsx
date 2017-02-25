@@ -12,6 +12,7 @@ var OfferDetail = React.createClass({
         return {
             "isYes":false, /*判断bind_list是update-save*/
             "adwordsIsYes":false,
+            "appleIsYes":false,
             "data_geo":[],
                 "data_geo_table_head":[],
             "data_geo_table_clicks_list":[],
@@ -46,21 +47,23 @@ var OfferDetail = React.createClass({
         var id= e.target.dataset.form_id;
         if(valid(id,"data-required")) {
             var data = setForm(id, "data-key");
-            data.advertise_series =data.advertise_series.replace(/[\r\n]/g,",").split(",").filter(function (val) {
+            data.advertise_series =data.advertise_series&&data.advertise_series.replace(/[\r\n]/g,",").split(",").filter(function (val) {
                 if(val){
                     return val;
                 }
-            }).join(",");
-            data.advertise_groups=data.advertise_groups.replace(/[\r\n]/g,",").split(",").filter(function (val) {
+            }).join(",") || "";
+            data.advertise_groups=data.advertise_groups&&data.advertise_groups.replace(/[\r\n]/g,",").split(",").filter(function (val) {
                 if(val){
                     return val;
                 }
-            }).join(",");
+            }).join(",") || "";
             getForm(id,data);
             let url="";
             if(id=="#create_customer"){
                 url= this.state.isYes?"/api/bind_update":"/api/offer_bind";
-            }else {
+            }else if(id=="#adwords_form") {
+                url= this.state.adwordsIsYes?"/api/bind_update":"/api/offer_bind";
+            }else if(id=="#apple_form"){
                 url= this.state.adwordsIsYes?"/api/bind_update":"/api/offer_bind";
             }
             ajax("post",url, JSON.stringify(data)).then(function (data) {
@@ -68,7 +71,9 @@ var OfferDetail = React.createClass({
                 if (data.code == "200") {
                     let facebook_form_id = id+" .disable";
                     $(facebook_form_id).attr("disabled",true);
-                    _this.campaignNames();
+                    if(id=="#create_customer"){
+                        _this.campaignNames();
+                    }
                 } else {
                     $(".ajax_error").html(data.message);
                     $("#modal").modal("toggle");
@@ -107,6 +112,14 @@ var OfferDetail = React.createClass({
                     $("#adwords_form .disable").attr("disabled",true);
                     $("#adwords_form .ad_id").val(data.adwords.adwords_id);
                     getForm("#adwords_form", data.adwords)
+                }
+                if(data.apple&&data.apple.apple_id){
+                    _this.setState({
+                        appleIsYes:true
+                    });
+                    $("#apple_form .disable").attr("disabled",true);
+                    $("#apple_form .ad_id").val(data.apple.apple_id);
+                    getForm("#apple_form", data.apple)
                 }
             } else {
                 $(".ajax_error").html(data.message);
@@ -322,7 +335,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Adwords 广告系列关键字
+                                        Adwords 非UAC
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable"  data-key="advertise_series" placeholder="Enter key or comma separated">
@@ -334,7 +347,7 @@ var OfferDetail = React.createClass({
                             <div className="row" style={{marginTop:"15px"}}>
                                 <div className="col-sm-10">
                                     <div className="col-sm-3 text-right">
-                                        Adwords　AccountId
+                                        Adwords　UAC
                                     </div>
                                     <div className="col-sm-9">
                                     <textarea className="form-control disable"  data-key="advertise_groups" placeholder="Enter key or comma separated">
@@ -357,12 +370,40 @@ var OfferDetail = React.createClass({
                                 </div>
                             </div>
                         </form>
+                        <hr/>
+                        <form id="apple_form" className="form-horizontal" role="form" noValidate="noValidate">
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right">
+                                        AppName
+                                    </div>
+                                    <div className="col-sm-9">
+                                    <textarea className="form-control disable"  data-key="advertise_series" placeholder="Enter key or comma separated">
+
+                                    </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row" style={{marginTop:"15px"}}>
+                                <div className="col-sm-10">
+                                    <div className="col-sm-3 text-right"></div>
+                                    <div className="col-sm-9">
+                                        <input type="hidden" data-key="type" value='apple'/>
+                                        <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
+                                        <input type="hidden" data-key="ad_id" className="ad_id"/>
+                                        <button data-form_id="#apple_form" onClick={this.submit} type="button" className={_this.state.permissions.includes("bind_create")?"btn btn-primary disable":"none"}>Save</button>
+                                        <button data-form_id="#apple_form" onClick={this.edit} type="button" className={_this.state.permissions.includes("bind_edit")?"btn btn-primary":"none"} style={{marginLeft:"20px"}}>Edit</button>
+                                        <a href={this.props.params.id?"javascript:history.go(-1)":"javascript:void(0)"} type="button" className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div className="tab-pane fade" id="report">
                         <div className="row">
                             <div className="col-md-3">
                                 <input type="hidden" className="reportRange"/>
-                                <Daterange id="reportRange" />
+                                <Daterange id="reportRange" start="1" end="1" />
                             </div>
                             <div className="col-md-4">
                                 <ul className="box-center report_weidu">
