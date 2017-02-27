@@ -1695,14 +1695,14 @@ def faceReport():
                    ]
                    cpc_list += [
                        {
-                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "date_stop": date_new[i]
                        }
                    ]
                    cpi_list += [
                        {
-                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "date_stop": date_new[i]
                        }
