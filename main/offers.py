@@ -138,6 +138,7 @@ def createOffer():
 
             user_id= data["user_id"].split("(")[1].split(')')[0]
             customer_id = data["customer_id"].split("(")[1].split(')')[0]
+            print customer_id
 
             offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
             try:
