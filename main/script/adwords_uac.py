@@ -26,7 +26,7 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords'"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
         try:
             cursor.execute(query_string)
         finally:
