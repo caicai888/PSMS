@@ -12,14 +12,14 @@ db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
 url = "https://api.searchads.apple.com/api/v1/reports/campaigns"
-pem = "/home/centos/appleapi.pem"
-key = "/home/centos/appleapi.key"
+pem = "/home/ubuntu/appleapi.pem"
+key = "/home/ubuntu/appleapi.key"
 
 headers = {}
 headers["Authorization"] = "orgId=152120"
 headers["Content-Type"] = "application/json"
 
-date1 = "2017-02-26"
+date1 = "2016-10-01"
 all_date = []
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
