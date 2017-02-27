@@ -19,7 +19,7 @@ headers = {}
 headers["Authorization"] = "orgId=152120"
 headers["Content-Type"] = "application/json"
 
-date1 = "2016-10-01"
+date1 = "2017-02-26"
 all_date = []
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
