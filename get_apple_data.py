@@ -80,8 +80,8 @@ for i in results:
 
     if all_date != []:
         for campaignId in appleCampaigns:
-            pem = "/home/centos/appleapi.pem"
-            key = "/home/centos/appleapi.key"
+            pem = "/home/ubuntu/appleapi.pem"
+            key = "/home/ubuntu/appleapi.key"
             campaign_url = "https://api.searchads.apple.com/api/v1/reports/campaigns/"+str(campaignId)+"/searchterms"
             for date in all_date:
                 count_impressions = 0
