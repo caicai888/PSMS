@@ -19,8 +19,12 @@ def customerSelect():
         result = []
         customers = Customers.query.filter(Customers.company_name.ilike('%' + data["name"] + '%'),Customers.status=="Created").all()
         for i in customers:
+            if ',' in i.company_name:
+                campany_name = i.company_name.replace(',','')
+            else:
+                campany_name = i.company_name
             data = {
-                "id": i.company_name+"("+str(i.id)+")",
+                "id": campany_name+"("+str(i.id)+")",
                 "text": i.company_name
             }
             result += [data]
