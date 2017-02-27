@@ -12,13 +12,13 @@ var CreateOffer = React.createClass({
         return {
             result:[],
             tfpt:[{
-                id:"facebook",
+                id:"Facebook",
                 text:"Facebook"
             },{
-                id:"adwords",
+                id:"Adwords",
                 text:"Adwords"
             },{
-                id:"apple",
+                id:"Apple",
                 text:"Apple"
             }],
             khmc:[],
