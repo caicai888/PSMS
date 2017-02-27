@@ -18,8 +18,8 @@ var CreateOffer = React.createClass({
                 id:"Adwords",
                 text:"Adwords"
             },{
-                id:"apple",
-                text:"apple"
+                id:"Apple",
+                text:"Apple"
             }],
             khmc:[],
             tfdq:[],
@@ -340,26 +340,6 @@ var CreateOffer = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            合作方式
-                        </div>
-                        <div className="col-sm-3">
-                            <select id="hzfs" className="form-control" data-key="contract_type">
-                                <option value="1">服务费</option>
-                                <option value="2">CPA</option>
-                            </select>
-                        </div>
-                        <div className="col-sm-3 text-right">
-                            比例
-                        </div>
-                        <div className="col-sm-3">
-                            <div className="input-group">
-                                <input onBlur={_this.parseFloat} id="bl" type="number" className="form-control"  data-key="contract_scale"/>
-                                <div className="input-group-addon">%</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
                             合同编号
                         </div>
                         <div className="col-sm-3">
@@ -430,8 +410,36 @@ var CreateOffer = React.createClass({
                             <input type="text" className="form-control" data-key="track_link"/>
                         </div>
                     </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            投放平台
+                        </div>
+                        <div className="col-sm-9">
+                            <Select keyword="platform" className="tfpt" placeholder="投放平台"　multiple="true" data={this.state.tfpt}/>
+                        </div>
+                    </div>
                     <div className="col-sm-12">
                         <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            合作方式
+                        </div>
+                        <div className="col-sm-3">
+                            <select id="hzfs" className="form-control" data-key="contract_type">
+                                <option value="1">服务费</option>
+                                <option value="2">CPA</option>
+                            </select>
+                        </div>
+                        <div className="col-sm-3 text-right">
+                            比例
+                        </div>
+                        <div className="col-sm-3">
+                            <div className="input-group">
+                                <input onBlur={_this.parseFloat} id="bl" type="number" className="form-control"  data-key="contract_scale"/>
+                                <div className="input-group-addon">%</div>
+                            </div>
+                        </div>
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
@@ -463,14 +471,6 @@ var CreateOffer = React.createClass({
                                     <input type="checkbox" className="tbd"/> TBD
                                 </label>
                             </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            投放平台
-                        </div>
-                        <div className="col-sm-9">
-                            <Select keyword="platform" className="tfpt" placeholder="投放平台"　multiple="true" data={this.state.tfpt}/>
                         </div>
                     </div>
                     <div className="col-sm-10">
