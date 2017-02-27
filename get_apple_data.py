@@ -18,9 +18,6 @@ sql = "select offer_id,apple_appname from advertisers where type='apple' and off
 cursor.execute(sql)
 results = cursor.fetchall()
 
-pem = "/home/centos/appleapi.pem"
-key = "/home/centos/appleapi.key"
-
 headers = {}
 headers["Authorization"] = "orgId=152120"
 headers["Content-Type"] = "application/json"
@@ -83,6 +80,8 @@ for i in results:
 
     if all_date != []:
         for campaignId in appleCampaigns:
+            pem = "/home/centos/appleapi.pem"
+            key = "/home/centos/appleapi.key"
             campaign_url = "https://api.searchads.apple.com/api/v1/reports/campaigns/"+str(campaignId)+"/searchterms"
             for date in all_date:
                 count_impressions = 0
