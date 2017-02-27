@@ -583,15 +583,32 @@ def faceReport():
                         ]
 
                     adwords_results_unique = unique_list(impressions_list_ad,cost_list_ad,clicks_list_ad,conversions_list_ad,ctr_list_ad,cvr_list_ad,cpc_list_ad,cpi_list_ad,revenue_list_ad,profit_list_ad)
-                    print "++++"*10
-                    print adwords_results_unique[0]
                     impressions_list.extend(adwords_results_unique[0])
+                    cost_list.extend(adwords_results_unique[1])
+                    clicks_list.extend(adwords_results_unique[2])
+                    conversions_list.extend(adwords_results_unique[3])
+                    ctr_list.extend(adwords_results_unique[4])
+                    cvr_list.extend(adwords_results_unique[5])
+                    cpc_list.extend(adwords_results_unique[6])
+                    cpi_list.extend(adwords_results_unique[7])
+                    revenue_list.extend(adwords_results_unique[8])
+                    profit_list.extend(adwords_results_unique[9])
 
                     ## facebook
+                    impressions_list_fb = []
+                    cost_list_fb = []
+                    clicks_list_fb = []
+                    conversions_list_fb = []
+                    ctr_list_fb = []
+                    cvr_list_fb = []
+                    cpc_list_fb = []
+                    cpi_list_fb = []
+                    revenue_list_fb = []
+                    profit_list_fb = []
                     for i in facebook_results:
                         date = i.date
                         country = i.country
-                        impressions_list += [
+                        impressions_list_fb += [
                             {
                                 "impressions": int(i.impressions),
                                 "country": country,
@@ -599,7 +616,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        cost_list += [
+                        cost_list_fb += [
                             {
                                 "spend": '%0.2f' % (float(i.cost)),
                                 "country": country,
@@ -607,7 +624,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        clicks_list += [
+                        clicks_list_fb += [
                             {
                                 "clicks": int(i.clicks),
                                 "country": country,
@@ -615,7 +632,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        conversions_list += [
+                        conversions_list_fb += [
                             {
                                 "conversions": float(i.conversions),
                                 "country": country,
@@ -623,7 +640,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        ctr_list += [
+                        ctr_list_fb += [
                             {
                                 "ctr": '%0.2f' % (float(i.ctr)),
                                 "country": country,
@@ -631,7 +648,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        cvr_list += [
+                        cvr_list_fb += [
                             {
                                 "cvr": '%0.2f' % (float(i.cvr)),
                                 "country": country,
@@ -639,7 +656,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        cpc_list += [
+                        cpc_list_fb += [
                             {
                                 "cpc": '%0.2f' % (float(i.cpc)),
                                 "country": country,
@@ -647,7 +664,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        cpi_list += [
+                        cpi_list_fb += [
                             {
                                 "cpi": '%0.2f' % (float(i.cpi)),
                                 "country": country,
@@ -655,7 +672,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        revenue_list += [
+                        revenue_list_fb += [
                             {
                                 "revenue": '%0.2f' % (float(i.revenue)),
                                 "country": country,
@@ -663,7 +680,7 @@ def faceReport():
                                 "source": "facebook"
                             }
                         ]
-                        profit_list += [
+                        profit_list_fb += [
                             {
                                 "profit": '%0.2f' % (float(i.profit)),
                                 "country": country,
@@ -672,11 +689,33 @@ def faceReport():
                             }
                         ]
 
+                    facebook_results_unique = unique_list(impressions_list_fb, cost_list_fb, clicks_list_fb, conversions_list_fb, ctr_list_fb,cvr_list_fb, cpc_list_fb, cpi_list_fb, revenue_list_fb, profit_list_fb)
+                    impressions_list.extend(facebook_results_unique[0])
+                    cost_list.extend(facebook_results_unique[1])
+                    clicks_list.extend(facebook_results_unique[2])
+                    conversions_list.extend(facebook_results_unique[3])
+                    ctr_list.extend(facebook_results_unique[4])
+                    cvr_list.extend(facebook_results_unique[5])
+                    cpc_list.extend(facebook_results_unique[6])
+                    cpi_list.extend(facebook_results_unique[7])
+                    revenue_list.extend(facebook_results_unique[8])
+                    profit_list.extend(facebook_results_unique[9])
+
                     ## apple
+                    impressions_list_ap = []
+                    cost_list_ap = []
+                    clicks_list_ap = []
+                    conversions_list_ap = []
+                    ctr_list_ap = []
+                    cvr_list_ap = []
+                    cpc_list_ap = []
+                    cpi_list_ap = []
+                    revenue_list_ap = []
+                    profit_list_ap = []
                     for i in apple_results:
                         date = i.date
                         country = i.country
-                        impressions_list += [
+                        impressions_list_ap += [
                             {
                                 "impressions": int(i.impressions),
                                 "country": country,
@@ -684,7 +723,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        cost_list += [
+                        cost_list_ap += [
                             {
                                 "spend": '%0.2f' % (float(i.cost)),
                                 "country": country,
@@ -692,7 +731,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        clicks_list += [
+                        clicks_list_ap += [
                             {
                                 "clicks": int(i.clicks),
                                 "country": country,
@@ -700,7 +739,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        conversions_list += [
+                        conversions_list_ap += [
                             {
                                 "conversions": float(i.conversions),
                                 "country": country,
@@ -708,7 +747,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        ctr_list += [
+                        ctr_list_ap += [
                             {
                                 "ctr": '%0.2f' % (float(i.ctr)),
                                 "country": country,
@@ -716,7 +755,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        cvr_list += [
+                        cvr_list_ap += [
                             {
                                 "cvr": '%0.2f' % (float(i.cvr)),
                                 "country": country,
@@ -724,7 +763,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        cpc_list += [
+                        cpc_list_ap += [
                             {
                                 "cpc": '%0.2f' % (float(i.cpc)),
                                 "country": country,
@@ -732,7 +771,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        cpi_list += [
+                        cpi_list_ap += [
                             {
                                 "cpi": '%0.2f' % (float(i.cpi)),
                                 "country": country,
@@ -740,7 +779,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        revenue_list += [
+                        revenue_list_ap += [
                             {
                                 "revenue": '%0.2f' % (float(i.revenue)),
                                 "country": country,
@@ -748,7 +787,7 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-                        profit_list += [
+                        profit_list_ap += [
                             {
                                 "profit": '%0.2f' % (float(i.profit)),
                                 "country": country,
@@ -756,8 +795,17 @@ def faceReport():
                                 "source": "apple"
                             }
                         ]
-
-
+                    apple_results_unique = unique_list(impressions_list_ap, cost_list_ap, clicks_list_ap, conversions_list_ap, ctr_list_ap,cvr_list_ap, cpc_list_ap, cpi_list_ap, revenue_list_ap, profit_list_ap)
+                    impressions_list.extend(apple_results_unique[0])
+                    cost_list.extend(apple_results_unique[1])
+                    clicks_list.extend(apple_results_unique[2])
+                    conversions_list.extend(apple_results_unique[3])
+                    ctr_list.extend(apple_results_unique[4])
+                    cvr_list.extend(apple_results_unique[5])
+                    cpc_list.extend(apple_results_unique[6])
+                    cpi_list.extend(apple_results_unique[7])
+                    revenue_list.extend(apple_results_unique[8])
+                    profit_list.extend(apple_results_unique[9])
 
                     data_geo_table = {
                         "impressions_list": impressions_list,
