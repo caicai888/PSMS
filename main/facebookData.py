@@ -584,7 +584,8 @@ def faceReport():
 
                     adwords_results_unique = unique_list(impressions_list_ad,cost_list_ad,clicks_list_ad,conversions_list_ad,ctr_list_ad,cvr_list_ad,cpc_list_ad,cpi_list_ad,revenue_list_ad,profit_list_ad)
                     print "++++"*10
-                    print adwords_results_unique
+                    print adwords_results_unique[0]
+                    impressions_list.extend(adwords_results_unique[0])
 
                     ## facebook
                     for i in facebook_results:
