@@ -38,6 +38,14 @@ var CreateCustomer = React.createClass({
         return (
             <div className="col-sm-6 col-sm-offset-3 animated slideInDown create_customer">
                 <form id="create_customer" className="form-horizontal" role="form" noValidate="noValidate">
+                    {
+                        this.props.params.id?<div className="form-group">
+                            <label htmlFor="company_name" className="col-sm-2 control-label text-right">* 客户编码</label>
+                            <div className="col-sm-10">
+                                <input　disabled="disabled" type="text" data-required="true" data-key="customer_code"  name="name" className="form-control" id="company_name"  placeholder="Name" />
+                            </div>
+                        </div>:""
+                    }
                     <div className="form-group">
                         <label htmlFor="company_name" className="col-sm-2 control-label text-right">* 公司名称</label>
                         <div className="col-sm-10">
@@ -46,12 +54,23 @@ var CreateCustomer = React.createClass({
                         </div>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="company_address" className="col-sm-2 control-label text-right">* 公司地址</label>
+                        <label htmlFor="company_address" className="col-sm-2 control-label text-right">公司地址</label>
                         <div className="col-sm-10">
-                            <input  type="text" data-required="true"　data-key="company_address" name="address" className="form-control" id="company_address" placeholder="Address" />
+                            <input  type="text"　data-key="company_address" name="address" className="form-control" id="company_address" placeholder="Address" />
                         </div>
                     </div>
-
+                    <div className="form-group">
+                        <label htmlFor="company_address" className="col-sm-2 control-label text-right">* 银行账户</label>
+                        <div className="col-sm-10">
+                            <input  type="text" data-required="true"　data-key="bank_account" name="bank_account" className="form-control" id="bank_account" placeholder="Bank" />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="company_address" className="col-sm-2 control-label text-right">合同编号</label>
+                        <div className="col-sm-10">
+                            <input  type="text"　data-key="concordat_code" name="concordat_code" className="form-control" id="concordat_code" placeholder="Num" />
+                        </div>
+                    </div>
                     {/*<div className="form-group">
                         <label htmlFor="company_address" className="col-sm-2 control-label text-right">* select</label>
                         <div className="col-sm-10">
