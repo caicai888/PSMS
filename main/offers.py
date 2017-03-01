@@ -249,19 +249,102 @@ def offerDetail(id):
     customer = Customers.query.filter_by(id=customerId).first()
     userId = offer.user_id
     user = User.query.filter_by(id=userId).first()
-    contract_type = offer.contract_type
-    if contract_type != "1":
-        contract_scale = 0
-    else:
-        contract_scale = offer.contract_scale
     plate = offer.platform
+
+    fb_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="facebook").first()
+    if fb_offer:
+        contract_type = fb_offer.contract_type
+        if contract_type != "1":
+            contract_scale = 0
+        else:
+            contract_scale = fb_offer.contract_scale
+        facebook = {
+            "contract_type": contract_type,
+            "contract_scale": contract_scale,
+            "material": fb_offer.material,
+            "startTime": fb_offer.startTime,
+            "endTime": fb_offer.endTime,
+            "country": fb_offer.country,
+            "price": fb_offer.price,
+            "daily_budget": fb_offer.daily_budget,
+            "daily_type": fb_offer.daily_type,
+            "total_budget": fb_offer.total_budget,
+            "total_type": fb_offer.total_type,
+            "distribution": fb_offer.distribution,
+            "authorized": fb_offer.authorized,
+            "named_rule": fb_offer.named_rule,
+            "KPI": fb_offer.KPI,
+            "settlement": fb_offer.settlement,
+            "period": fb_offer.period,
+            "remark": fb_offer.remark
+        }
+    else:
+        facebook = {}
+
+    ad_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="adwords").first()
+    if ad_offer:
+        contract_type = ad_offer.contract_type
+        if contract_type != "1":
+            contract_scale = 0
+        else:
+            contract_scale = ad_offer.contract_scale
+        adwords = {
+            "contract_type": contract_type,
+            "contract_scale": contract_scale,
+            "material": ad_offer.material,
+            "startTime": ad_offer.startTime,
+            "endTime": ad_offer.endTime,
+            "country": ad_offer.country,
+            "price": ad_offer.price,
+            "daily_budget": ad_offer.daily_budget,
+            "daily_type": ad_offer.daily_type,
+            "total_budget": ad_offer.total_budget,
+            "total_type": ad_offer.total_type,
+            "distribution": ad_offer.distribution,
+            "authorized": ad_offer.authorized,
+            "named_rule": ad_offer.named_rule,
+            "KPI": ad_offer.KPI,
+            "settlement": ad_offer.settlement,
+            "period": ad_offer.period,
+            "remark": ad_offer.remark
+        }
+    else:
+        adwords = {}
+
+    ap_offer = PlatformOffer.query.filter_by(offer_id=int(id), platform="apple").first()
+    if ad_offer:
+        contract_type = ap_offer.contract_type
+        if contract_type != "1":
+            contract_scale = 0
+        else:
+            contract_scale = ap_offer.contract_scale
+        apple = {
+            "contract_type": contract_type,
+            "contract_scale": contract_scale,
+            "material": ap_offer.material,
+            "startTime": ap_offer.startTime,
+            "endTime": ap_offer.endTime,
+            "country": ap_offer.country,
+            "price": ap_offer.price,
+            "daily_budget": ap_offer.daily_budget,
+            "daily_type": ap_offer.daily_type,
+            "total_budget": ap_offer.total_budget,
+            "total_type": ap_offer.total_type,
+            "distribution": ap_offer.distribution,
+            "authorized": ap_offer.authorized,
+            "named_rule": ap_offer.named_rule,
+            "KPI": ap_offer.KPI,
+            "settlement": ap_offer.settlement,
+            "period": ap_offer.period,
+            "remark": ap_offer.remark
+        }
+    else:
+        apple = {}
 
     result = {
         "customer_id": customer.company_name+"("+str(customer.id)+")",
         "status": offer.status,
-        "contract_scale": contract_scale,
         "contract_num": offer.contract_num,
-        "contract_type": contract_type,
         "user_id": user.name+"("+str(user.id)+")",
         "os": offer.os,
         "package_name": offer.package_name,
