@@ -130,7 +130,7 @@ def createOffer():
 
                     oldHistorty = History.query.filter_by(offer_id=offer_id,platformOffer_id=j.id).all()
                     for i in oldHistorty:
-                        historty = History(offer.id, i.user_id,platformOffer.id,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
+                        historty = History(offer.id, i.user_id,platformOffer.id,i.platform,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
                         db.session.add(historty)
                         db.session.commit()
                         db.create_all()
@@ -156,7 +156,7 @@ def createOffer():
                     db.session.commit()
                     db.create_all()
                     for i in fb['country_detail']:
-                        history = History(offer.id, int(user_id),platformOffer.id, "default", createdTime, status=offer.status,country=i["country"], country_price=i["price"], price=platformOffer.price,daily_budget=float(fb["daily_budget"] if fb["daily_budget"] else 0), daily_type=fb["daily_type"],total_budget=float(fb["total_budget"] if fb["total_budget"] else 0),  total_type=fb["total_type"],KPI=fb["KPI"], contract_type=fb["contract_type"],contract_scale=float(fb["contract_scale"] if fb["contract_scale"] else 0))
+                        history = History(offer.id, int(user_id),platformOffer.id,"facebook", "default", createdTime, status=offer.status,country=i["country"], country_price=float(i["price"]), price=platformOffer.price,daily_budget=float(fb["daily_budget"] if fb["daily_budget"] else 0), daily_type=fb["daily_type"],total_budget=float(fb["total_budget"] if fb["total_budget"] else 0),  total_type=fb["total_type"],KPI=fb["KPI"], contract_type=fb["contract_type"],contract_scale=float(fb["contract_scale"] if fb["contract_scale"] else 0))
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
@@ -167,7 +167,7 @@ def createOffer():
                     db.session.commit()
                     db.create_all()
                     for i in ad['country_detail']:
-                        history = History(offer.id, int(user_id),platformOffer.id, "default", createdTime, status=offer.status,country=i["country"], country_price=i["price"], price=platformOffer.price,daily_budget=float(ad["daily_budget"] if ad["daily_budget"] else 0), daily_type=ad["daily_type"],total_budget=float(ad["total_budget"] if ad["total_budget"] else 0),  total_type=ad["total_type"],KPI=ad["KPI"], contract_type=ad["contract_type"],contract_scale=float(ad["contract_scale"] if ad["contract_scale"] else 0))
+                        history = History(offer.id, int(user_id),platformOffer.id,"adwords", "default", createdTime, status=offer.status,country=i["country"], country_price=float(i["price"]), price=platformOffer.price,daily_budget=float(ad["daily_budget"] if ad["daily_budget"] else 0), daily_type=ad["daily_type"],total_budget=float(ad["total_budget"] if ad["total_budget"] else 0),  total_type=ad["total_type"],KPI=ad["KPI"], contract_type=ad["contract_type"],contract_scale=float(ad["contract_scale"] if ad["contract_scale"] else 0))
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
@@ -178,7 +178,7 @@ def createOffer():
                     db.session.commit()
                     db.create_all()
                     for i in ap['country_detail']:
-                        history = History(offer.id, int(user_id),platformOffer.id, "default", createdTime, status=offer.status,country=i["country"], country_price=i["price"], price=platformOffer.price,daily_budget=float(ap["daily_budget"] if ap["daily_budget"] else 0), daily_type=ap["daily_type"],total_budget=float(ap["total_budget"] if ap["total_budget"] else 0),  total_type=ap["total_type"],KPI=ap["KPI"], contract_type=ap["contract_type"],contract_scale=float(ap["contract_scale"] if ap["contract_scale"] else 0))
+                        history = History(offer.id, int(user_id),platformOffer.id,"apple", "default", createdTime, status=offer.status,country=i["country"], country_price=float(i["price"]), price=platformOffer.price,daily_budget=float(ap["daily_budget"] if ap["daily_budget"] else 0), daily_type=ap["daily_type"],total_budget=float(ap["total_budget"] if ap["total_budget"] else 0),  total_type=ap["total_type"],KPI=ap["KPI"], contract_type=ap["contract_type"],contract_scale=float(ap["contract_scale"] if ap["contract_scale"] else 0))
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
@@ -278,6 +278,24 @@ def offerDetail(id):
             "period": fb_offer.period,
             "remark": fb_offer.remark
         }
+        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == fb_offer.id).all()
+        countries = []
+        for i in historties:
+            country = i.country
+            countries.append(country)
+        countries = list(set(countries))
+        country_detail = []
+        for i in countries:
+            historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == fb_offer.id).order_by(
+                desc(History.createdTime)).first()
+            country = historty.country
+            country_price = historty.country_price
+            detail = {
+                "country": country,
+                "price": country_price
+            }
+            country_detail += [detail]
+        facebook["country_detail"] = country_detail
     else:
         facebook = {}
 
@@ -308,6 +326,24 @@ def offerDetail(id):
             "period": ad_offer.period,
             "remark": ad_offer.remark
         }
+        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == ad_offer.id).all()
+        countries = []
+        for i in historties:
+            country = i.country
+            countries.append(country)
+        countries = list(set(countries))
+        country_detail = []
+        for i in countries:
+            historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == ad_offer.id).order_by(
+                desc(History.createdTime)).first()
+            country = historty.country
+            country_price = historty.country_price
+            detail = {
+                "country": country,
+                "price": country_price
+            }
+            country_detail += [detail]
+        adwords["country_detail"] = country_detail
     else:
         adwords = {}
 
@@ -338,6 +374,24 @@ def offerDetail(id):
             "period": ap_offer.period,
             "remark": ap_offer.remark
         }
+        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == ap_offer.id).all()
+        countries = []
+        for i in historties:
+            country = i.country
+            countries.append(country)
+        countries = list(set(countries))
+        country_detail = []
+        for i in countries:
+            historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == ap_offer.id).order_by(
+                desc(History.createdTime)).first()
+            country = historty.country
+            country_price = historty.country_price
+            detail = {
+                "country": country,
+                "price": country_price
+            }
+            country_detail += [detail]
+        apple["country_detail"] = country_detail
     else:
         apple = {}
 
@@ -352,45 +406,14 @@ def offerDetail(id):
         "app_type": offer.app_type,
         "preview_link": offer.preview_link,
         "track_link": offer.track_link,
-        "material": offer.material,
-        "startTime": offer.startTime,
-        "endTime": offer.endTime,
         "platform": str(plate),
-        "country": str(offer.country),
-        "price": offer.price,
-        "daily_budget": offer.daily_budget,
-        "daily_type": offer.daily_type,
-        "total_budget": offer.total_budget,
-        "total_type": offer.total_type,
-        "distribution": offer.distribution,
-        "authorized": offer.authorized,
-        "named_rule": offer.named_rule,
-        "KPI": offer.KPI,
-        "settlement": offer.settlement,
-        "period": offer.period,
-        "remark": offer.remark,
         "email_time": offer.email_time,
         "email_users": offer.email_users,
-        "email_tempalte": offer.email_template
+        "email_tempalte": offer.email_template,
+        "facebook": facebook,
+        "adwords": adwords,
+        "apple": apple
     }
-    historties = History.query.filter(History.offer_id == id, History.country != "").all()
-    countries = []
-    for i in historties:
-        country = i.country
-        countries.append(country)
-    countries = list(set(countries))
-    country_detail = []
-    for i in countries:
-        historty = History.query.filter(History.offer_id == id, History.country == i).order_by(
-            desc(History.createdTime)).first()
-        country = historty.country
-        country_price = historty.country_price
-        detail = {
-            "country": country,
-            "price": country_price
-        }
-        country_detail += [detail]
-    result["country_detail"] = country_detail
     response = {
         "code": 200,
         "result": result,
@@ -401,7 +424,7 @@ def offerDetail(id):
 #offer国家对应的价钱
 @offers.route('/api/country_price/<offerId>', methods=["GET"])
 def countryPrice(offerId):
-    historties = History.query.filter(History.offer_id == int(offerId), History.country != "").all()
+    historties = History.query.filter(History.offer_id == int(offerId), History.country != "", History.platform == "facebook").all()
     countries = []
     for i in historties:
         country = i.country
@@ -495,6 +518,38 @@ def updateStatus(offer_id):
         db.create_all()
         return json.dumps({"code": 200, "message": "success"})
 
+def updatePlatformOffer(offer_id,platform,data):
+    platform_offer = PlatformOffer.query.filter_by(offer_id=int(offer_id),platform=platform).first()
+    time_now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+    if platform_offer is not None:
+        platform_offer.contract_type = data['contract_type']
+        platform_offer.contract_scale = data['contract_scale']
+        platform_offer.material = data['material']
+        platform_offer.startTime = data['startTime']
+        platform_offer.endTime = data['endTime']
+        platform_offer.country = data['country']
+        platform_offer.price = float(data['price'])
+        platform_offer.daily_budget = float(data['daily_budget'])
+        platform_offer.daily_type = data['daily_type']
+        platform_offer.total_budget = float(data['total_budget'])
+        platform_offer.total_type = data['total_type']
+        platform_offer.distribution = data['distribution']
+        platform_offer.authorized = data['authorized']
+        platform_offer.named_rule = data['named_rule']
+        platform_offer.KPI = data['KPI']
+        platform_offer.settlement = data['settlement']
+        platform_offer.period = data['period']
+        platform_offer.remark = data['remark']
+        platform_offer.updateTime = time_now
+        db.session.add(platform_offer)
+        db.session.commit()
+    else:
+        platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],float(data['price']),float(data['daily_budget']),data['daily_type'],float(data['total_budget']),data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
+        db.session.add(platform_offer)
+        db.session.commit()
+        db.create_all()
+    return platform_offer
+
 @offers.route('/api/update_offer', methods=["POST", "GET"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateOffer():
@@ -510,8 +565,6 @@ def updateOffer():
                 offer.status = data["status"] if data["status"] != "" else offer.status
                 offer.customer_id = int(customer_id) if data["customer_id"] != "" else offer.customer_id
                 offer.user_id = int(user_id) if data['user_id'] != "" else offer.user_id
-                offer.contract_type = data["contract_type"] if data["contract_type"] != "" else offer.contract_type
-                offer.contract_scale = float(data["contract_scale"]) if data["contract_scale"] != "" else offer.contract_scale
                 offer.contract_num = data["contract_num"] if data["contract_num"] != "" else offer.contract_num
                 offer.os = data["os"] if data["os"] != "" else offer.os
                 offer.package_name = data["package_name"] if data["package_name"] != "" else offer.package_name
@@ -519,10 +572,18 @@ def updateOffer():
                 offer.app_type = data["app_type"] if data["app_type"] != "" else offer.app_type
                 offer.preview_link = data["preview_link"] if data["preview_link"] != "" else offer.preview_link
                 offer.track_link = data["track_link"] if data["track_link"] != "" else offer.track_link
+                offer.platform = str(data["platform"]) if str(data["platform"]) != "" else offer.platform
+                offer.email_time = data["email_time"]
+                offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
+                offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
+
+                if data["facebook"] != {}:
+                    fb_offer = PlatformOffer.query.filter_by(offer_id=int(data["offer_id"]),platform="facebook").first()
+
+
                 offer.material = data["material"] if data["material"] != "" else offer.material
                 offer.startTime = data["startTime"] if data["startTime"] != "" else offer.startTime
                 offer.endTime = data["endTime"] if data["endTime"] != "" else offer.endTime
-                offer.platform = str(data["platform"]) if str(data["platform"]) != "" else offer.platform
                 offer.country = str(data["country"]) if str(data["country"]) != "" else offer.country
                 offer.price = float(data["price"]) if data["price"] != "" else offer.price
                 offer.daily_budget = float(data["daily_budget"]) if data["daily_budget"] != "" else offer.daily_budget
@@ -536,9 +597,7 @@ def updateOffer():
                 offer.settlement = data['settlement'].encode('utf-8') if data["settlement"] != "" else offer.settlement
                 offer.period = data["period"].encode("utf-8") if data["period"] != "" else offer.period
                 offer.remark = data["remark"].encode("utf-8") if data["remark"] != "" else offer.remark
-                offer.email_time = data["email_time"]
-                offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
-                offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
+
                 db.session.add(offer)
                 db.session.commit()
                 if "country_detail" in flag:

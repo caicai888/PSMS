@@ -240,6 +240,7 @@ class History(db.Model):
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     platformOffer_id = db.Column(db.Integer, db.ForeignKey('platformOffer.id'))
+    platform = db.Column(db.String(100), nullable=False)
     type = db.Column(db.String(100), default='default')
     status = db.Column(db.String(100), nullable=False)
     createdTime = db.Column(db.String(100), nullable=False)
@@ -254,12 +255,13 @@ class History(db.Model):
     contract_type = db.Column(db.String(100), nullable=True)  # 合同模式
     contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
 
-    def __init__(self, offer_id, user_id,platformOffer_id, type, createdTime, status=None, country=None, country_price=0, price=0,
+    def __init__(self, offer_id, user_id,platformOffer_id,platform, type, createdTime, status=None, country=None, country_price=0, price=0,
                  daily_budget=0, daily_type=None, total_budget=0, total_type=None, KPI=None, contract_type=None,
                  contract_scale=None):
         self.offer_id = offer_id
         self.user_id = user_id
         self.platformOffer_id = platformOffer_id
+        self.platform = platform
         self.type = type
         self.createdTime = createdTime
         self.status = status
