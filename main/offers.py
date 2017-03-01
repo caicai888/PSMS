@@ -3,7 +3,7 @@ from __future__ import division
 from main.has_permission import *
 from flask import Blueprint, request
 from main import db
-from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role,CampaignRelations
+from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role,CampaignRelations,PlatformOffer,CooperationPer
 import json
 import os
 import datetime, time
@@ -116,46 +116,75 @@ def createOffer():
         if data["offer_id"]:
             offer_id = int(data["offer_id"])
             oldOffer = Offer.query.filter_by(id=offer_id).first()
-            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_type,oldOffer.contract_num,oldOffer.contract_scale,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.material,oldOffer.startTime,oldOffer.endTime,oldOffer.platform,oldOffer.country,oldOffer.price,oldOffer.daily_budget,oldOffer.daily_type,oldOffer.total_budget,oldOffer.total_type,oldOffer.distribution,oldOffer.authorized,oldOffer.named_rule,oldOffer.KPI,oldOffer.settlement,oldOffer.period,oldOffer.remark,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
+            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
             try:
                 db.session.add(offer)
                 db.session.commit()
                 db.create_all()
-
-                oldHistorty = History.query.filter_by(offer_id=offer_id).all()
-                for i in oldHistorty:
-                    historty = History(offer.id, i.user_id,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
-                    db.session.add(historty)
+                oldplatformOffers = PlatformOffer.query.filter_by(offer_id=offer_id).all()
+                for j in oldplatformOffers:
+                    platformOffer = PlatformOffer(offer.id,j.platform,j.contract_type,j.contract_scale,j.material, j.startTime,j.endTime, j.country, j.price,j.daily_budget,j.daily_type, j.total_budget, j.total_type, j.distribution, j.authorized,j.named_rule, j.KPI,j.settlement, j.period, j.remark, createdTime, updateTime)
+                    db.session.add(platformOffer)
                     db.session.commit()
                     db.create_all()
+
+                    oldHistorty = History.query.filter_by(offer_id=offer_id,platformOffer_id=j.id).all()
+                    for i in oldHistorty:
+                        historty = History(offer.id, i.user_id,platformOffer.id,"default",createdTime,i.status,i.country,i.country_price,i.price,i.daily_budget,i.daily_type,i.total_budget,i.total_type,i.KPI,i.contract_type,i.contract_scale)
+                        db.session.add(historty)
+                        db.session.commit()
+                        db.create_all()
                 return json.dumps({"code":200,"message":"success","offerId":offer.id})
             except Exception as e:
                 print e
                 return json.dumps({"code":500,"message":"fail"})
 
         else:
-            contract_type = data["contract_type"]
-
             user_id= data["user_id"].split("(")[1].split(')')[0]
             customer_id = data["customer_id"].split("(")[1].split(')')[0]
-            print customer_id
 
-            offer = Offer(int(user_id), int(customer_id), data["status"], contract_type,data["contract_num"], float(data["contract_scale"] if data["contract_scale"] else 0), data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],data["material"], data["startTime"], data["endTime"], str(data["platform"]), str(data["country"]),float(data["price"] if data["price"] else 0), float(data["daily_budget"] if data["daily_budget"] else 0), data["daily_type"],float(data["total_budget"] if data["total_budget"] else 0), data["total_type"], data["distribution"], data["authorized"],data["named_rule"], data["KPI"].encode('utf-8'), data["settlement"].encode('utf-8'),data["period"].encode('utf-8'), data["remark"].encode('utf-8'), data["email_time"],str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
+            offer = Offer(int(user_id), int(customer_id), data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
             try:
                 db.session.add(offer)
                 db.session.commit()
                 db.create_all()
 
-                for i in data['country_detail']:
-                    history = History(offer.id, int(user_id), "default", createdTime, status=data["status"],country=i["country"], country_price=i["price"], price=data["price"],daily_budget=float(data["daily_budget"] if data["daily_budget"] else 0), daily_type=data["daily_type"],total_budget=float(data["total_budget"] if data["total_budget"] else 0),  total_type=data["total_type"],KPI=data["KPI"], contract_type=contract_type,contract_scale=float(data["contract_scale"] if data["contract_scale"] else 0))
-                    db.session.add(history)
+                if data["facebook"] != {}:
+                    fb = data["facebook"]
+                    platformOffer = PlatformOffer(offer.id, "facebook",fb["contract_type"],float(fb["contract_scale"] if fb["contract_scale"] else 0),fb["material"], fb["startTime"], fb["endTime"],str(fb["country"]),float(fb["price"] if fb["price"] else 0), float(fb["daily_budget"] if fb["daily_budget"] else 0), fb["daily_type"],float(fb["total_budget"] if fb["total_budget"] else 0), fb["total_type"], fb["distribution"], fb["authorized"],fb["named_rule"], fb["KPI"].encode('utf-8'), fb["settlement"].encode('utf-8'),fb["period"].encode('utf-8'), fb["remark"].encode('utf-8'),createdTime,updateTime)
+                    db.session.add(platformOffer)
                     db.session.commit()
                     db.create_all()
+                    for i in fb['country_detail']:
+                        history = History(offer.id, int(user_id),platformOffer.id, "default", createdTime, status=offer.status,country=i["country"], country_price=i["price"], price=platformOffer.price,daily_budget=float(fb["daily_budget"] if fb["daily_budget"] else 0), daily_type=fb["daily_type"],total_budget=float(fb["total_budget"] if fb["total_budget"] else 0),  total_type=fb["total_type"],KPI=fb["KPI"], contract_type=fb["contract_type"],contract_scale=float(fb["contract_scale"] if fb["contract_scale"] else 0))
+                        db.session.add(history)
+                        db.session.commit()
+                        db.create_all()
+                if data["adwords"] != {}:
+                    ad = data["adwords"]
+                    platformOffer = PlatformOffer(offer.id, "adwords", ad["contract_type"],float(ad["contract_scale"] if ad["contract_scale"] else 0), ad["material"], ad["startTime"],ad["endTime"], str(ad["country"]), float(ad["price"] if ad["price"] else 0),float(ad["daily_budget"] if ad["daily_budget"] else 0), ad["daily_type"],float(ad["total_budget"] if ad["total_budget"] else 0), ad["total_type"], ad["distribution"],ad["authorized"], ad["named_rule"], ad["KPI"].encode('utf-8'), ad["settlement"].encode('utf-8'),ad["period"].encode('utf-8'), ad["remark"].encode('utf-8'), createdTime, updateTime)
+                    db.session.add(platformOffer)
+                    db.session.commit()
+                    db.create_all()
+                    for i in ad['country_detail']:
+                        history = History(offer.id, int(user_id),platformOffer.id, "default", createdTime, status=offer.status,country=i["country"], country_price=i["price"], price=platformOffer.price,daily_budget=float(ad["daily_budget"] if ad["daily_budget"] else 0), daily_type=ad["daily_type"],total_budget=float(ad["total_budget"] if ad["total_budget"] else 0),  total_type=ad["total_type"],KPI=ad["KPI"], contract_type=ad["contract_type"],contract_scale=float(ad["contract_scale"] if ad["contract_scale"] else 0))
+                        db.session.add(history)
+                        db.session.commit()
+                        db.create_all()
+                if data["apple"] != {}:
+                    ap = data["apple"]
+                    platformOffer = PlatformOffer(offer.id, "apple", ap["contract_type"],float(ap["contract_scale"] if ap["contract_scale"] else 0), ap["material"], ap["startTime"],ap["endTime"], str(ap["country"]), float(ap["price"] if ap["price"] else 0),float(ap["daily_budget"] if ap["daily_budget"] else 0), ap["daily_type"],float(ap["total_budget"] if ap["total_budget"] else 0), ap["total_type"], ap["distribution"],ap["authorized"], ap["named_rule"], ap["KPI"].encode('utf-8'), ap["settlement"].encode('utf-8'),ap["period"].encode('utf-8'), ap["remark"].encode('utf-8'), createdTime, updateTime)
+                    db.session.add(platformOffer)
+                    db.session.commit()
+                    db.create_all()
+                    for i in ap['country_detail']:
+                        history = History(offer.id, int(user_id),platformOffer.id, "default", createdTime, status=offer.status,country=i["country"], country_price=i["price"], price=platformOffer.price,daily_budget=float(ap["daily_budget"] if ap["daily_budget"] else 0), daily_type=ap["daily_type"],total_budget=float(ap["total_budget"] if ap["total_budget"] else 0),  total_type=ap["total_type"],KPI=ap["KPI"], contract_type=ap["contract_type"],contract_scale=float(ap["contract_scale"] if ap["contract_scale"] else 0))
+                        db.session.add(history)
+                        db.session.commit()
+                        db.create_all()
                 return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
             except Exception as e:
-                print e
-                return json.dumps({"code": 500, "message": "fail"})
-
+                return json.dumps({"code": 500, "message": e})
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
 def offerShow():
@@ -175,12 +204,14 @@ def offerShow():
             customer = Customers.query.filter_by(id=customerId).first()
             customerName = customer.company_name  # 客户名称
             status = i.status
-            contract_type = i.contract_type
             sales = User.query.filter_by(id=int(i.user_id)).first()
-            if contract_type == "1":
-                contract_type = u"服务费"
-            elif contract_type == "2":
-                contract_type = "cpa"
+            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all()
+            for j in fb_offer:
+                contract_type = j.contract_type
+                if contract_type == "1":
+                    contract_type = u"服务费"
+                elif contract_type == "2":
+                    contract_type = "cpa"
             os = i.os
             app_name = i.app_name
             if i.endTime >= (datetime.datetime.now()+datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
