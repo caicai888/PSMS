@@ -105,7 +105,7 @@ for i in results:
         for campaignId in advertise_series:
             print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
-            time_ranges = "{'since': '2017-02-27', 'until': '2017-03-01'}"
+            time_ranges = "[{'since':'2017-02-27','until':'2017-02-27'},{'since':'2017-02-28','until':'2017-02-28'}]"
             params = {
                 "access_token": accessToken,
                 "level": "campaign",
