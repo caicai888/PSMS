@@ -30,7 +30,8 @@ for account in accountIds:
     params = {
         "access_token": accessToken,
         "level": "account",
-        "fields": ["name"]
+        "fields": ["name"],
+        "limit": "500"
     }
     result = requests.get(url=url, params=params)
     try:
