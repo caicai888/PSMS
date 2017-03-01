@@ -97,12 +97,13 @@ class Customers(db.Model):
     last_datetime = db.Column(db.DateTime, default=datetime.now())
     status = db.Column(db.String(100), nullable=False, default='Created')
 
-    def __init__(self, customer_code, company_name, company_address, bank_account=None, concordat_code=None, comment=None, status="Created"):
+    # def __init__(self, customer_code, company_name, company_address, bank_account=None, concordat_code=None, comment=None, status="Created"):
+    def __init__(self, customer_code, company_name, company_address, comment=None, status="Created"):
         self.customer_code = customer_code
         self.company_name = company_name
         self.company_address = company_address
-        self.bank_account = bank_account
-        self.concordat_code = concordat_code
+        # self.bank_account = bank_account
+        # self.concordat_code = concordat_code
         self.comment = comment
         self.status = status
 
