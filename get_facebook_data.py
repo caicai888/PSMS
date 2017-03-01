@@ -100,11 +100,12 @@ for i in results:
                 time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
         else:
             time_ranges = []
-    time_ranges = ["{'since':'2017-02-27','until':'2017-02-27'},{'since':'2017-02-28','until':'2017-02-28'}"]
+    print time_ranges
     if time_ranges != []:
         for campaignId in advertise_series:
             print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
+            time_ranges = "{'since': '2017-02-27', 'until': '2017-03-01'}"
             params = {
                 "access_token": accessToken,
                 "level": "campaign",
