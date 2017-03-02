@@ -217,6 +217,8 @@ def offerShow():
                 else:
                     endTime = j.endTime
                 startTime = j.startTime
+                country = j.country
+                price = j.price
             os = i.os
             app_name = i.app_name
 
@@ -229,8 +231,8 @@ def offerShow():
                 "app_name": app_name,
                 "startTime": startTime,
                 "endTime": endTime,
-                "country": str(i.country),
-                "price": i.price,
+                "country": country,
+                "price": price,
                 "updateTime": i.updateTime,
                 "sale_name":sales.name
             }
@@ -1162,46 +1164,129 @@ def updateContryTime():
     return json.dumps({"code": 200, "message": "success"})
 
 #合作模式日历部分
-# @offers.route('/api/contract', methods=["POST","GET"])
-# def contract():
-#     data = request.get_json(force=True)
-#     result = data["result"]
-#
-#     if data["offer_id"] == "":
-#         offerIds = []
-#         offer_msg = Offer.query.all()
-#
-#         if offer_msg == []:
-#             offer_id = 1
-#         else:
-#             for i in offer_msg:
-#                 offerIds.append(i.id)
-#             offer_id = offerIds[-1] + 1
-#     else:
-#         offer_id = int(data["offer_id"])
-#     for i in result:
-#         if i["price"] != "":
-#             timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id, platform=i["platform"]).first()
-#             if timePrice:
-#                 timePrice.price = i["price"]
-#                 try:
-#                     db.session.add(timePrice)
-#                     db.session.commit()
-#                 except Exception as e:
-#                     print e
-#                     return json.dumps({"code": 500, "message": "fail"})
-#             else:
-#                 timePriceNew = TimePrice(offer_id, i["platform"], i["date"], i["price"])
-#                 try:
-#                     db.session.add(timePriceNew)
-#                     db.session.commit()
-#                     db.create_all()
-#                 except Exception as e:
-#                     print e
-#                     return json.dumps({"code": 500, "message": "fail"})
-#         else:
-#             pass
-#     return json.dumps({"code": 200, "message": "success"})
+@offers.route('/api/contract', methods=["POST","GET"])
+def contract():
+    data = request.get_json(force=True)
+    result = data["result"]
+    platform = data["platform"]
+    contract_type = data["contract_type"]
+    if data["offer_id"] == "":
+        offerIds = []
+        offer_msg = Offer.query.all()
+
+        if offer_msg == []:
+            offer_id = 1
+        else:
+            for i in offer_msg:
+                offerIds.append(i.id)
+            offer_id = offerIds[-1] + 1
+    else:
+        offer_id = int(data["offer_id"])
+    for i in result:
+        if i["contract_scale"] != "":
+            cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=offer_id, platform=platform).first()
+            if cooperation:
+                cooperation.contract_scale = float(i["price"])
+                cooperation.contract_type = contract_type
+                try:
+                    db.session.add(cooperation)
+                    db.session.commit()
+                except Exception as e:
+                    print e
+                    return json.dumps({"code": 500, "message": "fail"})
+            else:
+                createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+                cooperation = CooperationPer(offer_id, platform, contract_type, float(i["price"]),i["date"],createdTime)
+                try:
+                    db.session.add(cooperation)
+                    db.session.commit()
+                    db.create_all()
+                except Exception as e:
+                    print e
+                    return json.dumps({"code": 500, "message": "fail"})
+        else:
+            pass
+    return json.dumps({"code": 200, "message": "success"})
+
+@offers.route("/api/contract_show", methods=["POST", "GET"])
+def showContract():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        date = data['date']
+        platform = data['platform']
+        contract_type = data['contract_type']
+        month = date.split("-", 1)[1]
+        year = int(date.split('-', 1)[0])
+        if month in ["01", "03", "05", "07", "08", "10", "12"]:
+            dateList = [date + "-01", date + "-02", date + "-03", date + "-04", date + "-05", date + "-06",
+                        date + "-07", date + "-08", date + "-09", date + "-10", date + "-11", date + "-12",
+                        date + "-13", date + "-14", date + "-15", date + "-16", date + "-17", date + "-18",
+                        date + "-19", date + "-20", date + "-21", date + "-22", date + "-23", date + "-24",
+                        date + "-25", date + "-26", date + "-27", date + "-28", date + "-29", date + "-30",
+                        date + "-31"]
+        elif month in ["04", "06", "09", "11"]:
+            dateList = [date + "-01", date + "-02", date + "-03", date + "-04", date + "-05", date + "-06",
+                        date + "-07", date + "-08", date + "-09", date + "-10", date + "-11", date + "-12",
+                        date + "-13", date + "-14", date + "-15", date + "-16", date + "-17", date + "-18",
+                        date + "-19", date + "-20", date + "-21", date + "-22", date + "-23", date + "-24",
+                        date + "-25", date + "-26", date + "-27", date + "-28", date + "-29", date + "-30"]
+        else:
+            if year % 100 == 0 and year % 400 == 0:
+                dateList = [date + "-01", date + "-02", date + "-03", date + "-04", date + "-05", date + "-06",
+                            date + "-07", date + "-08",
+                            date + "-09", date + "-10", date + "-11", date + "-12", date + "-13", date + "-14",
+                            date + "-15", date + "-16",
+                            date + "-17", date + "-18", date + "-19", date + "-20", date + "-21", date + "-22",
+                            date + "-23", date + "-24",
+                            date + "-25", date + "-26", date + "-27", date + "-28", date + "-29"]
+            elif year % 100 != 0 and year % 4 == 0:
+                dateList = [date + "-01", date + "-02", date + "-03", date + "-04", date + "-05", date + "-06",
+                            date + "-07", date + "-08",
+                            date + "-09", date + "-10", date + "-11", date + "-12", date + "-13", date + "-14",
+                            date + "-15", date + "-16",
+                            date + "-17", date + "-18", date + "-19", date + "-20", date + "-21", date + "-22",
+                            date + "-23", date + "-24",
+                            date + "-25", date + "-26", date + "-27", date + "-28", date + "-29"]
+            else:
+                dateList = [date + "-01", date + "-02", date + "-03", date + "-04", date + "-05", date + "-06",
+                            date + "-07", date + "-08",
+                            date + "-09", date + "-10", date + "-11", date + "-12", date + "-13", date + "-14",
+                            date + "-15", date + "-16",
+                            date + "-17", date + "-18", date + "-19", date + "-20", date + "-21", date + "-22",
+                            date + "-23", date + "-24",
+                            date + "-25", date + "-26", date + "-27", date + "-28"]
+        result = []
+        dateCurrent = []
+        if data["offer_id"] != "":
+            cooperation = CooperationPer.query.filter(CooperationPer.platform == platform, CooperationPer.offer_id == int(data["offer_id"]), CooperationPer.contract_type == contract_type).all()
+            for t in cooperation:
+                dateCurrent.append(t.date)
+            for i in dateList:
+                if i in dateCurrent:
+                    cooperate = CooperationPer.query.filter_by(date=i, offer_id=int(data["offer_id"]),platform=platform,contract_type=contract_type).first()
+                    detail = {
+                        "date": i,
+                        "price": cooperate.contract_scale
+                    }
+                else:
+                    detail = {
+                        "date": i,
+                        "price": ""
+                    }
+                result += [detail]
+        else:
+            for i in dateList:
+                detail = {
+                    "date": i,
+                    "price": ""
+                }
+                result += [detail]
+        response = {
+            "code": 200,
+            "result": result,
+            "message": "success"
+        }
+        return json.dumps(response)
 
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
