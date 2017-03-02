@@ -1260,6 +1260,7 @@ def showContract():
         print "++++"*10
         print data["offer_id"]
         if data["offer_id"] != "":
+            print "****"*10
             cooperation = CooperationPer.query.filter(CooperationPer.platform == platform, CooperationPer.offer_id == int(data["offer_id"]), CooperationPer.contract_type == contract_type).all()
             for t in cooperation:
                 dateCurrent.append(t.date)
