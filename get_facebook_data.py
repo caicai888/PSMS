@@ -17,6 +17,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=17"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -38,6 +39,7 @@ for i in results:
     revenue_list = []
     profit_list = []
     offerId = i[0]
+    print offerId
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
@@ -99,8 +101,11 @@ for i in results:
                 time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
         else:
             time_ranges = []
+
     if time_ranges != []:
         for campaignId in advertise_series:
+            print campaignId
+            print "***"*10
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
@@ -393,7 +398,6 @@ for i in results:
                             "date_stop": date_start
                         }
                     ]
-
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
             date_fb = impressions_list[l].get("date_start")
