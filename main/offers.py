@@ -143,7 +143,7 @@ def createOffer():
             user_id= data["user_id"].split("(")[1].split(')')[0]
             customer_id = data["customer_id"].split("(")[1].split(')')[0]
 
-            offer = Offer(int(user_id), int(customer_id), data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), int(data["email_tempalte"]), createdTime, updateTime)
+            offer = Offer(int(user_id), int(customer_id), data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"], createdTime, updateTime)
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -1158,6 +1158,8 @@ def updateContryTime():
         else:
             pass
     return json.dumps({"code": 200, "message": "success"})
+
+
 
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
