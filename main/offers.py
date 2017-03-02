@@ -1257,6 +1257,8 @@ def showContract():
                             date + "-25", date + "-26", date + "-27", date + "-28"]
         result = []
         dateCurrent = []
+        print "++++"*10
+        print data["offer_id"]
         if data["offer_id"] != "":
             cooperation = CooperationPer.query.filter(CooperationPer.platform == platform, CooperationPer.offer_id == int(data["offer_id"]), CooperationPer.contract_type == contract_type).all()
             for t in cooperation:
@@ -1331,17 +1333,17 @@ def offerSearch():
 def offer_search_detail(offers):
     offer_result_list = []
     for i in offers:
-        contract_type = i.contract_type
         sales = User.query.filter_by(id=int(i.user_id)).first()
         platform_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").first()
+        contract_type = platform_offer.contract_type
         if contract_type == "1":
             contract_type = u"服务费"
         elif contract_type == "2":
             contract_type = "cpa"
-        if i.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+        if platform_offer.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
             endTime = "TBD"
         else:
-            endTime = i.endTime
+            endTime = platform_offer.endTime
         customerId = i.customer_id
         customer = Customers.query.filter_by(id=customerId).first()
         customerName = customer.company_name
@@ -1353,10 +1355,10 @@ def offer_search_detail(offers):
                 "os": i.os,
                 "customer_id": customerName,
                 "app_name": i.app_name,
-                "startTime": i.startTime,
+                "startTime": platform_offer.startTime,
                 "endTime": endTime,
-                "country": str(i.country),
-                "price": i.price,
+                "country": str(platform_offer.country),
+                "price": platform_offer.price,
                 "updateTime": i.updateTime,
                 "sale_name": sales.name
             }
