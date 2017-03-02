@@ -1183,7 +1183,7 @@ def contract():
     else:
         offer_id = int(data["offer_id"])
     for i in result:
-        if i["contract_scale"] != "":
+        if i["price"] != "":
             cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=offer_id, platform=platform).first()
             if cooperation:
                 cooperation.contract_scale = float(i["price"])
@@ -1333,6 +1333,7 @@ def offer_search_detail(offers):
     for i in offers:
         contract_type = i.contract_type
         sales = User.query.filter_by(id=int(i.user_id)).first()
+        platform_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").first()
         if contract_type == "1":
             contract_type = u"服务费"
         elif contract_type == "2":
