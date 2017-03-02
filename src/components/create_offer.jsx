@@ -110,9 +110,10 @@ var CreateOffer = React.createClass({
         var result=[];
         var dd = $(".price-calendar dd");
         for(var i =0;i<dd.length;i++){
+            var html=$(dd[i]).find(".cal-price").html().toString();
             result.push({
                 date:$(".cal-year").html()+"-"+($(".cal-month").html().toString().length<2?"0"+$(".cal-month").html():$(".cal-month").html())+"-"+($(dd[i]).find(".cal-day").html().toString().length<2?"0"+$(dd[i]).find(".cal-day").html():$(dd[i]).find(".cal-day").html()),
-                price:$(dd[i]).find(".cal-price").html().length>0?$(dd[i]).find(".cal-price").html().toString().substring(1):""
+                price:html.length>0?(html.indexOf("￥")>-1?html.substring(1):html):""
             })
         }
         var platform="";
@@ -160,7 +161,7 @@ var CreateOffer = React.createClass({
         var pt = e&&e.target.dataset.pt || _this.state.pt;
         _this.setState({
             pt:pt
-        })
+        });
         var platform="";
         if(pt=="facebook"){
             platform="facebook"
@@ -171,19 +172,21 @@ var CreateOffer = React.createClass({
         if(pt=="apple"){
             platform="apple"
         }
-        var url ="";
+        var url ="/api/country_time_show";
         var hzfs= _this.state.hzfs || e&&e.target.dataset.hzfs || "";
         if(Boolean(hzfs)){
             url="/api/contract_show";
             _this.setState({
                 hzfs:"true"
             })
+            sessionStorage.setItem("isPrice",true);
         }
         if(e&&e.target.dataset.country){
             url ="/api/country_time_show";
             _this.setState({
                 hzfs:""
             })
+            sessionStorage.removeItem("isPrice");
         }
         ajax("post",url,JSON.stringify({
             date:(_this.state.date&&moment(this.state.date).format("YYYY-MM")) || moment().format("YYYY-MM"),
@@ -208,7 +211,7 @@ var CreateOffer = React.createClass({
                     }
                     var date = new Date(year, month-1,1);
                     _this.setState({date:date});
-                    _this.savePrice(false,Boolean(hzfs)?true:false);
+                    _this.savePrice(false,Boolean(hzfs)?true:"");
                 });
 
                 // 下一月
@@ -221,10 +224,10 @@ var CreateOffer = React.createClass({
                     }
                     var date = new Date(year, month-1,1);
                     _this.setState({date:date});
-                    _this.savePrice(false,Boolean(hzfs)?true:false);
+                    _this.savePrice(false,Boolean(hzfs)?true:"");
                 });
                 $(".cal-save").on("click",function () {
-                    _this.savePrice(true,Boolean(hzfs)?true:false);
+                    _this.savePrice(true,Boolean(hzfs)?true:"");
                     $(".price-calendar").hide();
                 });
                 $(".cal-cancel").on("click",function () {

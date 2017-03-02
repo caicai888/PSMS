@@ -1173,7 +1173,8 @@ def contract():
     if data["offer_id"] == "":
         offerIds = []
         offer_msg = Offer.query.all()
-
+        print "+++"*10
+        print offer_msg
         if offer_msg == []:
             offer_id = 1
         else:
@@ -1184,7 +1185,9 @@ def contract():
         offer_id = int(data["offer_id"])
     for i in result:
         if i["price"] != "":
-            cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=offer_id, platform=platform).first()
+            print "***"*10
+            print offer_id
+            cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=int(offer_id), platform=platform).first()
             if cooperation:
                 cooperation.contract_scale = float(i["price"])
                 cooperation.contract_type = contract_type
@@ -1195,8 +1198,11 @@ def contract():
                     print e
                     return json.dumps({"code": 500, "message": "fail"})
             else:
+                print "lalalala"
+                print offer_id
+                print type(offer_id)
                 createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-                cooperation = CooperationPer(offer_id, platform, contract_type, float(i["price"]),i["date"],createdTime)
+                cooperation = CooperationPer(int(offer_id), platform, contract_type, float(i["price"]),i["date"],createdTime)
                 try:
                     db.session.add(cooperation)
                     db.session.commit()
@@ -1257,10 +1263,7 @@ def showContract():
                             date + "-25", date + "-26", date + "-27", date + "-28"]
         result = []
         dateCurrent = []
-        print "++++"*10
-        print data["offer_id"]
         if data["offer_id"] != "":
-            print "****"*10
             cooperation = CooperationPer.query.filter(CooperationPer.platform == platform, CooperationPer.offer_id == int(data["offer_id"]), CooperationPer.contract_type == contract_type).all()
             for t in cooperation:
                 dateCurrent.append(t.date)
