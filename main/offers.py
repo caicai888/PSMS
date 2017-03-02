@@ -1173,7 +1173,8 @@ def contract():
     if data["offer_id"] == "":
         offerIds = []
         offer_msg = Offer.query.all()
-
+        print "+++"*10
+        print offer_msg
         if offer_msg == []:
             offer_id = 1
         else:
@@ -1184,6 +1185,8 @@ def contract():
         offer_id = int(data["offer_id"])
     for i in result:
         if i["price"] != "":
+            print "***"*10
+            print offer_id
             cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=offer_id, platform=platform).first()
             if cooperation:
                 cooperation.contract_scale = float(i["price"])
@@ -1257,10 +1260,7 @@ def showContract():
                             date + "-25", date + "-26", date + "-27", date + "-28"]
         result = []
         dateCurrent = []
-        print "++++"*10
-        print data["offer_id"]
         if data["offer_id"] != "":
-            print "****"*10
             cooperation = CooperationPer.query.filter(CooperationPer.platform == platform, CooperationPer.offer_id == int(data["offer_id"]), CooperationPer.contract_type == contract_type).all()
             for t in cooperation:
                 dateCurrent.append(t.date)
