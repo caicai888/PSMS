@@ -1121,6 +1121,7 @@ def updateContryTime():
     data = request.get_json(force=True)
     result = data["result"]
     countryName = data["country"]
+    platform = data["platform"]
     country = Country.query.filter_by(shorthand=countryName).first()
     countryId = country.id
 
@@ -1138,7 +1139,7 @@ def updateContryTime():
         offer_id = int(data["offer_id"])
     for i in result:
         if i["price"] != "":
-            timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id, platform=i["platform"]).first()
+            timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id, platform=platform).first()
             if timePrice:
                 timePrice.price = i["price"]
                 try:
@@ -1148,7 +1149,7 @@ def updateContryTime():
                     print e
                     return json.dumps({"code": 500, "message": "fail"})
             else:
-                timePriceNew = TimePrice(offer_id,countryId, i["platform"], i["date"], i["price"])
+                timePriceNew = TimePrice(offer_id,countryId, platform, i["date"], i["price"])
                 try:
                     db.session.add(timePriceNew)
                     db.session.commit()
