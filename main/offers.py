@@ -212,12 +212,13 @@ def offerShow():
                     contract_type = u"服务费"
                 elif contract_type == "2":
                     contract_type = "cpa"
+                if j.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+                    endTime = "TBD"
+                else:
+                    endTime = j.endTime
             os = i.os
             app_name = i.app_name
-            if i.endTime >= (datetime.datetime.now()+datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
-                endTime = "TBD"
-            else:
-                endTime = i.endTime
+
             data = {
                 "offer_id": i.id,
                 "status": status,
