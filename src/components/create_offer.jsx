@@ -10,7 +10,9 @@ import moment from "moment";
 var CreateOffer = React.createClass({
     getInitialState() {
         return {
-            result:[],
+            facebook_tfdj:[],
+            adwords_tfdj:[],
+            apple_tfdj:[],
             tfpt:[{
                 id:"Facebook",
                 text:"Facebook"
@@ -18,26 +20,38 @@ var CreateOffer = React.createClass({
                 id:"Adwords",
                 text:"Adwords"
             },{
-                id:"apple",
-                text:"apple"
+                id:"Apple",
+                text:"Apple"
             }],
+            pt:"",//区分是在哪个平台下的批量导入
             khmc:[],
             tfdq:[],
             country:"",
             date:"",
-            country_detail:[],
-            userId:[]
+            userId:[],
+            hzfs:""
         };
     },
-    uploadFile:function () {
+    uploadFile:function (e) {
         var _this = this;
-        var id =this.props.params.id?this.props.params.id:"create";
-        uploadFile("/api/country_time/"+id,"post","import").then(function (data) {
+        var pt = _this.state.pt;
+        var id =this.props.params.id?this.props.params.id+"_"+pt:"create"+"/"+pt;
+        var fileId="";
+        if(pt=="facebook"){
+            fileId = "import"
+        }
+        if(pt=="adwords"){
+            fileId = "import1"
+        }
+        if(pt=="apple"){
+            fileId = "import2"
+        }
+        uploadFile("/api/country_time/"+id,"post",fileId).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
-                $("#import").unbind().change(function () {
+                $("."+pt+" input[type=file]").unbind().change(function () {
                     _this.uploadFile();
                 });
             }else {
@@ -49,23 +63,33 @@ var CreateOffer = React.createClass({
     submit(){
         if(valid("#create_offer","data-required")){
             var data = setForm("#create_offer","data-key");
-            data.country=data.country.join(",");
             data.platform=data.platform.join(",");
-            if($(".tbd").prop("checked")){
-                var newDateArr = data.endTime.toString().split("-");
-                newDateArr[0] = parseInt(newDateArr[0])+30;
-                data.endTime = newDateArr.join("-");
-            }
-            var country_detail=[];
-            $("#country_detail tr").map(function (ele,index,array) {
-                var country=$(this).find("td:first").html();
-                var price = $(this).find("input").val();
-                country_detail.push({
-                    country:country,
-                    price:price
+            var classList =["facebook","adwords","apple"];
+            for (let i in classList){
+                //data[classList[i]]["country"]=data[classList[i]]["country"].join(",");
+                if($("."+classList[i]).find(".tbd").prop("checked")){
+                    let endTime = data[classList[i]]["endTime"] ;
+                    let newDateArr = endTime.split("-");
+                    newDateArr[0] = parseInt(newDateArr[0])+30;
+                    data[classList[i]]["endTime"] =newDateArr.join("-");
+                }
+                var country_detail=[];
+                $("."+classList[i]+" #country_detail tr").map(function (ele,index,array) {
+                    var country=$(this).find("td:first").html();
+                    var price = $(this).find("input").val();
+                    country_detail.push({
+                        country:country,
+                        price:price
+                    });
                 });
+                data[classList[i]]["country_detail"] = country_detail;
+            }
+            /*报告模板*/
+            var checked="";
+            $(".email_tempalte input:checked").each(function () {
+                checked +=$(this).val()+","
             });
-            var data = Object.assign(data,{country_detail:country_detail,flag:["country_detail"]});
+            data.email_tempalte =checked.substring(0,checked.length-1);
             var url = this.props.params.id?"/api/update_offer":"/api/create_offer";
             ajax("post",url,JSON.stringify(data)).then(function (data) {
                 var data = JSON.parse(data);
@@ -81,7 +105,7 @@ var CreateOffer = React.createClass({
             $(".has-error input:first").focus();
         }
     },
-    savePrice(isShow){
+    savePrice(isShow,hzfs){
         var _this = this;
         var result=[];
         var dd = $(".price-calendar dd");
@@ -91,10 +115,29 @@ var CreateOffer = React.createClass({
                 price:$(dd[i]).find(".cal-price").html().length>0?$(dd[i]).find(".cal-price").html().toString().substring(1):""
             })
         }
-        ajax("post","/api/country_time_update",JSON.stringify({
+        var platform="";
+        var pt = _this.state.pt;
+        if(pt=="facebook"){
+            platform="facebook"
+        }
+        if(pt=="adwords"){
+            platform="adwords"
+        }
+        if(pt=="apple"){
+            platform="apple"
+        }
+        var url="";
+        if(Boolean(hzfs)){
+            url="/api/contract"
+        }else {
+            url= "/api/country_time_update"
+        }
+        ajax("post",url,JSON.stringify({
             result:result,
             country:_this.state.country,
-            offer_id:_this.props.params.id?_this.props.params.id:""
+            offer_id:_this.props.params.id?_this.props.params.id:"",
+            platform:platform,
+            contract_type:$("."+platform+" .hzfs").val()
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -114,10 +157,40 @@ var CreateOffer = React.createClass({
                 country:e.target.dataset.country
             })
         }
-        ajax("post","/api/country_time_show",JSON.stringify({
+        var pt = e&&e.target.dataset.pt || _this.state.pt;
+        _this.setState({
+            pt:pt
+        })
+        var platform="";
+        if(pt=="facebook"){
+            platform="facebook"
+        }
+        if(pt=="adwords"){
+            platform="adwords"
+        }
+        if(pt=="apple"){
+            platform="apple"
+        }
+        var url ="";
+        var hzfs= _this.state.hzfs || e&&e.target.dataset.hzfs || "";
+        if(Boolean(hzfs)){
+            url="/api/contract_show";
+            _this.setState({
+                hzfs:"true"
+            })
+        }
+        if(e&&e.target.dataset.country){
+            url ="/api/country_time_show";
+            _this.setState({
+                hzfs:""
+            })
+        }
+        ajax("post",url,JSON.stringify({
             date:(_this.state.date&&moment(this.state.date).format("YYYY-MM")) || moment().format("YYYY-MM"),
             country:e?e.target.dataset.country:_this.state.country,
-            offer_id:_this.props.params.id?_this.props.params.id:""
+            offer_id:_this.props.params.id?_this.props.params.id:"",
+            platform:platform,
+            contract_type:$("."+platform+" .hzfs").val()
         })).then(function (data) {
             var data = JSON.parse(data);
             if(data.code==200){
@@ -135,7 +208,7 @@ var CreateOffer = React.createClass({
                     }
                     var date = new Date(year, month-1,1);
                     _this.setState({date:date});
-                    _this.savePrice();
+                    _this.savePrice(false,Boolean(hzfs)?true:false);
                 });
 
                 // 下一月
@@ -148,10 +221,10 @@ var CreateOffer = React.createClass({
                     }
                     var date = new Date(year, month-1,1);
                     _this.setState({date:date});
-                    _this.savePrice();
+                    _this.savePrice(false,Boolean(hzfs)?true:false);
                 });
                 $(".cal-save").on("click",function () {
-                    _this.savePrice(true);
+                    _this.savePrice(true,Boolean(hzfs)?true:false);
                     $(".price-calendar").hide();
                 });
                 $(".cal-cancel").on("click",function () {
@@ -173,7 +246,7 @@ var CreateOffer = React.createClass({
             if(data.code=="200"){
                 _this.setState({
                     tfdq:data.result
-                })
+                });
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
@@ -192,6 +265,8 @@ var CreateOffer = React.createClass({
             }
             if(_this.props.params.id){
                 return ajax("post","/api/customer_select",JSON.stringify({name:""}))
+            }else {
+                $(".facebook,.adwords,.apple").hide();
             }
         });
         if(this.props.params.id){
@@ -212,20 +287,36 @@ var CreateOffer = React.createClass({
                 var data = JSON.parse(data);
                 if(data.code=="200"){
                     data.result.platform = data.result.platform.split(",");
-                    data.result.country = data.result.country.split(",");
+
                     getForm("#create_offer",data.result);
-                    if(data.result&&data.result.contract_type=="2"){
-                        $("#bl").attr("readonly","true").val(0)
-                    }else {
-                        $("#bl").removeAttr("readonly")
+
+                    //判断合作模式
+                    var classList =["facebook","adwords","apple"];
+                    for (let i in classList){
+                        if(data.result[classList[i]]["contract_type"]==2){
+                            $("."+[classList[i]]+" .bl").attr("readonly","true").val(0)
+                        }else {
+                            $("."+[classList[i]]+" .bl").removeAttr("readonly")
+                        }
                     }
+                    //判断报告模板
+                    $(".email_tempalte input").each(function () {
+                        var val = $(this).val();
+                        if(data.result.email_tempalte.includes(val)){
+                            $(this).prop("checked",true);
+                        }
+                    })
+
                     _this.setState({
-                        result:data.result.country_detail,
-                        country_detail:data.result.country_detail
+                        facebook_tfdj:data.result.facebook.country_detail,
+                        adwords_tfdj:data.result.adwords.country_detail,
+                        apple_tfdj:data.result.apple.country_detail
                     });
                     setTimeout(function () {
                         $(".tfpt").val(data.result.platform.toString().split(",")).trigger("change");
-                        $(".tfdq").val(data.result.country.toString().split(",")).trigger("change");
+                        $(".facebook .tfdq").val(data.result.facebook.country.toString().split(",")).trigger("change");
+                        $(".adwords .tfdq").val(data.result.adwords.country.toString().split(",")).trigger("change");
+                        $(".apple .tfdq").val(data.result.apple.country.toString().split(",")).trigger("change");
                         $(".khmc").val(data.result.customer_id.toString().split(",")).trigger("change");
                     });
                 }else {
@@ -245,11 +336,47 @@ var CreateOffer = React.createClass({
             });
             return html;
         }
+        $(".tfpt").unbind("change").bind("change",function () {
+             var val = $(this).val();
+             $(".facebook,.adwords,.apple").hide();
+             if(val.includes("Facebook")){
+                 $(".facebook").show();
+             }
+             if(val.includes("Adwords")){
+                 $(".adwords").show();
+             }
+             if(val.includes("Apple")){
+                 $(".apple").show();
+             }
+        });
 
         $(".tfdq").unbind("change").bind("change",function () {
-            var result=_this.state.result;
+            var result=[];
+            if($(this).parents(".tfpt_content").hasClass("facebook")){
+                result = _this.state.facebook_tfdj;
+                setTimeout(function () {
+                    _this.setState({
+                        pt:"facebook"
+                    })
+                })
+            }else if($(this).parents(".tfpt_content").hasClass("adwords")){
+                result = _this.state.adwords_tfdj;
+                setTimeout(function () {
+                    _this.setState({
+                        pt:"adwords"
+                    })
+                })
+            }else if($(this).parents(".tfpt_content").hasClass("apple")){
+                result = _this.state.apple_tfdj;
+                setTimeout(function () {
+                    _this.setState({
+                        pt:"apple"
+                    })
+                })
+            }
+
             var new_result = [];
-            var val = $(".tfdq").val();
+            var val = $(this).val();
             for (var i=0;i<val.length;i++){
                 for (let ele of result){
                     if(val[i]==ele.country){
@@ -267,34 +394,77 @@ var CreateOffer = React.createClass({
                     });
                 }
             }
-            $("#tfdq_price_calendar").html(tfdq_price_calendar(new_result));
+            $(this).parents(".fc_ad_ap").nextAll().find(".tfdq_price_calendar").html(tfdq_price_calendar(new_result));
+
             $(".calendar_img").unbind("click").bind("click",function (e) {
                 _this.price(e);
             });
+
             $(".tfdq_price").on("change",function () {
-                let result=_this.state.result;
+                let result=[];
+                let tfdq_price＿parent = "";
+                if($(this).parents("#country_detail").hasClass("facebook_tfdj")){
+                    console.log("facebook")
+                    result = _this.state.facebook_tfdj;
+                    tfdq_price＿parent ="facebook";
+                }else if($(this).parents("#country_detail").hasClass("adwords_tfdj")){
+                    console.log("adwords")
+                    result = _this.state.adwords_tfdj;
+                    tfdq_price＿parent ="adwords";
+                }else if($(this).parents("#country_detail").hasClass("apple_tfdj")){
+                    console.log("apple")
+                    result = _this.state.apple_tfdj;
+                    tfdq_price＿parent ="apple";
+                }
                 let country_detail =[];
-                $("#country_detail tr").map(function (ele,index,array) {
-                    var country=$(this).find("td:first").html();
+                $("."+tfdq_price＿parent+" #country_detail tr").map(function (ele,index,array) {
+                    var country = $(this).find("td:first").html();
                     var price = $(this).find("input").val();
                     country_detail.push({
                         country:country,
                         price:price
                     });
                 });
-                _this.setState({
-                    result:Object.assign(result,country_detail)
-                })
+                if($(this).parents("#country_detail").hasClass("facebook_tfdj")){
+                    _this.setState({
+                        facebook_tfdj:Object.assign(result,country_detail)
+                    })
+                }else if($(this).parents("#country_detail").hasClass("adwords_tfdj")){
+                    _this.setState({
+                        adwords_tfdj:Object.assign(result,country_detail)
+                    })
+                }else if($(this).parents("#country_detail").hasClass("apple_tfdj")){
+                    _this.setState({
+                        apple_tfdj:Object.assign(result,country_detail)
+                    })
+                }
             })
+
         });
+
         /*合作方式*/
-        $("#hzfs").on("change",function () {
+        $(".hzfs").on("change",function () {
             if($(this).val()=="2"){
-                $("#bl").attr("readonly","true").val(0);
+                $(this).parent().nextAll().find(".bl").attr("readonly","true").val(0);
             }else {
-                $("#bl").removeAttr("readonly");
+                $(this).parent().nextAll().find(".bl").removeAttr("readonly");
             }
         })
+        /*报告模板*/
+        $(".email_tempalte input").on("click",function () {
+            var val = $(this).val();
+            if(val==0){
+                let flag = false;
+                if($(this).prop("checked")){
+                    flag=true;
+                }
+                $(".email_tempalte input").each(function () {
+                    $(this).prop("checked",flag);
+                })
+            }else{
+                $(".email_tempalte input:first").prop("checked",false);
+            }
+        });
         /*邮件报告*/
         var html ="";
         for (var i=0;i<24;i++){
@@ -303,16 +473,22 @@ var CreateOffer = React.createClass({
         $("#email_report").html(html);
     },
     bulk_import_save(){
-        var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$(".tfdq").val().toString().toUpperCase();
+        var _this = this;
+        var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$("."+_this.state.pt+" .tfdq").val().toString().toUpperCase();
         ajax("post","/api/country_select",JSON.stringify({name:text})).then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
-                $(".tfdq").val(data.namelist).trigger("change");
+                $("."+_this.state.pt+" .tfdq").val(data.namelist).trigger("change");
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
             }
         });
+    },
+    pt(e){
+      this.setState({
+          pt:e.target.dataset.pt
+      })
     },
     render:function () {
         var _this = this;
@@ -340,30 +516,10 @@ var CreateOffer = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            合作方式
-                        </div>
-                        <div className="col-sm-3">
-                            <select id="hzfs" className="form-control" data-key="contract_type">
-                                <option value="1">服务费</option>
-                                <option value="2">CPA</option>
-                            </select>
-                        </div>
-                        <div className="col-sm-3 text-right">
-                            比例
-                        </div>
-                        <div className="col-sm-3">
-                            <div className="input-group">
-                                <input onBlur={_this.parseFloat} id="bl" type="number" className="form-control"  data-key="contract_scale"/>
-                                <div className="input-group-addon">%</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
                             合同编号
                         </div>
                         <div className="col-sm-3">
-                            <input type="text" data-required="true" className="form-control"  data-key="contract_num"/>
+                            <input type="text"  className="form-control"  data-key="contract_num"/>
                         </div>
                         <div className="col-sm-3 text-right">
                             销售
@@ -430,41 +586,6 @@ var CreateOffer = React.createClass({
                             <input type="text" className="form-control" data-key="track_link"/>
                         </div>
                     </div>
-                    <div className="col-sm-12">
-                        <hr/>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            制作素材
-                        </div>
-                        <div className="col-sm-3">
-                            <select　className="form-control" data-key="material">
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            投放起始
-                        </div>
-                        <div className="col-sm-3">
-                            <DateSingle minDate="" maxDate="end_date" id="start_date" require="true" keyword="startTime"/>
-                        </div>
-                        <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
-                            投放截止
-                        </div>
-                        <div className="col-sm-3">
-                            <DateSingle maxDate="" minDate="start_date" id="end_date" require="true" keyword="endTime"/>
-                        </div>
-                        <div className="col-sm-1 text-right">
-                            <div className="checkbox" style={{marginTop:"3px"}}>
-                                <label>
-                                    <input type="checkbox" className="tbd"/> TBD
-                                </label>
-                            </div>
-                        </div>
-                    </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
                             投放平台
@@ -473,35 +594,776 @@ var CreateOffer = React.createClass({
                             <Select keyword="platform" className="tfpt" placeholder="投放平台"　multiple="true" data={this.state.tfpt}/>
                         </div>
                     </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            投放地区
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="facebook tfpt_content">
+                        <div className="col-sm-12 text-center">
+                            Facebook
                         </div>
-                        <div className="col-sm-6">
-                            {
-                                <Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
-                            }
-                            {/*{
-                                this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
-                            }*/}
+                        <div className="col-sm-12">
+                            <hr/>
                         </div>
-                        <div className="col-md-3">
-                            <button data-target="#bulk_import" type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
-                                批量导入
-                            </button>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                合作方式
+                            </div>
+                            <div className="col-sm-3">
+                                <select  className="form-control hzfs" data-key="facebook.contract_type">
+                                    <option value="1">服务费</option>
+                                    <option value="2">CPA</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
+                                比例
+                            </div>
+                            <div className="col-sm-3">
+                                <div className="input-group">
+                                    <input onBlur={_this.parseFloat}  type="number" className="form-control bl"  data-key="facebook.contract_scale"/>
+                                    <div className="input-group-addon">%</div>
+                                </div>
+                            </div>
+                            <div className="col-sm-1 ">
+                                <img onClick={_this.price} data-pt="facebook" data-hzfs="true" style={{cursor:"pointer",width:"24px",marginTop:"5px"}} src="./src/img/calender.jpg"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                制作素材
+                            </div>
+                            <div className="col-sm-3">
+                                <select　className="form-control" data-key="facebook.material">
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                投放起始
+                            </div>
+                            <div className="col-sm-3">
+                                <DateSingle minDate="" maxDate="end_date" class="start_date"  keyword="facebook.startTime"/>
+                            </div>
+                            <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
+                                投放截止
+                            </div>
+                            <div className="col-sm-3">
+                                <DateSingle maxDate="" minDate="start_date" class="end_date"  keyword="facebook.endTime"/>
+                            </div>
+                            <div className="col-sm-1 tbd_time">
+                                <div className="checkbox" style={{marginTop:"3px"}}>
+                                    <label>
+                                        <input type="checkbox" className="tbd"/> TBD
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-sm-10 fc_ad_ap">
+                            <div className="col-sm-3 text-right">
+                                投放地区
+                            </div>
+                            <div className="col-sm-6">
+                                {
+                                    <Select  keyword="facebook.country" style="width:100%" className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>
+                                }
+                                {/*{
+                                 this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
+                                 }*/}
+                            </div>
+                            <div className="col-md-3">
+                                <button data-target="#bulk_import" data-pt="facebook"　onClick={_this.pt} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                                    批量导入
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                投放单价
+                            </div>
+                            <div className="col-sm-6">
+                                <input type="number"  className="form-control" data-key="facebook.price"/>
+                            </div>
+                            <div className="col-sm-3">
+                                <button type="button" className="btn btn-primary" style={{position:"relative"}}>
+                                    Import<input data-pt="facebook" onClick={_this.pt} type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3"> </div>
+                            <div className="col-sm-9 table-responsive">
+                                <table className="table table-bordered text-center facebook_tfdj" id="country_detail">
+                                    <tbody className="tfdq_price_calendar">
+                                    {/*{
+                                     this.state.result.map(function (ele,index,array) {
+                                     return <tr key={index}>
+                                     <td>{ele.country}</td>
+                                     <td><input type="text" onChange={_this.invalid} defaultValue={ele.price} className="form-control" /></td>
+                                     <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
+                                     </tr>
+                                     })
+                                     }*/}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                最高日预算
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control" data-key="facebook.daily_type">
+                                    <option value="install">Install</option>
+                                    <option value="cost">Cost($)</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="number" className="form-control" data-key="facebook.daily_budget"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                最高总预算
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control" data-key="facebook.total_type">
+                                    <option value="install">Install</option>
+                                    <option value="cost">Cost($)</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="number" className="form-control" data-key="facebook.total_budget"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                预算分配
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="facebook.distribution"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                授权账户
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="facebook.authorized"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                命名规则
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="facebook.named_rule"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                KPI　要求
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="facebook.KPI"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                结算标准
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="facebook.settlement"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                账期
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="facebook.period"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                备注
+                            </div>
+                            <div className="col-sm-9">
+                        <textarea className="form-control" data-key="facebook.remark">
+
+                        </textarea>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                    </div>
+                    <div className="adwords tfpt_content">
+                        <div className="col-sm-12 text-center">
+                            Adwords
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                合作方式
+                            </div>
+                            <div className="col-sm-3">
+                                <select  className="form-control hzfs" data-key="adwords.contract_type">
+                                    <option value="1">服务费</option>
+                                    <option value="2">CPA</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
+                                比例
+                            </div>
+                            <div className="col-sm-3">
+                                <div className="input-group">
+                                    <input onBlur={_this.parseFloat}  type="number" className="form-control bl"  data-key="adwords.contract_scale"/>
+                                    <div className="input-group-addon">%</div>
+                                </div>
+                            </div>
+                            <div className="col-sm-1 ">
+                                <img  onClick={_this.price} data-pt="adwords"  data-hzfs="true" style={{cursor:"pointer",width:"24px",marginTop:"5px"}} src="./src/img/calender.jpg"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                制作素材
+                            </div>
+                            <div className="col-sm-3">
+                                <select　className="form-control" data-key="adwords.material">
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                投放起始
+                            </div>
+                            <div className="col-sm-3">
+                                <DateSingle minDate="" maxDate="end_date" class="start_date1" require="true" keyword="adwords.startTime"/>
+                            </div>
+                            <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
+                                投放截止
+                            </div>
+                            <div className="col-sm-3">
+                                <DateSingle maxDate="" minDate="start_date" class="end_date1" require="true" keyword="adwords.endTime"/>
+                            </div>
+                            <div className="col-sm-1 tbd_time">
+                                <div className="checkbox" style={{marginTop:"3px"}}>
+                                    <label>
+                                        <input type="checkbox" className="tbd"/> TBD
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-sm-10 fc_ad_ap">
+                            <div className="col-sm-3 text-right">
+                                投放地区
+                            </div>
+                            <div className="col-sm-6">
+                                {
+                                    <Select  keyword="adwords.country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq_adwords}/>
+                                }
+                                {/*{
+                                 this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
+                                 }*/}
+                            </div>
+                            <div className="col-md-3">
+                                <button data-target="#bulk_import" data-pt="adwords"　onClick={_this.pt} type="button" className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                                    批量导入
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                投放单价
+                            </div>
+                            <div className="col-sm-6">
+                                <input type="number"  className="form-control" data-key="adwords.price"/>
+                            </div>
+                            <div className="col-sm-3">
+                                <button type="button" className="btn btn-primary" style={{position:"relative"}}>
+                                    Import<input data-pt="adwords" type="file" onClick={_this.pt} name="file" onChange={this.uploadFile} id="import1" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3"> </div>
+                            <div className="col-sm-9 table-responsive">
+                                <table className="table table-bordered text-center adwords_tfdj" id="country_detail">
+                                    <tbody className="tfdq_price_calendar">
+                                    {/*{
+                                     this.state.result.map(function (ele,index,array) {
+                                     return <tr key={index}>
+                                     <td>{ele.country}</td>
+                                     <td><input type="text" onChange={_this.invalid} defaultValue={ele.price} className="form-control" /></td>
+                                     <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
+                                     </tr>
+                                     })
+                                     }*/}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                最高日预算
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control" data-key="adwords.daily_type">
+                                    <option value="install">Install</option>
+                                    <option value="cost">Cost($)</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="number" className="form-control" data-key="adwords.daily_budget"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                最高总预算
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control" data-key="adwords.total_type">
+                                    <option value="install">Install</option>
+                                    <option value="cost">Cost($)</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="number" className="form-control" data-key="adwords.total_budget"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                预算分配
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="adwords.distribution"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                授权账户
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="adwords.authorized"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                命名规则
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="adwords.named_rule"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                KPI　要求
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="adwords.KPI"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                结算标准
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="adwords.settlement"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                账期
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="adwords.period"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                备注
+                            </div>
+                            <div className="col-sm-9">
+                        <textarea className="form-control" data-key="adwords.remark">
+
+                        </textarea>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                    </div>
+                    <div className="apple tfpt_content">
+                        <div className="col-sm-12 text-center">
+                            Apple
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                合作方式
+                            </div>
+                            <div className="col-sm-3">
+                                <select  className="form-control hzfs" data-key="apple.contract_type">
+                                    <option value="1">服务费</option>
+                                    <option value="2">CPA</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
+                                比例
+                            </div>
+                            <div className="col-sm-3">
+                                <div className="input-group">
+                                    <input onBlur={_this.parseFloat}  type="number" className="form-control bl"  data-key="apple.contract_scale"/>
+                                    <div className="input-group-addon">%</div>
+                                </div>
+                            </div>
+                            <div className="col-sm-1 ">
+                                <img  onClick={_this.price} data-pt="apple" data-hzfs="true" style={{cursor:"pointer",width:"24px",marginTop:"5px"}} src="./src/img/calender.jpg"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                制作素材
+                            </div>
+                            <div className="col-sm-3">
+                                <select　className="form-control" data-key="apple.material">
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                投放起始
+                            </div>
+                            <div className="col-sm-3">
+                                <DateSingle minDate="" maxDate="end_date" class="start_date2" require="true" keyword="apple.startTime"/>
+                            </div>
+                            <div className="col-sm-2 text-right" style={{lineHeight:"34px"}}>
+                                投放截止
+                            </div>
+                            <div className="col-sm-3">
+                                <DateSingle maxDate="" minDate="start_date" class="end_date2" require="true" keyword="apple.endTime"/>
+                            </div>
+                            <div className="col-sm-1 tbd_time">
+                                <div className="checkbox" style={{marginTop:"3px"}}>
+                                    <label>
+                                        <input type="checkbox" className="tbd"/> TBD
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-sm-10 fc_ad_ap">
+                            <div className="col-sm-3 text-right">
+                                投放地区
+                            </div>
+                            <div className="col-sm-6">
+                                {
+                                    <Select  keyword="apple.country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq_apple}/>
+                                }
+                                {/*{
+                                 this.props.params.id?<Select  keyword="country"  className="tfdq" placeholder="投放地区．．．"　multiple="true" data={this.state.tfdq}/>:<AjaxSelect keyword="country" className="tfdq" placeholder="投放地区．．．"　multiple="true" url="/api/country_select" />
+                                 }*/}
+                            </div>
+                            <div className="col-md-3">
+                                <button data-target="#bulk_import" type="button" data-pt="apple"　onClick={_this.pt} className="btn btn-primary" data-toggle="modal" data-target="#bulk_import">
+                                    批量导入
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                投放单价
+                            </div>
+                            <div className="col-sm-6">
+                                <input type="number"  className="form-control" data-key="apple.price"/>
+                            </div>
+                            <div className="col-sm-3">
+                                <button type="button" className="btn btn-primary" style={{position:"relative"}}>
+                                    Import<input data-pt="apple" type="file" onClick={_this.pt} name="file" onChange={this.uploadFile} id="import2" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3"> </div>
+                            <div className="col-sm-9 table-responsive">
+                                <table className="table table-bordered text-center apple_tfdj" id="country_detail">
+                                    <tbody className="tfdq_price_calendar">
+                                    {/*{
+                                     this.state.result.map(function (ele,index,array) {
+                                     return <tr key={index}>
+                                     <td>{ele.country}</td>
+                                     <td><input type="text" onChange={_this.invalid} defaultValue={ele.price} className="form-control" /></td>
+                                     <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
+                                     </tr>
+                                     })
+                                     }*/}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                最高日预算
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control" data-key="apple.daily_type">
+                                    <option value="install">Install</option>
+                                    <option value="cost">Cost($)</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="number" className="form-control" data-key="apple.daily_budget"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                最高总预算
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control" data-key="apple.total_type">
+                                    <option value="install">Install</option>
+                                    <option value="cost">Cost($)</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="number" className="form-control" data-key="apple.total_budget"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                预算分配
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="apple.distribution"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                授权账户
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="apple.authorized"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                命名规则
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="apple.named_rule"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                KPI　要求
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="apple.KPI"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                结算标准
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="apple.settlement"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                账期
+                            </div>
+                            <div className="col-sm-9">
+                                <input type="text" className="form-control" data-key="apple.period"/>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                        <div className="col-sm-10">
+                            <div className="col-sm-3 text-right">
+                                备注
+                            </div>
+                            <div className="col-sm-9">
+                        <textarea className="form-control" data-key="apple.remark">
+
+                        </textarea>
+                            </div>
+                        </div>
+                        <div className="col-sm-12">
+                            <hr/>
                         </div>
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            投放单价
+                            邮件报告
                         </div>
-                        <div className="col-sm-6">
-                            <input type="number" data-required="true" className="form-control" data-key="price"/>
+                        <div className="col-sm-9">
+                            <select type="text" id="email_report" className="form-control" data-key="email_time">
+
+                            </select>
                         </div>
-                        <div className="col-sm-3">
-                            <button type="button" className="btn btn-primary" style={{position:"relative"}}>
-                                Import<input type="file" name="file" onChange={this.uploadFile} id="import" style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:'block',opacity:0,zIndex:1}}/>
-                            </button>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+
+                        </div>
+                        <div className="col-sm-9">
+                            <input type="text" data-key="email_users" className="form-control" placeholder="xx@xx.com,xx@xx.com"/>
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            报告模板
+                        </div>
+                        <div className="col-sm-9 email_tempalte">
+                            {/*<select className="form-control" data-key="email_tempalte">
+                                <option value="1">最全数据模板</option>
+                            </select>*/}
+                            <div className="col-sm-12" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={0} 　/> 全部维度
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={1}　/> Optimization
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={2}　/> Date
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox"　value={3} /> Impression
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={4}　/> GEO
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={5}　/> CVR
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={6}　/> Revenue
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={7}　/> Profit
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={8}　/> Clicks
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={9}　/> Conversions
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={10}　/> CPC
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={11}　/> CPA
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={12}　/> Cost
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={13}　/> CTR
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" value={14}　/> Source
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+
+                        </div>
+                        <div className="col-sm-9">
+                            <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
+                            <button type="button" onClick={this.submit} className="btn btn-primary">Create/Update</button>
+                            <a href="javascript:history.go(-1)"  className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
+                        </div>
+                    </div>
+                    <div className="price-calendar">
+                        <div className="mask_mask box-center">
+                            <div id="price-calendar"></div>
                         </div>
                     </div>
                     <div className="modal  fade" id="bulk_import">
@@ -529,162 +1391,6 @@ var CreateOffer = React.createClass({
                                     <button onClick={_this.bulk_import_save} type="button" id="bulk_import_save" className="btn btn-primary" data-dismiss="modal">Save</button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3"> </div>
-                        <div className="col-sm-9 table-responsive">
-                            <table className="table table-bordered text-center" id="country_detail">
-                                <tbody id="tfdq_price_calendar">
-                                    {/*{
-                                        this.state.result.map(function (ele,index,array) {
-                                            return <tr key={index}>
-                                                        <td>{ele.country}</td>
-                                                        <td><input type="text" onChange={_this.invalid} defaultValue={ele.price} className="form-control" /></td>
-                                                        <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
-                                                    </tr>
-                                        })
-                                    }*/}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            最高日预算
-                        </div>
-                        <div className="col-sm-3">
-                            <select className="form-control" data-key="daily_type">
-                                <option value="install">Install</option>
-                                <option value="cost">Cost($)</option>
-                            </select>
-                        </div>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" data-key="daily_budget"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            最高总预算
-                        </div>
-                        <div className="col-sm-3">
-                            <select className="form-control" data-key="total_type">
-                                <option value="install">Install</option>
-                                <option value="cost">Cost($)</option>
-                            </select>
-                        </div>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" data-key="total_budget"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            预算分配
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="distribution"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            授权账户
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="authorized"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            命名规则
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="named_rule"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-12">
-                        <hr/>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            KPI　要求
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="KPI"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            结算标准
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="settlement"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            账期
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" data-key="period"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-12">
-                        <hr/>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            备注
-                        </div>
-                        <div className="col-sm-9">
-                        <textarea className="form-control" data-key="remark">
-
-                        </textarea>
-                        </div>
-                    </div>
-                    <div className="col-sm-12">
-                        <hr/>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            邮件报告
-                        </div>
-                        <div className="col-sm-9">
-                            <select type="text" id="email_report" className="form-control" data-key="email_time">
-
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="text" data-key="email_users" className="form-control" placeholder="xx@xx.com,xx@xx.com"/>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            报告模板
-                        </div>
-                        <div className="col-sm-9">
-                            <select className="form-control" data-key="email_tempalte">
-                                <option value="1">最全数据模板</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-
-                        </div>
-                        <div className="col-sm-9">
-                            <input type="hidden" data-key="offer_id" value={this.props.params.id}/>
-                            <button type="button" onClick={this.submit} className="btn btn-primary">Create/Update</button>
-                            <a href="javascript:history.go(-1)"  className="btn btn-warning" style={{marginLeft:"20px"}}>Cancel</a>
-                        </div>
-                    </div>
-                    <div className="price-calendar">
-                        <div className="mask_mask box-center">
-                            <div id="price-calendar"></div>
                         </div>
                     </div>
                 </div>

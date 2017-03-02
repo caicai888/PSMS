@@ -1,10 +1,12 @@
 import React from "react";
 import {ajax} from "../lib/ajax";
+import moment from "moment";
 
 var Dashboard = React.createClass({
     getInitialState() {
         return {
-            result:[]
+            result:[],
+            date:moment().subtract(1, 'days').format('MMMM D, YYYY')
         };
     },
     componentDidMount(){
@@ -26,8 +28,11 @@ var Dashboard = React.createClass({
         return (
             <div>
                 <div className="row">
-                    <div className="col-md-12" style={{padding:"15px"}}>
+                    <div className="col-xs-6" style={{padding:"15px"}}>
                         Facebook Dashboard
+                    </div>
+                    <div className="col-xs-6 text-right" style={{padding:"15px"}}>
+                        {this.state.date}
                     </div>
                 </div>
                 <div className="row dashboard_data">
@@ -79,8 +84,11 @@ var Dashboard = React.createClass({
                     }
                 </div>
                 <div className="row">
-                    <div className="col-md-12" style={{padding:"15px"}}>
+                    <div className="col-xs-6" style={{padding:"15px"}}>
                         Adwords Dashboard
+                    </div>
+                    <div className="col-xs-6 text-right" style={{padding:"15px"}}>
+                        {this.state.date}
                     </div>
                 </div>
                 <div className="row dashboard_data">
@@ -132,8 +140,11 @@ var Dashboard = React.createClass({
                     }
                 </div>
                 <div className="row">
-                    <div className="col-md-12" style={{padding:"15px"}}>
+                    <div className="col-xs-6" style={{padding:"15px"}}>
                         Apple Dashboard
+                    </div>
+                    <div className="col-xs-6 text-right" style={{padding:"15px"}}>
+                        {this.state.date}
                     </div>
                 </div>
                 <div className="row dashboard_data">
