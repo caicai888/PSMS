@@ -74,13 +74,13 @@ var getForm = function (form,data) {
             console.log(JSON.stringify(obj[i]).toString().replace(/\{|\}|\"/gi,""));
             var str = JSON.stringify(obj[i]).toString().replace(/\{|\}|\"/gi,"");
             var str_arr = str.split(",");
-            for(var j=0;j<str_arr.length-1;j++){
+            for(var j=0;j<str_arr.length;j++){
+
                 var key ="";
                 var str_pos = str_arr[j].split(":");
                 //console.log( form +" [data-key='"+i+"."+str_arr[j].substr(0,str_pos)+"']")
                 $( form +" [data-key='"+i+"."+str_pos[0]+"']").val(str_pos[1])
             }
-
         }else if($( form +" [data-key="+i+"]").attr("type")=="radio"){
             $( form +" [data-key="+i+"]").each(function () {
                 if($(this).val() == obj[i]){
