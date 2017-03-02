@@ -215,7 +215,7 @@ class PlatformOffer(db.Model):
 class CooperationPer(db.Model):
     __tablename__ = "cooperationPer"
     id = db.Column(db.Integer, primary_key=True)
-    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    offer_id = db.Column(db.Integer, nullable=False)
     platform = db.Column(db.String(100), nullable=False)  #所属平台
     contract_type = db.Column(db.String(100), nullable=False)  # 合作模式 1代表服务费,2代表CPA
     contract_scale = db.Column(db.Float, default=0)  # 合作模式为服务费时存在,CPA时为0
