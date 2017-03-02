@@ -30,11 +30,16 @@ module.exports = {
     externals:{
         'jquery':'window.jQuery'
     },
-    devtool: 'cheap-source-map',
+    devtool: false,//'cheap-source-map',
     plugin:[
         new webpack.optimize.UglifyJsPlugin({
+            output: {
+                comments: false  // remove all comments
+            },
             compress: {
-                warnings: false
+                warnings: false,
+                drop_debugger: true,
+                drop_console: true
             },
             minimize: true
         }),
