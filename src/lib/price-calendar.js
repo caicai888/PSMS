@@ -78,7 +78,7 @@ module.exports = (function ($) {
                 $("#cal-set").on("blur", "dd", function () {
                     var price = $(this).children(".cal-price-input");
                     if(price.val()){
-                        $(this).children(".cal-price-input").replaceWith('<span class="cal-price">￥' + price.val() + '</span>');
+                        $(this).children(".cal-price-input").replaceWith('<span class="cal-price">'+ (sessionStorage.getItem('isPrice')?''+ price.val():'￥'+ price.val()) + '</span>');
                         $(this).attr("data-default", false);
                     }else {
                         $(this).children(".cal-price-input").replaceWith('<span class="cal-price"></span>');
