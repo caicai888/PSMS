@@ -1187,7 +1187,7 @@ def contract():
         if i["price"] != "":
             print "***"*10
             print offer_id
-            cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=offer_id, platform=platform).first()
+            cooperation = CooperationPer.query.filter_by( date=i["date"], offer_id=int(offer_id), platform=platform).first()
             if cooperation:
                 cooperation.contract_scale = float(i["price"])
                 cooperation.contract_type = contract_type
@@ -1198,8 +1198,11 @@ def contract():
                     print e
                     return json.dumps({"code": 500, "message": "fail"})
             else:
+                print "lalalala"
+                print offer_id
+                print type(offer_id)
                 createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-                cooperation = CooperationPer(offer_id, platform, contract_type, float(i["price"]),i["date"],createdTime)
+                cooperation = CooperationPer(int(offer_id), platform, contract_type, float(i["price"]),i["date"],createdTime)
                 try:
                     db.session.add(cooperation)
                     db.session.commit()
