@@ -135,20 +135,6 @@ var OfferDetailDetail = React.createClass({
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
-                            <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
-                        </div>
-                        <div className="col-sm-3">
-                            {this.state.result.contract_type=="1"?"服务费":"CPA"}
-                        </div>
-                        <div className="col-sm-3 text-right">
-                            比例
-                        </div>
-                        <div className="col-sm-3">
-                            {this.state.result.contract_scale}
-                        </div>
-                    </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
                             合同编号
                         </div>
                         <div className="col-sm-3">
@@ -210,8 +196,35 @@ var OfferDetailDetail = React.createClass({
                             {this.state.result.track_link}
                         </div>
                     </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            投放平台
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.platform}
+                        </div>
+                    </div>
                     <div className="col-sm-12">
                         <hr/>
+                    </div>
+
+                    <div class="col-sm-12 text-center">Facebook</div>
+                    <div class="col-sm-12">
+                        <hr />
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.contract_type=="1"?"服务费":"CPA"}
+                        </div>
+                        <div className="col-sm-3 text-right">
+                            比例
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.contract_scale}
+                        </div>
                     </div>
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
@@ -235,14 +248,7 @@ var OfferDetailDetail = React.createClass({
                             {this.state.result.endTime}
                         </div>
                     </div>
-                    <div className="col-sm-10">
-                        <div className="col-sm-3 text-right">
-                            投放平台
-                        </div>
-                        <div className="col-sm-9">
-                            {this.state.result.platform}
-                        </div>
-                    </div>
+
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
                             投放地区
@@ -259,6 +265,7 @@ var OfferDetailDetail = React.createClass({
                             {this.state.result.price}
                         </div>
                     </div>
+
                     <div className="col-sm-10">
                         <div className="col-sm-3 text-right">
                             {
@@ -390,7 +397,399 @@ var OfferDetailDetail = React.createClass({
                             报告模板
                         </div>
                         <div className="col-sm-9">
-                            {this.state.result.email_tempalte==1?"最全数据模板":""}
+                            最全数据模板
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+
+                    <div class="col-sm-12 text-center">adwords</div>
+                    <div class="col-sm-12">
+                        <hr />
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.contract_type=="1"?"服务费":"CPA"}
+                        </div>
+                        <div className="col-sm-3 text-right">
+                            比例
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.contract_scale}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            制作素材
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.material}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            投放起始
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.startTime}
+                        </div>
+                        <div className="col-sm-3 text-right">
+                            投放截止
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.endTime}
+                        </div>
+                    </div>
+
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            投放地区
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.country}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="price" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 投放单价
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.price}
+                        </div>
+                    </div>
+
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            {
+                                this.state.country_detail.length>0?<img src="./src/img/changeHIstory.jpg" data-flag="country_detail" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/>:""
+
+                            }
+                        </div>
+                        <div className="col-sm-9 table-responsive">
+                            <table className="table table-bordered text-center" id="country_detail">
+                                <tbody>
+                                {
+                                    this.state.country_detail.map(function (ele,index,array) {
+                                        return <tr key={index}>
+                                            <td>{ele.country}</td>
+                                            <td>{ele.price}</td>
+                                            <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
+                                        </tr>
+                                    })
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="daily_budget" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 最高日预算
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.daily_type}
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.daily_budget}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="total_butget" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 最高总预算
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.total_type}
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.total_budget}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            预算分配
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.distribution}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            授权账户
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.authorized}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            命名规则
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.named_rule}
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="KPI" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> KPI　要求
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.KPI}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            结算标准
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.settlement}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            账期
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.period}
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            备注
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.remark}
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            邮件报告
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.email_time}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.email_users}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            报告模板
+                        </div>
+                        <div className="col-sm-9">
+                            最全数据模板
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+
+                    <div class="col-sm-12 text-center">apple</div>
+                    <div class="col-sm-12">
+                        <hr />
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="contract_type" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 合作方式
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.contract_type=="1"?"服务费":"CPA"}
+                        </div>
+                        <div className="col-sm-3 text-right">
+                            比例
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.contract_scale}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            制作素材
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.material}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            投放起始
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.startTime}
+                        </div>
+                        <div className="col-sm-3 text-right">
+                            投放截止
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.endTime}
+                        </div>
+                    </div>
+
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            投放地区
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.country}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="price" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 投放单价
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.price}
+                        </div>
+                    </div>
+
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            {
+                                this.state.country_detail.length>0?<img src="./src/img/changeHIstory.jpg" data-flag="country_detail" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/>:""
+
+                            }
+                        </div>
+                        <div className="col-sm-9 table-responsive">
+                            <table className="table table-bordered text-center" id="country_detail">
+                                <tbody>
+                                {
+                                    this.state.country_detail.map(function (ele,index,array) {
+                                        return <tr key={index}>
+                                            <td>{ele.country}</td>
+                                            <td>{ele.price}</td>
+                                            <td><img onClick={_this.price} data-country={ele.country} className="calendar_img" style={{cursor:"pointer",width:"24px"}} src="./src/img/calender.jpg"/></td>
+                                        </tr>
+                                    })
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="daily_budget" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 最高日预算
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.daily_type}
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.daily_budget}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="total_butget" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> 最高总预算
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.total_type}
+                        </div>
+                        <div className="col-sm-3">
+                            {this.state.result.total_budget}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            预算分配
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.distribution}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            授权账户
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.authorized}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            命名规则
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.named_rule}
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            <img src="./src/img/changeHIstory.jpg" data-flag="KPI" onClick={this.history} style={{width:"20px",marginRight:"10px",cursor:"pointer"}}/> KPI　要求
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.KPI}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            结算标准
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.settlement}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            账期
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.period}
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            备注
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.remark}
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <hr/>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            邮件报告
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.email_time}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+
+                        </div>
+                        <div className="col-sm-9">
+                            {this.state.result.email_users}
+                        </div>
+                    </div>
+                    <div className="col-sm-10">
+                        <div className="col-sm-3 text-right">
+                            报告模板
+                        </div>
+                        <div className="col-sm-9">
+                            最全数据模板
                         </div>
                     </div>
                     <div className="col-sm-10">

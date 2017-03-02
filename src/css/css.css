@@ -184,6 +184,9 @@ table tr td{
 #create_offer>div{
     margin-bottom: 10px;
 }
+#create_offer>div.tfpt_content>div{
+    margin-bottom: 10px;
+}
 #offer_list td div{
     display: inline-block;
     width: 15px;

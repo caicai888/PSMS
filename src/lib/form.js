@@ -73,15 +73,14 @@ var getForm = function (form,data) {
         if(typeof  obj[i] =="object"){
             console.log(JSON.stringify(obj[i]).toString().replace(/\{|\}|\"/gi,""));
             var str = JSON.stringify(obj[i]).toString().replace(/\{|\}|\"/gi,"");
-            var str_arr = str.split(":");
-            var key ="";
+            var str_arr = str.split(",");
             for(var j=0;j<str_arr.length-1;j++){
-                //var str_pos = str_arr[j].indexOf(":");
-                console.log(str_arr[j])
-                key += str_arr[j]+".";
+                var key ="";
+                var str_pos = str_arr[j].split(":");
                 //console.log( form +" [data-key='"+i+"."+str_arr[j].substr(0,str_pos)+"']")
+                $( form +" [data-key='"+i+"."+str_pos[0]+"']").val(str_pos[1])
             }
-            $( form +" [data-key='"+i+"."+key.toString().substring(0,key.length-1)+"']").val(str_arr[str_arr.length-1])
+
         }else if($( form +" [data-key="+i+"]").attr("type")=="radio"){
             $( form +" [data-key="+i+"]").each(function () {
                 if($(this).val() == obj[i]){

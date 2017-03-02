@@ -21,7 +21,8 @@ def create_customer():
         customer_code = str(code).upper()[:8]
         if db.session.query(Customers).filter_by(company_name=data["company_name"]).first():
             return json.dumps({"code": "500", "message": "customer has exits"})
-        customer = Customers(customer_code, data["company_name"], data['company_address'], data['comment'], 'Created')
+        # customer = Customers(customer_code, data["company_name"], data['company_address'], data['bank_account'], data['concordat_code'], data['comment'], 'Created')
+        customer = Customers(customer_code, data["company_name"], data['company_address'],data['comment'], 'Created')
         db.session.add(customer)
         db.session.commit()
         db.create_all()
@@ -43,7 +44,9 @@ def customer():
                 'company_address': customer.company_address,
                 'comment': customer.comment,
                 'last_datetime': str(customer.last_datetime+timedelta(hours=8)),
-                'status': customer.status
+                'status': customer.status,
+                # 'bank_account': customer.bank_account,
+                # 'concordat_code': customer.concordat_code
             }
             msg_list += [data]
         created_list = []
@@ -66,9 +69,14 @@ def query_customer(id):
         data = {}
         data['code'] = '200'
         data['message'] = 'success'
+        # data['results'] = {'customer_code': customer.customer_code, 'company_name': customer.company_name,
+        #                    'company_address': customer.company_address, 'comment': customer.comment,
+        #                    'last_datetime': str(customer.last_datetime+timedelta(hours=8)),'bank_account':customer.bank_account,
+        #                    'concordat_code': customer.concordat_code
+        #                    }
         data['results'] = {'customer_code': customer.customer_code, 'company_name': customer.company_name,
                            'company_address': customer.company_address, 'comment': customer.comment,
-                           'last_datetime': str(customer.last_datetime+timedelta(hours=8))
+                           'last_datetime': str(customer.last_datetime + timedelta(hours=8))
                            }
         return json.dumps(data)
     return json.dumps({"code": "500", "message": "request method error"})
@@ -85,6 +93,8 @@ def edit_customer(id):
             customer.company_name = data['company_name']
             customer.company_address = data['company_address']
             customer.comment = data['comment']
+            # customer.bank_account = data['bank_account']
+            # customer.concordat_code = data['concordat_code']
             customer.last_datetime = str(datetime.now())
             db.session.commit()
             return json.dumps({"code": "200", "message": "success"})

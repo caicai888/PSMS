@@ -91,14 +91,18 @@ class Customers(db.Model):
     customer_code = db.Column(db.String(100), nullable=False, unique=True)
     company_name = db.Column(db.String(100), nullable=False, unique=True)
     company_address = db.Column(db.String(100), nullable=False)
+    bank_account = db.Column(db.String(100),nullable=False)
+    concordat_code = db.Column(db.String(100),nullable=False)
     comment = db.Column(db.String(100), nullable=False)
     last_datetime = db.Column(db.DateTime, default=datetime.now())
     status = db.Column(db.String(100), nullable=False, default='Created')
 
-    def __init__(self, customer_code, company_name, company_address, comment, status):
+    def __init__(self, customer_code, company_name, company_address, bank_account=None, concordat_code=None, comment=None, status="Created"):
         self.customer_code = customer_code
         self.company_name = company_name
         self.company_address = company_address
+        self.bank_account = bank_account
+        self.concordat_code = concordat_code
         self.comment = comment
         self.status = status
 
@@ -114,19 +118,54 @@ class Offer(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 销售
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))  # 客户
     status = db.Column(db.String(100), default='active')
-    contract_type = db.Column(db.String(100))  # 合同模式
     contract_num = db.Column(db.String(100), nullable=False)  # 合同编号
-    contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
     os = db.Column(db.String(100), nullable=True)  # 操作系统　
     package_name = db.Column(db.String(1000), nullable=True)  # 包名
     app_name = db.Column(db.String(1000), nullable=True)
     app_type = db.Column(db.String(1000), nullable=True)
     preview_link = db.Column(db.String(1000), nullable=True)
     track_link = db.Column(db.String(1000), nullable=True)
+    platform = db.Column(db.String(100), nullable=False)  # 投放平台
+    email_time = db.Column(db.String(100), nullable=True)  # 邮件发送时间
+    email_users = db.Column(db.String(500), nullable=True)  # 邮件收件人
+    email_template = db.Column(db.String(100), nullable=True)  # 报告模版
+    createdTime = db.Column(db.String(100), nullable=False)
+    updateTime = db.Column(db.String(100), nullable=False)
+    historys = db.relationship('History', backref='offer', lazy='dynamic')
+
+    def __init__(self, user_id, customer_id, status="active", contract_num=None,os=None, package_name=None, app_name=None, app_type=None,
+                 preview_link=None, track_link=None,platform=None,email_time=None, email_users=None,email_template=None, createdTime=None,                     updateTime=None):
+        self.user_id = user_id
+        self.customer_id = customer_id
+        self.status = status
+        self.contract_num = contract_num
+        self.os = os
+        self.package_name = package_name
+        self.app_name = app_name
+        self.app_type = app_type
+        self.preview_link = preview_link
+        self.track_link = track_link
+        self.platform = platform
+        self.email_time = email_time
+        self.email_users = email_users
+        self.email_template = email_template
+        self.createdTime = createdTime
+        self.updateTime = updateTime
+
+    def __repr__(self):
+        return '<Offer {}>'.format(self.id)
+
+#分平台offer信息
+class PlatformOffer(db.Model):
+    __tablename__ = "platformOffer"
+    id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    platform = db.Column(db.String(100), nullable=False)  #所属平台
+    contract_type = db.Column(db.String(100), nullable=False)  # 合作模式 1代表服务费,2代表CPA
+    contract_scale = db.Column(db.Float, default=0)  # 合作模式为服务费时存在,CPA时为0
     material = db.Column(db.String(100), default="yes")
     startTime = db.Column(db.String(100), nullable=False)  # 投放开始时间
     endTime = db.Column(db.String(100), nullable=False)  # 投放结束时间
-    platform = db.Column(db.String(100), nullable=False)  # 投放平台
     country = db.Column(db.String(500), nullable=False)  # 投放国家
     price = db.Column(db.Float, default=0)  # 投放单价
     daily_budget = db.Column(db.Float, default=0)  # 最高日预算
@@ -140,35 +179,19 @@ class Offer(db.Model):
     settlement = db.Column(db.String(1000), nullable=True)  # 结算标准
     period = db.Column(db.String(1000), nullable=True)  # 账期
     remark = db.Column(db.String(1000), nullable=True)  # 备注
-    email_time = db.Column(db.String(100), nullable=True)  # 邮件发送时间
-    email_users = db.Column(db.String(500), nullable=True)  # 邮件收件人
-    email_template = db.Column(db.Integer, nullable=True)  # 报告模版
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
-    historys = db.relationship('History', backref='offer', lazy='dynamic')
 
-    def __init__(self, user_id, customer_id, status="active", contract_type=None, contract_num=None, contract_scale=0,
-                 os=None, package_name=None, app_name=None, app_type=None, preview_link=None, track_link=None,
-                 material="yes", startTime=None, endTime=None, platform=None, country=None, price=0, daily_budget=0,
-                 daily_type="install", total_budget=0, total_type="cost", distribution=None, authorized=None,
-                 named_rule=None, KPI=None, settlement=None, period=None, remark=None, email_time=None, email_users=None,
-                 email_template=1, createdTime=None, updateTime=None):
-        self.user_id = user_id
-        self.customer_id = customer_id
-        self.status = status
+    def __init__(self, offer_id,platform,contract_type,contract_scale,material="yes", startTime=None, endTime=None, country=None, price=0,
+                 daily_budget=0,daily_type="install", total_budget=0, total_type="cost", distribution=None, authorized=None,
+                 named_rule=None, KPI=None, settlement=None, period=None, remark=None, createdTime=None, updateTime=None):
+        self.offer_id = offer_id
+        self.platform = platform
         self.contract_type = contract_type
-        self.contract_num = contract_num
         self.contract_scale = contract_scale
-        self.os = os
-        self.package_name = package_name
-        self.app_name = app_name
-        self.app_type = app_type
-        self.preview_link = preview_link
-        self.track_link = track_link
         self.material = material
         self.startTime = startTime
         self.endTime = endTime
-        self.platform = platform
         self.country = country
         self.price = price
         self.daily_budget = daily_budget
@@ -182,21 +205,41 @@ class Offer(db.Model):
         self.settlement = settlement
         self.period = period
         self.remark = remark
-        self.email_time = email_time
-        self.email_users = email_users
-        self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
 
     def __repr__(self):
-        return '<Offer {}>'.format(self.id)
+        return "<PlatformOffer {}>".format(self.id)
 
+#合作模式的日历形式
+class CooperationPer(db.Model):
+    __tablename__ = "cooperationPer"
+    id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    platform = db.Column(db.String(100), nullable=False)  #所属平台
+    contract_type = db.Column(db.String(100), nullable=False)  # 合作模式 1代表服务费,2代表CPA
+    contract_scale = db.Column(db.Float, default=0)  # 合作模式为服务费时存在,CPA时为0
+    date = db.Column(db.String(100), nullable=False)
+    createdTime = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, offer_id, platform, contract_type, contract_scale, date, createdTime):
+        self.offer_id = offer_id
+        self.platform = platform
+        self.contract_type = contract_type
+        self.contract_scale = contract_scale
+        self.date = date
+        self.createdTime = createdTime
+
+    def __repr__(self):
+        return '<CooperationPer {}>'.format(self.id)
 
 class History(db.Model):
     __tablename__ = 'history'
     id = db.Column(db.Integer, primary_key=True)
     offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    platformOffer_id = db.Column(db.Integer, db.ForeignKey('platformOffer.id'))
+    platform = db.Column(db.String(100), nullable=False)
     type = db.Column(db.String(100), default='default')
     status = db.Column(db.String(100), nullable=False)
     createdTime = db.Column(db.String(100), nullable=False)
@@ -211,11 +254,13 @@ class History(db.Model):
     contract_type = db.Column(db.String(100), nullable=True)  # 合同模式
     contract_scale = db.Column(db.Float, default=0)  # 合同模式为服务费时存在
 
-    def __init__(self, offer_id, user_id, type, createdTime, status=None, country=None, country_price=0, price=0,
+    def __init__(self, offer_id, user_id,platformOffer_id,platform, type, createdTime, status=None, country=None, country_price=0, price=0,
                  daily_budget=0, daily_type=None, total_budget=0, total_type=None, KPI=None, contract_type=None,
                  contract_scale=None):
         self.offer_id = offer_id
         self.user_id = user_id
+        self.platformOffer_id = platformOffer_id
+        self.platform = platform
         self.type = type
         self.createdTime = createdTime
         self.status = status
@@ -256,12 +301,14 @@ class TimePrice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     offer_id = db.Column(db.Integer, nullable=False)
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
+    platform = db.Column(db.String(100),nullable=False)
     date = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    def __init__(self, offer_id, country_id, date, price):
+    def __init__(self, offer_id, country_id, platform, date, price):
         self.offer_id = offer_id
         self.country_id = country_id
+        self.platform = platform
         self.date = date
         self.price = price
 
