@@ -87,7 +87,7 @@ var CreateOffer = React.createClass({
             /*报告模板*/
             var checked="";
             $(".email_tempalte input:checked").each(function () {
-                checked +=$(this).val()+","
+                checked +=$(this).attr("name")+","
             });
             data.email_tempalte =checked.substring(0,checked.length-1);
             var url = this.props.params.id?"/api/update_offer":"/api/create_offer";
@@ -304,7 +304,7 @@ var CreateOffer = React.createClass({
                     }
                     //判断报告模板
                     $(".email_tempalte input").each(function () {
-                        var val = $(this).val();
+                        var val = $(this).attr("name");
                         if(data.result.email_tempalte.includes(val)){
                             $(this).prop("checked",true);
                         }
@@ -1250,105 +1250,105 @@ var CreateOffer = React.createClass({
                             <div className="col-sm-12" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={0} 　/> 全部维度
+                                        <input type="checkbox" name="全部维度" value={0} 　/> 全部维度
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={1}　/> Optimization
+                                        <input type="checkbox" name="Optimization" value={1}　/> Optimization
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={2}　/> Date
+                                        <input type="checkbox" name="Date" value={2}　/> Date
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox"　value={3} /> Impression
+                                        <input type="checkbox" name="Impression" 　value={3} /> Impression
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={4}　/> GEO
+                                        <input type="checkbox" name="GEO" value={4}　/> GEO
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={5}　/> CVR
+                                        <input type="checkbox" name="CVR" value={5}　/> CVR
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={6}　/> Revenue
+                                        <input type="checkbox" name="Revenue" value={6}　/> Revenue
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={7}　/> Profit
+                                        <input type="checkbox" name="Profit" value={7}　/> Profit
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={8}　/> Clicks
+                                        <input type="checkbox" name="Clicks" value={8}　/> Clicks
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={9}　/> Conversions
+                                        <input type="checkbox" name="Conversions" value={9}　/> Conversions
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={10}　/> CPC
+                                        <input type="checkbox" name="CPC" value={10}　/> CPC
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={11}　/> CPA
+                                        <input type="checkbox" name="CPA" value={11}　/> CPA
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={12}　/> Cost
+                                        <input type="checkbox" name="Cost" value={12}　/> Cost
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={13}　/> CTR
+                                        <input type="checkbox" name="CTR" value={13}　/> CTR
                                     </label>
                                 </div>
                             </div>
                             <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" value={14}　/> Source
+                                        <input type="checkbox" name="Source" value={14}　/> Source
                                     </label>
                                 </div>
                             </div>
