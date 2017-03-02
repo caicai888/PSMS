@@ -216,6 +216,7 @@ def offerShow():
                     endTime = "TBD"
                 else:
                     endTime = j.endTime
+                startTime = j.startTime
             os = i.os
             app_name = i.app_name
 
@@ -226,7 +227,7 @@ def offerShow():
                 "os": os,
                 "customer_id": customerName,
                 "app_name": app_name,
-                "startTime": i.startTime,
+                "startTime": startTime,
                 "endTime": endTime,
                 "country": str(i.country),
                 "price": i.price,
@@ -1120,6 +1121,7 @@ def updateContryTime():
     data = request.get_json(force=True)
     result = data["result"]
     countryName = data["country"]
+    platform = data["platform"]
     country = Country.query.filter_by(shorthand=countryName).first()
     countryId = country.id
 
@@ -1137,7 +1139,7 @@ def updateContryTime():
         offer_id = int(data["offer_id"])
     for i in result:
         if i["price"] != "":
-            timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id, platform=i["platform"]).first()
+            timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id, platform=platform).first()
             if timePrice:
                 timePrice.price = i["price"]
                 try:
@@ -1147,7 +1149,7 @@ def updateContryTime():
                     print e
                     return json.dumps({"code": 500, "message": "fail"})
             else:
-                timePriceNew = TimePrice(offer_id,countryId, i["platform"], i["date"], i["price"])
+                timePriceNew = TimePrice(offer_id,countryId, platform, i["date"], i["price"])
                 try:
                     db.session.add(timePriceNew)
                     db.session.commit()
@@ -1159,7 +1161,47 @@ def updateContryTime():
             pass
     return json.dumps({"code": 200, "message": "success"})
 
-
+#合作模式日历部分
+# @offers.route('/api/contract', methods=["POST","GET"])
+# def contract():
+#     data = request.get_json(force=True)
+#     result = data["result"]
+#
+#     if data["offer_id"] == "":
+#         offerIds = []
+#         offer_msg = Offer.query.all()
+#
+#         if offer_msg == []:
+#             offer_id = 1
+#         else:
+#             for i in offer_msg:
+#                 offerIds.append(i.id)
+#             offer_id = offerIds[-1] + 1
+#     else:
+#         offer_id = int(data["offer_id"])
+#     for i in result:
+#         if i["price"] != "":
+#             timePrice = TimePrice.query.filter_by(country_id=countryId, date=i["date"], offer_id=offer_id, platform=i["platform"]).first()
+#             if timePrice:
+#                 timePrice.price = i["price"]
+#                 try:
+#                     db.session.add(timePrice)
+#                     db.session.commit()
+#                 except Exception as e:
+#                     print e
+#                     return json.dumps({"code": 500, "message": "fail"})
+#             else:
+#                 timePriceNew = TimePrice(offer_id, i["platform"], i["date"], i["price"])
+#                 try:
+#                     db.session.add(timePriceNew)
+#                     db.session.commit()
+#                     db.create_all()
+#                 except Exception as e:
+#                     print e
+#                     return json.dumps({"code": 500, "message": "fail"})
+#         else:
+#             pass
+#     return json.dumps({"code": 200, "message": "success"})
 
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
