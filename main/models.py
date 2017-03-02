@@ -302,12 +302,14 @@ class TimePrice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     offer_id = db.Column(db.Integer, nullable=False)
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
+    platform = db.Column(db.String(100),nullable=False)
     date = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    def __init__(self, offer_id, country_id, date, price):
+    def __init__(self, offer_id, country_id, platform, date, price):
         self.offer_id = offer_id
         self.country_id = country_id
+        self.platform = platform
         self.date = date
         self.price = price
 
