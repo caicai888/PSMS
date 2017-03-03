@@ -327,7 +327,8 @@ for i in results:
                     if history_scale_result:
                         contract_scale = history_scale_result[0]
 
-                print "****"*10
+                print "++++"*10
+                print contract_scale
                 revenue_list += [
                     {
                         "country": country,

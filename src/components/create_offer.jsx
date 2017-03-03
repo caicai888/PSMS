@@ -34,7 +34,7 @@ var CreateOffer = React.createClass({
     },
     uploadFile:function (e) {
         var _this = this;
-        var pt = _this.state.pt;
+        var pt = _this.state.pt || sessionStorage.getItem("pt");
         var id =this.props.params.id?this.props.params.id+"_"+pt:"create"+"/"+pt;
         var fileId="";
         if(pt=="facebook"){
@@ -117,7 +117,7 @@ var CreateOffer = React.createClass({
             })
         }
         var platform="";
-        var pt = _this.state.pt;
+        var pt = _this.state.pt || sessionStorage.getItem("pt");
         if(pt=="facebook"){
             platform="facebook"
         }
@@ -158,10 +158,11 @@ var CreateOffer = React.createClass({
                 country:e.target.dataset.country
             })
         }
-        var pt = e&&e.target.dataset.pt || _this.state.pt;
-        _this.setState({
+        var pt = e&&e.target.dataset.pt || _this.state.pt || sessionStorage.getItem("pt");
+        /*_this.setState({
             pt:pt
-        });
+        });*/
+        sessionStorage.setItem("pt",pt);
         var platform="";
         if(pt=="facebook"){
             platform="facebook"
@@ -357,25 +358,28 @@ var CreateOffer = React.createClass({
             var result=[];
             if($(this).parents(".tfpt_content").hasClass("facebook")){
                 result = _this.state.facebook_tfdj;
-                setTimeout(function () {
+                /*setTimeout(function () {
                     _this.setState({
                         pt:"facebook"
                     })
-                })
+                })*/
+                sessionStorage.setItem("pt","facebook")
             }else if($(this).parents(".tfpt_content").hasClass("adwords")){
                 result = _this.state.adwords_tfdj;
-                setTimeout(function () {
+                /*setTimeout(function () {
                     _this.setState({
                         pt:"adwords"
                     })
-                })
+                })*/
+                sessionStorage.setItem("pt","adwords")
             }else if($(this).parents(".tfpt_content").hasClass("apple")){
                 result = _this.state.apple_tfdj;
-                setTimeout(function () {
+                /*setTimeout(function () {
                     _this.setState({
                         pt:"apple"
                     })
-                })
+                })*/
+                sessionStorage.setItem("pt","apple")
             }
 
             var new_result = [];
@@ -477,11 +481,11 @@ var CreateOffer = React.createClass({
     },
     bulk_import_save(){
         var _this = this;
-        var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$("."+_this.state.pt+" .tfdq").val().toString().toUpperCase();
+        var text = $("#bulk_import_input").val().toString().toUpperCase()+","+$("."+(_this.state.pt || sessionStorage.getItem("pt"))+" .tfdq").val().toString().toUpperCase();
         ajax("post","/api/country_select",JSON.stringify({name:text})).then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
-                $("."+_this.state.pt+" .tfdq").val(data.namelist).trigger("change");
+                $("."+(_this.state.pt || sessionStorage.getItem("pt"))+" .tfdq").val(data.namelist).trigger("change");
             }else {
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
@@ -489,9 +493,10 @@ var CreateOffer = React.createClass({
         });
     },
     pt(e){
-      this.setState({
+      /*this.setState({
           pt:e.target.dataset.pt
-      })
+      })*/
+      sessionStorage.setItem("pt",e.target.dataset.pt)
     },
     render:function () {
         var _this = this;
