@@ -49,7 +49,8 @@ for i in results:
         for n in campaign_name:
             advertise_series.append(n[0])
     advertise_series = list(set(advertise_series))
-    sql_offer = "select startTime,endTime,contract_type,contract_scale,price from offer where id='%d'"%offerId   #获取offer投放的时间
+    # sql_offer = "select startTime,endTime,contract_type,contract_scale,price from offer where id='%d'"%offerId   #获取offer投放的时间
+    sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='facebook'" % offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
     startTime = str(runtime[0])  #投放的开始时间
@@ -333,13 +334,13 @@ for i in results:
                 country_result = cursor.fetchone()
                 countryId = country_result[0]
 
-                timePrice_sql = "select price from timePrice where country_id='%d' and offer_id='%d' and date<='%s' and date>='%s' order by date" %(countryId,offerId,date,startTime)
+                timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date" %(countryId,offerId,date,startTime)
                 cursor.execute(timePrice_sql)
                 timePrice_result = cursor.fetchone()
                 if timePrice_result:
                     price = timePrice_result[0]
                 else:
-                    history_sql = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc"%(country,offerId)
+                    history_sql = "select country_price from history where country='%s' and platform='facebook' and offer_id='%d'order by createdTime desc"%(country,offerId)
                     cursor.execute(history_sql)
                     history_result = cursor.fetchone()
                     if not history_result:
