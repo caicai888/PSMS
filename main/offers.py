@@ -261,7 +261,7 @@ def offerDetail(id):
     plate = offer.platform
 
     fb_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="facebook").first()
-    if fb_offer:
+    if fb_offer is not None:
         contract_type = fb_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
@@ -307,7 +307,7 @@ def offerDetail(id):
         facebook = {}
 
     ad_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="adwords").first()
-    if ad_offer:
+    if ad_offer is not None:
         contract_type = ad_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
@@ -353,7 +353,7 @@ def offerDetail(id):
         adwords = {}
 
     ap_offer = PlatformOffer.query.filter_by(offer_id=int(id), platform="apple").first()
-    if ad_offer:
+    if ad_offer is not None:
         contract_type = ap_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
