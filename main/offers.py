@@ -282,11 +282,9 @@ def offerDetail(id):
             "period": fb_offer.period,
             "remark": fb_offer.remark
         }
-        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == fb_offer.id).all()
-        countries = []
-        for i in historties:
-            country = i.country
-            countries.append(country)
+        plate_country = PlatformOffer.query.filter_by(id=fb_offer.id).first()
+        countries = plate_country.country
+        countries = countries.split(',')
         countries = list(set(countries))
         country_detail = []
         for i in countries:
@@ -330,11 +328,9 @@ def offerDetail(id):
             "period": ad_offer.period,
             "remark": ad_offer.remark
         }
-        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == ad_offer.id).all()
-        countries = []
-        for i in historties:
-            country = i.country
-            countries.append(country)
+        plate_country = PlatformOffer.query.filter_by(id=ad_offer.id).first()
+        countries = plate_country.country
+        countries = countries.split(',')
         countries = list(set(countries))
         country_detail = []
         for i in countries:
@@ -378,11 +374,9 @@ def offerDetail(id):
             "period": ap_offer.period,
             "remark": ap_offer.remark
         }
-        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == ap_offer.id).all()
-        countries = []
-        for i in historties:
-            country = i.country
-            countries.append(country)
+        plate_country = PlatformOffer.query.filter_by(id=ap_offer.id).first()
+        countries = plate_country.country
+        countries = countries.split(',')
         countries = list(set(countries))
         country_detail = []
         for i in countries:
