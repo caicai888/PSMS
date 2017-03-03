@@ -199,8 +199,6 @@ def offerShow():
         else:
             totalPages = count/limit + 1
         result = []
-        print offers.items
-        print "***"*10
         for i in offers.items:
             customerId = i.customer_id
             customer = Customers.query.filter_by(id=customerId).first()
@@ -208,6 +206,7 @@ def offerShow():
             status = i.status
             sales = User.query.filter_by(id=int(i.user_id)).first()
             fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all()
+            contract_type = "cpa"
             for j in fb_offer:
                 contract_type = j.contract_type
                 if contract_type == "1":
@@ -223,8 +222,6 @@ def offerShow():
                 price = j.price
             os = i.os
             app_name = i.app_name
-            print i.id
-            print contract_type
 
             data = {
                 "offer_id": i.id,
