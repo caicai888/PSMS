@@ -428,16 +428,13 @@ def offerDetail(id):
 #offer国家对应的价钱
 @offers.route('/api/country_price/<offerId>', methods=["GET"])
 def countryPrice(offerId):
-    historties = History.query.filter(History.offer_id == int(offerId), History.country != "", History.platform == "facebook").all()
-    countries = []
-    for i in historties:
-        country = i.country
-        countries.append(country)
+    platform_offer = PlatformOffer.query.filter_by(offer_id=int(offerId),platform='facebook').first()
+    countries = platform_offer.country
+    countries = countries.split(',')
     countries = list(set(countries))
     country_price_list = []
     for i in countries:
-        historty = History.query.filter(History.offer_id == int(offerId), History.country == i).order_by(
-            desc(History.createdTime)).first()
+        historty = History.query.filter(History.offer_id == int(offerId), History.country == i, History.platformOffer_id==platform_offer.id).order_by(desc(History.createdTime)).first()
         country = historty.country
         country_price = historty.country_price
         detail = {
