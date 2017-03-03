@@ -223,6 +223,8 @@ def offerShow():
                 price = j.price
             os = i.os
             app_name = i.app_name
+            print i.id
+            print contract_type
 
             data = {
                 "offer_id": i.id,
