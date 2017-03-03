@@ -38,6 +38,7 @@ for i in results:
         for n in apple_appNames:
             appleCampaigns.append(n[0])
     appleCampaigns=list(set(appleCampaigns))
+    print offerId
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='apple'"%offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
