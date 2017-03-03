@@ -426,3 +426,6 @@ table tr td{
     white-space:nowrap;
     text-overflow: ellipsis;
 }
+.tgdq_none{
+    display: none;
+}
