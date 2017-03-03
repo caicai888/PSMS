@@ -745,8 +745,8 @@ def historty():
         data = request.get_json(force=True)
         offer_id = int(data["offer_id"])
         flag = data["flag"]
+        platform = data["platform"]
         if flag == "country_detail":
-            platform = data["platform"]
             country = []
             result = []
             history = History.query.filter(History.offer_id == offer_id, History.country != "", History.platform == platform)
@@ -772,7 +772,7 @@ def historty():
         else:
             result = []
             if flag == "status":
-                history = History.query.filter(History.offer_id == offer_id, History.status != "",History.platform == platform)
+                history = History.query.filter(History.offer_id == offer_id, History.status != "")
                 for i in history:
                     status = i.status
                     createdTime = i.createdTime
@@ -785,7 +785,6 @@ def historty():
                     }
                     result += [detail]
             elif flag == "contract_type":
-                platform = data["platform"]
                 history = History.query.filter(History.offer_id == offer_id, History.contract_type != "",History.platform == platform)
                 for i in history:
                     contract_type = i.contract_type
@@ -806,7 +805,6 @@ def historty():
                     result += [detail]
 
             elif flag == "price":
-                platform = data["platform"]
                 history = History.query.filter(History.offer_id == offer_id, History.price != "",History.platform == platform)
                 for i in history:
                     price = i.price
@@ -820,7 +818,6 @@ def historty():
                     }
                     result += [detail]
             elif flag == "daily_budget":
-                platform = data["platform"]
                 history = History.query.filter(History.offer_id == offer_id, History.daily_budget != "",History.platform == platform)
                 for i in history:
                     daily_budget = i.daily_budget
@@ -836,7 +833,6 @@ def historty():
                     }
                     result += [detail]
             elif flag == "total_budget":
-                platform = data["platform"]
                 history = History.query.filter(History.offer_id == offer_id, History.total_budget != "",History.platform == platform)
                 for i in history:
                     total_budget = i.total_budget
@@ -852,7 +848,6 @@ def historty():
                     }
                     result += [detail]
             elif flag == "KPI":
-                platform = data["platform"]
                 history = History.query.filter(History.offer_id == offer_id, History.total_budget != "",History.platform == platform)
                 for i in history:
                     KPI = i.KPI
