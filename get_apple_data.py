@@ -42,6 +42,7 @@ for i in results:
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='apple'"%offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
+    print runtime
     startTime = str(runtime[0])  # 投放的开始时间
     endTime = str(runtime[1])  # 投放的结束时间
     contract_type = runtime[2]
