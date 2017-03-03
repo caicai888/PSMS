@@ -353,7 +353,7 @@ def offerDetail(id):
         adwords = {}
 
     ap_offer = PlatformOffer.query.filter_by(offer_id=int(id), platform="apple").first()
-    if ad_offer is not None:
+    if ap_offer is not None:
         contract_type = ap_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
