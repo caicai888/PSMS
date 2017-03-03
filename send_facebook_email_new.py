@@ -18,7 +18,7 @@ time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select * from offer where email_time='%s' and status != 'deleted'"%(time_now)
+sql = "select id,email_users,app_name,email_template from offer where email_time='%s' and status != 'deleted'"%(time_now)
 cursor.execute(sql)
 results = cursor.fetchall()
 startTime = ((datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=120)).strftime("%Y-%m-%d")
@@ -40,12 +40,14 @@ for day in all_date[::-1]:
 accessToken = "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD"
 try:
     for i in results:
-        mail_to = i[31].split(",")
+        mail_to = i[1].split(",")
         offerId = i[0]
-        app_name = i[9]
-        data_sql = "select date,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date >= '%s' and date <= '%s' and offer_id='%d' order by date ASC " %(startTime,today,offerId)
-        cursor.execute(data_sql)
-        data_result = cursor.fetchall()
+        app_name = i[2]
+        email_template = i[3].split(",")
+        if u"全部维度" in email_template:
+            data_sql = "select date,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date >= '%s' and date <= '%s' and offer_id='%d' order by date ASC " %(startTime,today,offerId)
+            cursor.execute(data_sql)
+            data_result = cursor.fetchall()
         # 发送邮件
         wbk = xlwt.Workbook()
         sheet = wbk.add_sheet(app_name.encode("utf8") + u"数据详情")
