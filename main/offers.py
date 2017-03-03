@@ -199,6 +199,8 @@ def offerShow():
         else:
             totalPages = count/limit + 1
         result = []
+        print offers.items
+        print "***"*10
         for i in offers.items:
             customerId = i.customer_id
             customer = Customers.query.filter_by(id=customerId).first()
