@@ -207,6 +207,10 @@ def offerShow():
             sales = User.query.filter_by(id=int(i.user_id)).first()
             fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all()
             contract_type = "cpa"
+            startTime = "2017-01-01"
+            endTime = "2017-12-31"
+            country = "CN"
+            price = 0
             for j in fb_offer:
                 contract_type = j.contract_type
                 if contract_type == "1":
