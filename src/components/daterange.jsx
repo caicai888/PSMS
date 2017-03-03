@@ -40,20 +40,40 @@ var Daterange = React.createClass({
 var DateSingle = React.createClass({
     componentDidMount(){
         var _this= this;
-
+        var timeKey = _this.props.class;
         var date = function (id,time) {
-            var id =id=="start_date"?"#end_date":"#start_date";
+            /*var id = (id=="start_date"?".end_date":".start_date");*/
+            var id = "." + id;
             $(id).daterangepicker({
                 singleDatePicker: true,
                 locale: {
                     format: "YYYY-MM-DD"
                 },
                 autoUpdateInput:false,
-                minDate:id =="#end_date"?time:false,
-                maxDate:id =="#start_date"?time:false,
+                minDate:id ==".end_date"?time:(id.includes("1")&&id ==".end_date1"?time:(id.includes("2")&&id ==".end_date2"?time:false)), //着急忙慌的,先写死了
+                maxDate:id ==".start_date"?time:(id.includes("1")&&id ==".start_date1"?time:(id.includes("2")&&id ==".start_date2"?time:false)),
             },function(end) {
                 $(id).val(end.format("YYYY-MM-DD"));
-                date(id=="#end_date"?"end_date":"start_date",end.format("YYYY-MM-DD"))
+                var timeKey ="";
+                if(!id.includes("1")&&!id.includes("2")&&id==".end_date"){
+                    timeKey = "start_date"
+                }
+                if(!id.includes("1")&&!id.includes("2")&&id==".start_date"){
+                    timeKey ="end_date";
+                }
+                if(id.includes("1")&&id==".start_date1"){
+                    timeKey ="end_date1";
+                }
+                if(id.includes("1")&&id==".end_date1"){
+                    timeKey ="start_date1";
+                }
+                if(id.includes("2")&&id==".start_date2"){
+                    timeKey ="end_date2";
+                }
+                if(id.includes("2")&&id==".end_date2"){
+                    timeKey ="start_date2";
+                }
+                date(timeKey,end.format("YYYY-MM-DD"))
             })
         }
         /*$('#'+this.props.id).daterangepicker({
@@ -66,13 +86,12 @@ var DateSingle = React.createClass({
            $('#'+_this.props.id).val(start.format("YYYY-MM-DD"));
            date(_this.props.id,start.format("YYYY-MM-DD"))
         });*/
-        date("start_date",false);
-        date("end_date",false);
-        $('#'+_this.props.id).val(moment().subtract(_this.props.start, 'days').format("YYYY-MM-DD"));
+        date(timeKey,false);
+        $('.'+timeKey).val(moment().subtract(_this.props.start, 'days').format("YYYY-MM-DD"));
     },
     render() {
         return (
-            <input id={this.props.id} data-maxDate={this.props.maxDate} data-minDate={this.props.minDate} data-required={this.props.require} data-key={this.props.keyword} type="text" className="form-control" readOnly="readOnly"/>
+            <input className={"form-control "+this.props.class} data-maxDate={this.props.maxDate} data-minDate={this.props.minDate} data-required={this.props.require} data-key={this.props.keyword} type="text"  readOnly="readOnly"/>
         )
     }
 });
