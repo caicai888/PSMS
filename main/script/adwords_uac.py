@@ -59,6 +59,8 @@ class AdwordsSQL(object):
         cursor.close()
 
     def select_campaign_geo(self, campaign_name):
+        print "***"*10
+        print campaign_name
         selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
         selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
         # return selected_msg, selected_geo
