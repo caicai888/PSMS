@@ -233,6 +233,8 @@ for i in results:
                 ele['spend'] = float(ele['spend'])
                 tempList.append(key)
                 cost_list.append(ele)
+        print "&&&"*10
+        print cost_list
 
         clicks_list_unique = []
         for j in clicks_list:
