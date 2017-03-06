@@ -428,7 +428,7 @@ for i in results:
             cvr_fb = cvr_list[l].get("cvr")
             cpc_fb = cpc_list[l].get("cpc")
             cpi_fb = cpi_list[l].get("cpi")
-            data_sql = "select id from datas where offer_id='%d' and country='%s' and date='%s'"%(offerId,country_fb,date_fb)
+            data_sql = "select id from datas where offer_id='%d' and country='%s' and date='%s' and type='facebook'"%(offerId,country_fb,date_fb)
             cursor.execute(data_sql)
             result = cursor.fetchone()
             if not result:
