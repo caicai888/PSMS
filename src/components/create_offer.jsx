@@ -318,9 +318,9 @@ var CreateOffer = React.createClass({
                     });
                     setTimeout(function () {
                         $(".tfpt").val(data.result.platform.toString().split(",")).trigger("change");
-                        $(".facebook .tfdq").val(data.result.facebook.country.toString().split(",")).trigger("change");
-                        $(".adwords .tfdq").val(data.result.adwords.country.toString().split(",")).trigger("change");
-                        $(".apple .tfdq").val(data.result.apple.country.toString().split(",")).trigger("change");
+                        $(".facebook .tfdq").val(data.result.facebook.country&&data.result.facebook.country.toString().split(",") || []).trigger("change");
+                        $(".adwords .tfdq").val(data.result.adwords.country&&data.result.adwords.country.toString().split(",") || []).trigger("change");
+                        $(".apple .tfdq").val(data.result.apple.country&&data.result.apple.country.toString().split(",")  || [] ).trigger("change");
                         $(".khmc").val(data.result.customer_id.toString().split(",")).trigger("change");
                     });
                 }else {
@@ -357,7 +357,7 @@ var CreateOffer = React.createClass({
         $(".tfdq").unbind("change").bind("change",function () {
             var result=[];
             if($(this).parents(".tfpt_content").hasClass("facebook")){
-                result = _this.state.facebook_tfdj;
+                result = _this.state.facebook_tfdj || [];
                 /*setTimeout(function () {
                     _this.setState({
                         pt:"facebook"
@@ -365,7 +365,7 @@ var CreateOffer = React.createClass({
                 })*/
                 sessionStorage.setItem("pt","facebook")
             }else if($(this).parents(".tfpt_content").hasClass("adwords")){
-                result = _this.state.adwords_tfdj;
+                result = _this.state.adwords_tfdj || [];
                 /*setTimeout(function () {
                     _this.setState({
                         pt:"adwords"
@@ -373,7 +373,7 @@ var CreateOffer = React.createClass({
                 })*/
                 sessionStorage.setItem("pt","adwords")
             }else if($(this).parents(".tfpt_content").hasClass("apple")){
-                result = _this.state.apple_tfdj;
+                result = _this.state.apple_tfdj || [];
                 /*setTimeout(function () {
                     _this.setState({
                         pt:"apple"
