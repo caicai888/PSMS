@@ -103,6 +103,8 @@ for i in results:
             time_ranges = []
 
     if time_ranges != []:
+        print "+++"*10
+        print advertise_series
         for campaignId in advertise_series:
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
@@ -211,7 +213,8 @@ for i in results:
                 ele['impressions'] = int(ele['impressions'])
                 tempList.append(key)
                 impressions_list.append(ele)
-
+        print "****"*10
+        print cost_list
         cost_list_unique = []
         for j in cost_list:
             if j not in cost_list_unique:
