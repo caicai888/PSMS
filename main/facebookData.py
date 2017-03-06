@@ -1285,28 +1285,28 @@ def faceReport():
                    ]
                    ctr_list += [
                        {
-                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
+                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if float(impressions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "adwords"
                        }
                    ]
                    cvr_list += [
                        {
-                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "adwords"
                        }
                    ]
                    cpc_list += [
                        {
-                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "adwords"
                        }
                    ]
                    cpi_list += [
                        {
-                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "adwords"
                        }
@@ -1451,28 +1451,28 @@ def faceReport():
                    ]
                    ctr_list += [
                        {
-                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
+                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if float(impressions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "facebook"
                        }
                    ]
                    cvr_list += [
                        {
-                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "facebook"
                        }
                    ]
                    cpc_list += [
                        {
-                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "facebook"
                        }
                    ]
                    cpi_list += [
                        {
-                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "facebook"
                        }
@@ -1617,28 +1617,28 @@ def faceReport():
                    ]
                    ctr_list += [
                        {
-                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
+                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if float(impressions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "apple"
                        }
                    ]
                    cvr_list += [
                        {
-                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "apple"
                        }
                    ]
                    cpc_list += [
                        {
-                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "apple"
                        }
                    ]
                    cpi_list += [
                        {
-                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
                            "date_start": date_new[i],
                            "source": "apple"
                        }
@@ -1879,14 +1879,14 @@ def faceReport():
                    ]
                    ctr_list += [
                        {
-                           "ctr": '%0.2f'%(float(clicks_list_new[i])/float(impressions_list_new[i])*100) if impressions_list_new[i] !=0 else 0,
+                           "ctr": '%0.2f'%(float(clicks_list_new[i])/float(impressions_list_new[i])*100) if float(impressions_list_new[i]) !=0 else 0,
                            "date_start": date_new[i],
                            "date_stop": date_new[i]
                        }
                    ]
                    cvr_list += [
                        {
-                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] !=0 else 0,
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) !=0 else 0,
                            "date_start": date_new[i],
                            "date_stop": date_new[i]
                        }
