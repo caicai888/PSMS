@@ -146,6 +146,10 @@ class AdwordsUac(AdwordsSQL):
                         offer_price = offer_result["price"]
                         contract_type = offer_result["contract_type"]
                         contract_scale = offer_result['contract_scale']
+                        if ',' in read['Conversions']:
+                            conversions = read['Conversions'].replace(',','')
+                        else:
+                            conversions = read['Conversions']
                         if contract_type == "1":
                             cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(cooperation_sql)
@@ -179,10 +183,6 @@ class AdwordsUac(AdwordsSQL):
                             is_uac = 0
                         else:
                             is_uac = 1
-                        if ',' in read['Conversions']:
-                            conversions = read['Conversions'].replace(',','')
-                        else:
-                            conversions = read['Conversions']
                         cpc = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(read['Clicks'])) if float(read['Clicks']) != 0 else 0
                         cvr = '%0.2f'%(float(conversions)/float(read['Clicks'])*100) if float(read['Clicks']) != 0 else 0
                         cpi = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(conversions)) if float(conversions) != 0 else 0
