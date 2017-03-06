@@ -16,8 +16,8 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=14"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=14"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -103,8 +103,6 @@ for i in results:
             time_ranges = []
 
     if time_ranges != []:
-        print "+++"*10
-        print advertise_series
         for campaignId in advertise_series:
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
@@ -232,8 +230,6 @@ for i in results:
                 ele['spend'] = float(ele['spend'])
                 tempList.append(key)
                 cost_list.append(ele)
-        print "&&&"*10
-        print cost_list
 
         clicks_list_unique = []
         for j in clicks_list:
@@ -414,13 +410,10 @@ for i in results:
                     ]
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
-            print country_fb
             date_fb = impressions_list[l].get("date_start")
             revenue_fb = revenue_list[l].get("revenue")
             profit_fb = profit_list[l].get("profit")
             cost_fb = cost_list[l].get("spend")
-            print cost_fb
-            print "%%%%"*10
             impressions_fb = impressions_list[l].get("impressions")
             clicks_fb = clicks_list[l].get("clicks")
             conversions_fb = conversions_list[l].get("conversions")
@@ -439,3 +432,5 @@ for i in results:
                 update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'"%(float(revenue_fb),float(profit_fb),float(cost_fb),impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,result[0])
                 cursor.execute(update_sql)
                 db.commit()
+
+        print time_now+"ok"
