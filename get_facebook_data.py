@@ -213,8 +213,7 @@ for i in results:
                 ele['impressions'] = int(ele['impressions'])
                 tempList.append(key)
                 impressions_list.append(ele)
-        print "****"*10
-        print cost_list
+
         cost_list_unique = []
         for j in cost_list:
             if j not in cost_list_unique:
@@ -415,10 +414,13 @@ for i in results:
                     ]
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
+            print country_fb
             date_fb = impressions_list[l].get("date_start")
             revenue_fb = revenue_list[l].get("revenue")
             profit_fb = profit_list[l].get("profit")
             cost_fb = cost_list[l].get("spend")
+            print cost_fb
+            print "%%%%"*10
             impressions_fb = impressions_list[l].get("impressions")
             clicks_fb = clicks_list[l].get("clicks")
             conversions_fb = conversions_list[l].get("conversions")
