@@ -432,5 +432,3 @@ for i in results:
                 update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'"%(float(revenue_fb),float(profit_fb),float(cost_fb),impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,result[0])
                 cursor.execute(update_sql)
                 db.commit()
-
-        print time_now+"ok"
