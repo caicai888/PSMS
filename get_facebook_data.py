@@ -104,6 +104,7 @@ for i in results:
 
     if time_ranges != []:
         for campaignId in advertise_series:
+            print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
