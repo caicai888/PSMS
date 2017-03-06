@@ -39,7 +39,6 @@ for i in results:
     revenue_list = []
     profit_list = []
     offerId = i[0]
-    print offerId
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
@@ -105,8 +104,6 @@ for i in results:
 
     if time_ranges != []:
         for campaignId in advertise_series:
-            print campaignId
-            print "***"*10
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
@@ -327,8 +324,6 @@ for i in results:
                     if history_scale_result:
                         contract_scale = history_scale_result[0]
 
-                print "++++"*10
-                print contract_scale
                 revenue_list += [
                     {
                         "country": country,

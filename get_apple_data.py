@@ -38,9 +38,11 @@ for i in results:
         for n in apple_appNames:
             appleCampaigns.append(n[0])
     appleCampaigns=list(set(appleCampaigns))
-    sql_offer = "select startTime,endTime,contract_type,contract_scale,price from offer where id='%d'"%offerId
+    print offerId
+    sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='apple'"%offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
+    print runtime
     startTime = str(runtime[0])  # 投放的开始时间
     endTime = str(runtime[1])  # 投放的结束时间
     contract_type = runtime[2]
@@ -117,19 +119,30 @@ for i in results:
                         count_impressions += impressions
                         count_cost += spend
                 if contract_type == "1":
+                    cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='apple' and date<='%s' and date>='%s' order by date" % (offerId, date, startTime)
+                    cursor.execute(cooperation_sql)
+                    cooperation_result = cursor.fetchone()
+                    if cooperation_result:
+                        contract_scale = cooperation_result[0]
+                    else:
+                        history_scale_sql = "select contract_scale from history where platform='apple' and offer_id='%d' order by createdTime desc" % (offerId)
+                        cursor.execute(history_scale_sql)
+                        history_scale_result = cursor.fetchone()
+                        if history_scale_result:
+                            contract_scale = history_scale_result[0]
                     count_revenue = '%0.2f' % (count_cost * (1 + float(contract_scale) / 100))
                 else:
                     country_sql = "select id from country where shorthand='US'"
                     cursor.execute(country_sql)
                     country_result = cursor.fetchone()
                     countryId = country_result[0]
-                    timePrice_sql = "select price from timePrice where country_id='%d' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (countryId, offerId, date, startTime)
+                    timePrice_sql = "select price from timePrice where country_id='%d' and platform='apple' and offer_id='%d' and date<='%s' and date>='%s' order by date" %(countryId,offerId,date,startTime)
                     cursor.execute(timePrice_sql)
                     timePrice_result = cursor.fetchone()
                     if timePrice_result:
                         price = timePrice_result[0]
                     else:
-                        history_sql = "select country_price from history where country='%s' and offer_id='%d'order by createdTime desc" % ('US', offerId)
+                        history_sql = "select country_price from history where country='%s' and platform='apple' and offer_id='%d'order by createdTime desc" % ('US', offerId)
                         cursor.execute(history_sql)
                         history_result = cursor.fetchone()
                         if not history_result:

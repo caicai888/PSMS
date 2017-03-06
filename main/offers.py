@@ -206,6 +206,11 @@ def offerShow():
             status = i.status
             sales = User.query.filter_by(id=int(i.user_id)).first()
             fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all()
+            contract_type = "cpa"
+            startTime = "2017-01-01"
+            endTime = "2017-12-31"
+            country = "CN"
+            price = 0
             for j in fb_offer:
                 contract_type = j.contract_type
                 if contract_type == "1":
@@ -256,7 +261,7 @@ def offerDetail(id):
     plate = offer.platform
 
     fb_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="facebook").first()
-    if fb_offer:
+    if fb_offer is not None:
         contract_type = fb_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
@@ -282,11 +287,9 @@ def offerDetail(id):
             "period": fb_offer.period,
             "remark": fb_offer.remark
         }
-        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == fb_offer.id).all()
-        countries = []
-        for i in historties:
-            country = i.country
-            countries.append(country)
+        plate_country = PlatformOffer.query.filter_by(id=fb_offer.id).first()
+        countries = plate_country.country
+        countries = countries.split(',')
         countries = list(set(countries))
         country_detail = []
         for i in countries:
@@ -304,7 +307,7 @@ def offerDetail(id):
         facebook = {}
 
     ad_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="adwords").first()
-    if ad_offer:
+    if ad_offer is not None:
         contract_type = ad_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
@@ -330,11 +333,9 @@ def offerDetail(id):
             "period": ad_offer.period,
             "remark": ad_offer.remark
         }
-        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == ad_offer.id).all()
-        countries = []
-        for i in historties:
-            country = i.country
-            countries.append(country)
+        plate_country = PlatformOffer.query.filter_by(id=ad_offer.id).first()
+        countries = plate_country.country
+        countries = countries.split(',')
         countries = list(set(countries))
         country_detail = []
         for i in countries:
@@ -352,7 +353,7 @@ def offerDetail(id):
         adwords = {}
 
     ap_offer = PlatformOffer.query.filter_by(offer_id=int(id), platform="apple").first()
-    if ad_offer:
+    if ap_offer is not None:
         contract_type = ap_offer.contract_type
         if contract_type != "1":
             contract_scale = 0
@@ -378,11 +379,9 @@ def offerDetail(id):
             "period": ap_offer.period,
             "remark": ap_offer.remark
         }
-        historties = History.query.filter(History.offer_id == id, History.country != "", History.platformOffer_id == ap_offer.id).all()
-        countries = []
-        for i in historties:
-            country = i.country
-            countries.append(country)
+        plate_country = PlatformOffer.query.filter_by(id=ap_offer.id).first()
+        countries = plate_country.country
+        countries = countries.split(',')
         countries = list(set(countries))
         country_detail = []
         for i in countries:
@@ -428,16 +427,13 @@ def offerDetail(id):
 #offer国家对应的价钱
 @offers.route('/api/country_price/<offerId>', methods=["GET"])
 def countryPrice(offerId):
-    historties = History.query.filter(History.offer_id == int(offerId), History.country != "", History.platform == "facebook").all()
-    countries = []
-    for i in historties:
-        country = i.country
-        countries.append(country)
+    platform_offer = PlatformOffer.query.filter_by(offer_id=int(offerId),platform='facebook').first()
+    countries = platform_offer.country
+    countries = countries.split(',')
     countries = list(set(countries))
     country_price_list = []
     for i in countries:
-        historty = History.query.filter(History.offer_id == int(offerId), History.country == i).order_by(
-            desc(History.createdTime)).first()
+        historty = History.query.filter(History.offer_id == int(offerId), History.country == i, History.platformOffer_id==platform_offer.id).order_by(desc(History.createdTime)).first()
         country = historty.country
         country_price = historty.country_price
         detail = {
