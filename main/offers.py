@@ -563,43 +563,43 @@ def updateOffer():
         data = request.get_json(force=True)
         offer = Offer.query.filter_by(id=int(data["offer_id"])).first()
         if offer is not None:
-            # try:
-            customer_id = data["customer_id"].split("(")[1].split(')')[0]
-            user_id = data["user_id"].split("(")[1].split(')')[0]
-            offer.updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-            offer.status = data["status"] if data["status"] != "" else offer.status
-            offer.customer_id = int(customer_id) if data["customer_id"] != "" else offer.customer_id
-            offer.user_id = int(user_id) if data['user_id'] != "" else offer.user_id
-            offer.contract_num = data["contract_num"] if data["contract_num"] != "" else offer.contract_num
-            offer.os = data["os"] if data["os"] != "" else offer.os
-            offer.package_name = data["package_name"] if data["package_name"] != "" else offer.package_name
-            offer.app_name = data["app_name"] if data["app_name"] != "" else offer.app_name
-            offer.app_type = data["app_type"] if data["app_type"] != "" else offer.app_type
-            offer.preview_link = data["preview_link"] if data["preview_link"] != "" else offer.preview_link
-            offer.track_link = data["track_link"] if data["track_link"] != "" else offer.track_link
-            offer.platform = str(data["platform"]) if str(data["platform"]) != "" else offer.platform
-            offer.email_time = data["email_time"]
-            offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
-            offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
+            try:
+                customer_id = data["customer_id"].split("(")[1].split(')')[0]
+                user_id = data["user_id"].split("(")[1].split(')')[0]
+                offer.updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+                offer.status = data["status"] if data["status"] != "" else offer.status
+                offer.customer_id = int(customer_id) if data["customer_id"] != "" else offer.customer_id
+                offer.user_id = int(user_id) if data['user_id'] != "" else offer.user_id
+                offer.contract_num = data["contract_num"] if data["contract_num"] != "" else offer.contract_num
+                offer.os = data["os"] if data["os"] != "" else offer.os
+                offer.package_name = data["package_name"] if data["package_name"] != "" else offer.package_name
+                offer.app_name = data["app_name"] if data["app_name"] != "" else offer.app_name
+                offer.app_type = data["app_type"] if data["app_type"] != "" else offer.app_type
+                offer.preview_link = data["preview_link"] if data["preview_link"] != "" else offer.preview_link
+                offer.track_link = data["track_link"] if data["track_link"] != "" else offer.track_link
+                offer.platform = str(data["platform"]) if str(data["platform"]) != "" else offer.platform
+                offer.email_time = data["email_time"]
+                offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
+                offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
 
-            platforms = data["platform"].split(',')
-            if 'Facebook' in platforms:
-                fb_data = data['facebook']
-                fb_offer = updatePlatformOffer(int(data["offer_id"]),'facebook',fb_data)
-            if 'Adwords' in platforms:
-                ad_data = data['adwords']
-                ad_offer = updatePlatformOffer(int(data['offer_id']),'adwords',ad_data)
-            if 'Apple' in platforms:
-                ap_data = data['apple']
-                ap_offer = updatePlatformOffer(int(data['offer_id']),'apple',ap_data)
+                platforms = data["platform"].split(',')
+                if 'Facebook' in platforms:
+                    fb_data = data['facebook']
+                    fb_offer = updatePlatformOffer(int(data["offer_id"]),'facebook',fb_data)
+                if 'Adwords' in platforms:
+                    ad_data = data['adwords']
+                    ad_offer = updatePlatformOffer(int(data['offer_id']),'adwords',ad_data)
+                if 'Apple' in platforms:
+                    ap_data = data['apple']
+                    ap_offer = updatePlatformOffer(int(data['offer_id']),'apple',ap_data)
 
-            db.session.add(offer)
-            db.session.commit()
+                db.session.add(offer)
+                db.session.commit()
 
-            return json.dumps({"code": 200, "message": "success"})
-            # except Exception as e:
-            #     print e
-            #     return json.dumps({"code": 500, "message": "fail"})
+                return json.dumps({"code": 200, "message": "success"})
+            except Exception as e:
+                print e
+                return json.dumps({"code": 500, "message": "fail"})
         else:
             return json.dumps({"code": 400, "message": "offer is None"})
 
