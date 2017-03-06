@@ -16,8 +16,8 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=14"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=14"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -408,6 +408,7 @@ for i in results:
                             "date_stop": date_start
                         }
                     ]
+        print cost_list
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
             date_fb = impressions_list[l].get("date_start")
