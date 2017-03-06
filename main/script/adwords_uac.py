@@ -26,7 +26,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=18"
         try:
             cursor.execute(query_string)
         finally:
@@ -149,6 +150,8 @@ class AdwordsUac(AdwordsSQL):
                             conversions = read['Conversions'].replace(',','')
                         else:
                             conversions = read['Conversions']
+                        print "###"*10
+                        print conversions
                         if contract_type == "1":
                             cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(cooperation_sql)
@@ -191,6 +194,8 @@ class AdwordsUac(AdwordsSQL):
                         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
                         cursor.execute(sql_ad)
                         result_ad = cursor.fetchone()
+                        print round(float(read['Cost']) / (10 ** 6), 2)
+                        print "@@@"*10
                         if not result_ad:
                             self.insert_sql(int(offer_id), str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']),str(read['Impressions']), int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2),float(profit), str(conversions), cpc, cvr, cpi, ctr, str(read['Day']),countryName)
                         else:
@@ -226,7 +231,8 @@ class MyProcess(object):
     @staticmethod
     def get_uac_account_msg(self, account_id, offer_id, is_UAC=False):
         today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
-        a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        # a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        a_month_ago = ((datetime.now() + timedelta(hours=8)) - timedelta(days=1)).strftime("%Y-%m-%d")
         if is_UAC == False:
             fields = ['CampaignId', 'CampaignName', 'CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
         else:
