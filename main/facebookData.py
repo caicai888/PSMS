@@ -1156,795 +1156,795 @@ def faceReport():
                 })
 
         else:
-           try:
-               if "source" in dimension:
-                   adwords_results = Adwords.query.filter(Adwords.offer_id == offerId,Adwords.date>=start_date,Adwords.date<=end_date).order_by(Adwords.date.desc()).all()
-                   facebook_results = Datas.query.filter(Datas.offer_id==offerId,Datas.date>=start_date,Datas.date<=end_date,Datas.type=="facebook").order_by(Datas.date.desc()).all()
-                   apple_results = Datas.query.filter(Datas.offer_id == offerId, Datas.date >= start_date, Datas.date <= end_date,
-                                                         Datas.type == "apple").order_by(Datas.date.desc()).all()
-                   ##adwords
-                   impressions_list_all_adwords = []
-                   cost_list_all_adwords = []
-                   clicks_list_all_adwords = []
-                   conversions_list_all_adwords = []
-                   ctr_list_all_adwords = []
-                   cvr_list_all_adwords = []
-                   cpc_list_all_adwords = []
-                   cpi_list_all_adwords = []
-                   revenue_list_all_adwords = []
-                   profit_list_all_adwords = []
-                   for i in adwords_results:
-                       date = i.date
-                       impressions_list_all_adwords += [
-                           {
-                               "impressions": int(i.impressions),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       cost_list_all_adwords += [
-                           {
-                               "spend": '%0.2f' % (float(i.cost)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       clicks_list_all_adwords += [
-                           {
-                               "clicks": int(i.clicks),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       conversions_list_all_adwords += [
-                           {
-                               "conversions": float(i.conversions),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       ctr_list_all_adwords += [
-                           {
-                               "ctr": '%0.2f' % (float(i.ctr)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       cvr_list_all_adwords += [
-                           {
-                               "cvr": '%0.2f' % (float(i.cvr)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       cpc_list_all_adwords += [
-                           {
-                               "cpc": '%0.2f' % (float(i.cpc)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       cpi_list_all_adwords += [
-                           {
-                               "cpi": '%0.2f' % (float(i.cpi)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       revenue_list_all_adwords += [
-                           {
-                               "revenue": '%0.2f' % (float(i.revenue)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
-                       profit_list_all_adwords += [
-                           {
-                               "profit": '%0.2f' % (float(i.profit)),
-                               "date_start": date,
-                               "source": "adwords"
-                           }
-                       ]
+           # try:
+           if "source" in dimension:
+               adwords_results = Adwords.query.filter(Adwords.offer_id == offerId,Adwords.date>=start_date,Adwords.date<=end_date).order_by(Adwords.date.desc()).all()
+               facebook_results = Datas.query.filter(Datas.offer_id==offerId,Datas.date>=start_date,Datas.date<=end_date,Datas.type=="facebook").order_by(Datas.date.desc()).all()
+               apple_results = Datas.query.filter(Datas.offer_id == offerId, Datas.date >= start_date, Datas.date <= end_date,
+                                                     Datas.type == "apple").order_by(Datas.date.desc()).all()
+               ##adwords
+               impressions_list_all_adwords = []
+               cost_list_all_adwords = []
+               clicks_list_all_adwords = []
+               conversions_list_all_adwords = []
+               ctr_list_all_adwords = []
+               cvr_list_all_adwords = []
+               cpc_list_all_adwords = []
+               cpi_list_all_adwords = []
+               revenue_list_all_adwords = []
+               profit_list_all_adwords = []
+               for i in adwords_results:
+                   date = i.date
+                   impressions_list_all_adwords += [
+                       {
+                           "impressions": int(i.impressions),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   cost_list_all_adwords += [
+                       {
+                           "spend": '%0.2f' % (float(i.cost)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   clicks_list_all_adwords += [
+                       {
+                           "clicks": int(i.clicks),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   conversions_list_all_adwords += [
+                       {
+                           "conversions": float(i.conversions),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   ctr_list_all_adwords += [
+                       {
+                           "ctr": '%0.2f' % (float(i.ctr)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   cvr_list_all_adwords += [
+                       {
+                           "cvr": '%0.2f' % (float(i.cvr)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   cpc_list_all_adwords += [
+                       {
+                           "cpc": '%0.2f' % (float(i.cpc)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   cpi_list_all_adwords += [
+                       {
+                           "cpi": '%0.2f' % (float(i.cpi)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   revenue_list_all_adwords += [
+                       {
+                           "revenue": '%0.2f' % (float(i.revenue)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
+                   profit_list_all_adwords += [
+                       {
+                           "profit": '%0.2f' % (float(i.profit)),
+                           "date_start": date,
+                           "source": "adwords"
+                       }
+                   ]
 
-                   data_range_result_adwords = data_range(impressions_list_all_adwords,cost_list_all_adwords,clicks_list_all_adwords,conversions_list_all_adwords,ctr_list_all_adwords,cvr_list_all_adwords,cpc_list_all_adwords,cpi_list_all_adwords,revenue_list_all_adwords,profit_list_all_adwords)
-                   revenue_list_new = data_range_result_adwords["revenue"][::-1]
-                   cost_list_new = data_range_result_adwords["costs"][::-1]
-                   profit_list_new = data_range_result_adwords["profit"][::-1]
-                   impressions_list_new = data_range_result_adwords["impressions"][::-1]
-                   clicks_list_new = data_range_result_adwords["clicks"][::-1]
-                   conversions_list_new = data_range_result_adwords["conversions"][::-1]
-                   date_new = data_range_result_adwords["date"][::-1]
-                   for i in range(len(date_new)):
-                       impressions_list += [
-                           {
-                               "impressions": float(impressions_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       cost_list += [
-                           {
-                               "spend": '%0.2f' % (float(cost_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       clicks_list += [
-                           {
-                               "clicks": float(clicks_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       conversions_list += [
-                           {
-                               "conversions": float(conversions_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       ctr_list += [
-                           {
-                               "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       cvr_list += [
-                           {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       cpc_list += [
-                           {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       cpi_list += [
-                           {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       revenue_list += [
-                           {
-                               "revenue": '%0.2f' % (float(revenue_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
-                       profit_list += [
-                           {
-                               "profit": '%0.2f' % (float(profit_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "adwords"
-                           }
-                       ]
+               data_range_result_adwords = data_range(impressions_list_all_adwords,cost_list_all_adwords,clicks_list_all_adwords,conversions_list_all_adwords,ctr_list_all_adwords,cvr_list_all_adwords,cpc_list_all_adwords,cpi_list_all_adwords,revenue_list_all_adwords,profit_list_all_adwords)
+               revenue_list_new = data_range_result_adwords["revenue"][::-1]
+               cost_list_new = data_range_result_adwords["costs"][::-1]
+               profit_list_new = data_range_result_adwords["profit"][::-1]
+               impressions_list_new = data_range_result_adwords["impressions"][::-1]
+               clicks_list_new = data_range_result_adwords["clicks"][::-1]
+               conversions_list_new = data_range_result_adwords["conversions"][::-1]
+               date_new = data_range_result_adwords["date"][::-1]
+               for i in range(len(date_new)):
+                   impressions_list += [
+                       {
+                           "impressions": float(impressions_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   cost_list += [
+                       {
+                           "spend": '%0.2f' % (float(cost_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   clicks_list += [
+                       {
+                           "clicks": float(clicks_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   conversions_list += [
+                       {
+                           "conversions": float(conversions_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   ctr_list += [
+                       {
+                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   cvr_list += [
+                       {
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   cpc_list += [
+                       {
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   cpi_list += [
+                       {
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   revenue_list += [
+                       {
+                           "revenue": '%0.2f' % (float(revenue_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
+                   profit_list += [
+                       {
+                           "profit": '%0.2f' % (float(profit_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "adwords"
+                       }
+                   ]
 
-                   ## facebook
-                   impressions_list_all_fb = []
-                   cost_list_all_fb = []
-                   clicks_list_all_fb = []
-                   conversions_list_all_fb = []
-                   ctr_list_all_fb = []
-                   cvr_list_all_fb = []
-                   cpc_list_all_fb = []
-                   cpi_list_all_fb = []
-                   revenue_list_all_fb = []
-                   profit_list_all_fb = []
-                   for i in facebook_results:
-                       date = i.date
-                       impressions_list_all_fb += [
-                           {
-                               "impressions": int(i.impressions),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       cost_list_all_fb += [
-                           {
-                               "spend": '%0.2f' % (float(i.cost)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       clicks_list_all_fb += [
-                           {
-                               "clicks": int(i.clicks),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       conversions_list_all_fb += [
-                           {
-                               "conversions": float(i.conversions),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       ctr_list_all_fb += [
-                           {
-                               "ctr": '%0.2f' % (float(i.ctr)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       cvr_list_all_fb += [
-                           {
-                               "cvr": '%0.2f' % (float(i.cvr)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       cpc_list_all_fb += [
-                           {
-                               "cpc": '%0.2f' % (float(i.cpc)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       cpi_list_all_fb += [
-                           {
-                               "cpi": '%0.2f' % (float(i.cpi)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       revenue_list_all_fb += [
-                           {
-                               "revenue": '%0.2f' % (float(i.revenue)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
-                       profit_list_all_fb += [
-                           {
-                               "profit": '%0.2f' % (float(i.profit)),
-                               "date_start": date,
-                               "source": "facebook"
-                           }
-                       ]
+               ## facebook
+               impressions_list_all_fb = []
+               cost_list_all_fb = []
+               clicks_list_all_fb = []
+               conversions_list_all_fb = []
+               ctr_list_all_fb = []
+               cvr_list_all_fb = []
+               cpc_list_all_fb = []
+               cpi_list_all_fb = []
+               revenue_list_all_fb = []
+               profit_list_all_fb = []
+               for i in facebook_results:
+                   date = i.date
+                   impressions_list_all_fb += [
+                       {
+                           "impressions": int(i.impressions),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   cost_list_all_fb += [
+                       {
+                           "spend": '%0.2f' % (float(i.cost)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   clicks_list_all_fb += [
+                       {
+                           "clicks": int(i.clicks),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   conversions_list_all_fb += [
+                       {
+                           "conversions": float(i.conversions),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   ctr_list_all_fb += [
+                       {
+                           "ctr": '%0.2f' % (float(i.ctr)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   cvr_list_all_fb += [
+                       {
+                           "cvr": '%0.2f' % (float(i.cvr)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   cpc_list_all_fb += [
+                       {
+                           "cpc": '%0.2f' % (float(i.cpc)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   cpi_list_all_fb += [
+                       {
+                           "cpi": '%0.2f' % (float(i.cpi)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   revenue_list_all_fb += [
+                       {
+                           "revenue": '%0.2f' % (float(i.revenue)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
+                   profit_list_all_fb += [
+                       {
+                           "profit": '%0.2f' % (float(i.profit)),
+                           "date_start": date,
+                           "source": "facebook"
+                       }
+                   ]
 
-                   data_range_result_fb = data_range(impressions_list_all_fb, cost_list_all_fb, clicks_list_all_fb,
-                                                          conversions_list_all_fb, ctr_list_all_fb, cvr_list_all_fb,
-                                                          cpc_list_all_fb, cpi_list_all_fb, revenue_list_all_fb,profit_list_all_fb)
-                   revenue_list_new = data_range_result_fb["revenue"][::-1]
-                   cost_list_new = data_range_result_fb["costs"][::-1]
-                   profit_list_new = data_range_result_fb["profit"][::-1]
-                   impressions_list_new = data_range_result_fb["impressions"][::-1]
-                   clicks_list_new = data_range_result_fb["clicks"][::-1]
-                   conversions_list_new = data_range_result_fb["conversions"][::-1]
-                   date_new = data_range_result_fb["date"][::-1]
-                   for i in range(len(date_new)):
-                       impressions_list += [
-                           {
-                               "impressions": float(impressions_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       cost_list += [
-                           {
-                               "spend": '%0.2f' % (float(cost_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       clicks_list += [
-                           {
-                               "clicks": float(clicks_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       conversions_list += [
-                           {
-                               "conversions": float(conversions_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       ctr_list += [
-                           {
-                               "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       cvr_list += [
-                           {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       cpc_list += [
-                           {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       cpi_list += [
-                           {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       revenue_list += [
-                           {
-                               "revenue": '%0.2f' % (float(revenue_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
-                       profit_list += [
-                           {
-                               "profit": '%0.2f' % (float(profit_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "facebook"
-                           }
-                       ]
+               data_range_result_fb = data_range(impressions_list_all_fb, cost_list_all_fb, clicks_list_all_fb,
+                                                      conversions_list_all_fb, ctr_list_all_fb, cvr_list_all_fb,
+                                                      cpc_list_all_fb, cpi_list_all_fb, revenue_list_all_fb,profit_list_all_fb)
+               revenue_list_new = data_range_result_fb["revenue"][::-1]
+               cost_list_new = data_range_result_fb["costs"][::-1]
+               profit_list_new = data_range_result_fb["profit"][::-1]
+               impressions_list_new = data_range_result_fb["impressions"][::-1]
+               clicks_list_new = data_range_result_fb["clicks"][::-1]
+               conversions_list_new = data_range_result_fb["conversions"][::-1]
+               date_new = data_range_result_fb["date"][::-1]
+               for i in range(len(date_new)):
+                   impressions_list += [
+                       {
+                           "impressions": float(impressions_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   cost_list += [
+                       {
+                           "spend": '%0.2f' % (float(cost_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   clicks_list += [
+                       {
+                           "clicks": float(clicks_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   conversions_list += [
+                       {
+                           "conversions": float(conversions_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   ctr_list += [
+                       {
+                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   cvr_list += [
+                       {
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   cpc_list += [
+                       {
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   cpi_list += [
+                       {
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   revenue_list += [
+                       {
+                           "revenue": '%0.2f' % (float(revenue_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
+                   profit_list += [
+                       {
+                           "profit": '%0.2f' % (float(profit_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "facebook"
+                       }
+                   ]
 
-                   ## apple
-                   impressions_list_all_ap = []
-                   cost_list_all_ap = []
-                   clicks_list_all_ap = []
-                   conversions_list_all_ap = []
-                   ctr_list_all_ap = []
-                   cvr_list_all_ap = []
-                   cpc_list_all_ap = []
-                   cpi_list_all_ap = []
-                   revenue_list_all_ap = []
-                   profit_list_all_ap = []
-                   for i in apple_results:
-                       date = i.date
-                       impressions_list_all_ap += [
-                           {
-                               "impressions": int(i.impressions),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       cost_list_all_ap += [
-                           {
-                               "spend": '%0.2f' % (float(i.cost)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       clicks_list_all_ap += [
-                           {
-                               "clicks": int(i.clicks),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       conversions_list_all_ap += [
-                           {
-                               "conversions": float(i.conversions),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       ctr_list_all_ap += [
-                           {
-                               "ctr": '%0.2f' % (float(i.ctr)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       cvr_list_all_ap += [
-                           {
-                               "cvr": '%0.2f' % (float(i.cvr)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       cpc_list_all_ap += [
-                           {
-                               "cpc": '%0.2f' % (float(i.cpc)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       cpi_list_all_ap += [
-                           {
-                               "cpi": '%0.2f' % (float(i.cpi)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       revenue_list_all_ap += [
-                           {
-                               "revenue": '%0.2f' % (float(i.revenue)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
-                       profit_list_all_ap += [
-                           {
-                               "profit": '%0.2f' % (float(i.profit)),
-                               "date_start": date,
-                               "source": "apple"
-                           }
-                       ]
+               ## apple
+               impressions_list_all_ap = []
+               cost_list_all_ap = []
+               clicks_list_all_ap = []
+               conversions_list_all_ap = []
+               ctr_list_all_ap = []
+               cvr_list_all_ap = []
+               cpc_list_all_ap = []
+               cpi_list_all_ap = []
+               revenue_list_all_ap = []
+               profit_list_all_ap = []
+               for i in apple_results:
+                   date = i.date
+                   impressions_list_all_ap += [
+                       {
+                           "impressions": int(i.impressions),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   cost_list_all_ap += [
+                       {
+                           "spend": '%0.2f' % (float(i.cost)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   clicks_list_all_ap += [
+                       {
+                           "clicks": int(i.clicks),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   conversions_list_all_ap += [
+                       {
+                           "conversions": float(i.conversions),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   ctr_list_all_ap += [
+                       {
+                           "ctr": '%0.2f' % (float(i.ctr)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   cvr_list_all_ap += [
+                       {
+                           "cvr": '%0.2f' % (float(i.cvr)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   cpc_list_all_ap += [
+                       {
+                           "cpc": '%0.2f' % (float(i.cpc)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   cpi_list_all_ap += [
+                       {
+                           "cpi": '%0.2f' % (float(i.cpi)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   revenue_list_all_ap += [
+                       {
+                           "revenue": '%0.2f' % (float(i.revenue)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
+                   profit_list_all_ap += [
+                       {
+                           "profit": '%0.2f' % (float(i.profit)),
+                           "date_start": date,
+                           "source": "apple"
+                       }
+                   ]
 
-                   data_range_result_ap = data_range(impressions_list_all_ap, cost_list_all_ap, clicks_list_all_ap,
-                                                     conversions_list_all_ap, ctr_list_all_ap, cvr_list_all_ap,
-                                                     cpc_list_all_ap, cpi_list_all_ap, revenue_list_all_ap, profit_list_all_ap)
-                   revenue_list_new = data_range_result_ap["revenue"][::-1]
-                   cost_list_new = data_range_result_ap["costs"][::-1]
-                   profit_list_new = data_range_result_ap["profit"][::-1]
-                   impressions_list_new = data_range_result_ap["impressions"][::-1]
-                   clicks_list_new = data_range_result_ap["clicks"][::-1]
-                   conversions_list_new = data_range_result_ap["conversions"][::-1]
-                   date_new = data_range_result_ap["date"][::-1]
-                   for i in range(len(date_new)):
-                       impressions_list += [
-                           {
-                               "impressions": float(impressions_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       cost_list += [
-                           {
-                               "spend": '%0.2f' % (float(cost_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       clicks_list += [
-                           {
-                               "clicks": float(clicks_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       conversions_list += [
-                           {
-                               "conversions": float(conversions_list_new[i]),
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       ctr_list += [
-                           {
-                               "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       cvr_list += [
-                           {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       cpc_list += [
-                           {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       cpi_list += [
-                           {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       revenue_list += [
-                           {
-                               "revenue": '%0.2f' % (float(revenue_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
-                       profit_list += [
-                           {
-                               "profit": '%0.2f' % (float(profit_list_new[i])),
-                               "date_start": date_new[i],
-                               "source": "apple"
-                           }
-                       ]
+               data_range_result_ap = data_range(impressions_list_all_ap, cost_list_all_ap, clicks_list_all_ap,
+                                                 conversions_list_all_ap, ctr_list_all_ap, cvr_list_all_ap,
+                                                 cpc_list_all_ap, cpi_list_all_ap, revenue_list_all_ap, profit_list_all_ap)
+               revenue_list_new = data_range_result_ap["revenue"][::-1]
+               cost_list_new = data_range_result_ap["costs"][::-1]
+               profit_list_new = data_range_result_ap["profit"][::-1]
+               impressions_list_new = data_range_result_ap["impressions"][::-1]
+               clicks_list_new = data_range_result_ap["clicks"][::-1]
+               conversions_list_new = data_range_result_ap["conversions"][::-1]
+               date_new = data_range_result_ap["date"][::-1]
+               for i in range(len(date_new)):
+                   impressions_list += [
+                       {
+                           "impressions": float(impressions_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   cost_list += [
+                       {
+                           "spend": '%0.2f' % (float(cost_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   clicks_list += [
+                       {
+                           "clicks": float(clicks_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   conversions_list += [
+                       {
+                           "conversions": float(conversions_list_new[i]),
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   ctr_list += [
+                       {
+                           "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if impressions_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   cvr_list += [
+                       {
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   cpc_list += [
+                       {
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if clicks_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   cpi_list += [
+                       {
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if conversions_list_new[i] != 0 else 0,
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   revenue_list += [
+                       {
+                           "revenue": '%0.2f' % (float(revenue_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
+                   profit_list += [
+                       {
+                           "profit": '%0.2f' % (float(profit_list_new[i])),
+                           "date_start": date_new[i],
+                           "source": "apple"
+                       }
+                   ]
 
-                   data_date_table = {
-                       "impressions_list": impressions_list,
-                       "cost_list": cost_list,
-                       "clicks_list": clicks_list,
-                       "conversions_list": conversions_list,
-                       "ctr_list": ctr_list,
-                       "cvr_list": cvr_list,
-                       "cpc_list": cpc_list,
-                       "cpi_list": cpi_list,
-                       "revenue_list": revenue_list,
-                       "profit_list": profit_list,
-                       "head": ["Date", "source","Revenue", "Profit", "Cost", "Impressions", "Clicks", "Conversions", "CTR", "CVR", "CPC", "CPI"]
-                   }
-                   data_geo = data_count(impressions_list, cost_list, clicks_list, conversions_list, revenue_list, profit_list)
-                   data_range_result = data_range(impressions_list,cost_list,clicks_list,conversions_list,ctr_list,cvr_list,cpc_list,cpi_list,revenue_list,profit_list)
-                   return json.dumps({
-                       "code": 200,
-                       "data_geo": data_geo,
-                       "data_geo_table": {},
-                       "data_date_table": data_date_table,
-                       "data_range": data_range_result,
-                       "message": "success"
-                   })
-               else:
-                   adwords_results = Adwords.query.filter(Adwords.offer_id == offerId, Adwords.date >= start_date, Adwords.date <= end_date).order_by(Adwords.date.desc()).all()
-                   data_results = Datas.query.filter(Datas.offer_id==offerId,Datas.date>=start_date,Datas.date<=end_date).order_by(Datas.date.desc()).all()
-                   impressions_list_all = []
-                   cost_list_all = []
-                   clicks_list_all = []
-                   conversions_list_all = []
-                   ctr_list_all = []
-                   cvr_list_all=[]
-                   cpc_list_all=[]
-                   cpi_list_all=[]
-                   revenue_list_all=[]
-                   profit_list_all=[]
-                   for i in data_results:
-                       date = i.date
-                       impressions_list_all += [
-                           {
-                               "impressions": int(i.impressions),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cost_list_all += [
-                           {
-                               "spend": '%0.2f' % (float(i.cost)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       clicks_list_all += [
-                           {
-                               "clicks": int(i.clicks),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       conversions_list_all += [
-                           {
-                               "conversions": int(i.conversions),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       ctr_list_all += [
-                           {
-                               "ctr": '%0.2f' % (float(i.ctr)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cvr_list_all += [
-                           {
-                               "cvr": '%0.2f' % (float(i.cvr)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cpc_list_all += [
-                           {
-                               "cpc": '%0.2f' % (float(i.cpc)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cpi_list_all += [
-                           {
-                               "cpi": '%0.2f' % (float(i.cpi)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       revenue_list_all += [
-                           {
-                               "revenue": '%0.2f' % (float(i.revenue)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       profit_list_all += [
-                           {
-                               "profit": '%0.2f' % (float(i.profit)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-
-                   for i in adwords_results:
-                       date = i.date
-                       impressions_list_all += [
-                           {
-                               "impressions": int(i.impressions),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cost_list_all += [
-                           {
-                               "spend": '%0.2f' % (float(i.cost)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       clicks_list_all += [
-                           {
-                               "clicks": int(i.clicks),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       conversions_list_all += [
-                           {
-                               "conversions": float(i.conversions),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       ctr_list_all += [
-                           {
-                               "ctr": '%0.2f' % (float(i.ctr)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cvr_list_all += [
-                           {
-                               "cvr": '%0.2f' % (float(i.cvr)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cpc_list_all += [
-                           {
-                               "cpc": '%0.2f' % (float(i.cpc)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       cpi_list_all += [
-                           {
-                               "cpi": '%0.2f' % (float(i.cpi)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       revenue_list_all += [
-                           {
-                               "revenue": '%0.2f' % (float(i.revenue)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-                       profit_list_all += [
-                           {
-                               "profit": '%0.2f' % (float(i.profit)),
-                               "date_start": date,
-                               "date_stop": date
-                           }
-                       ]
-
-                   data_range_result = data_range(impressions_list_all,cost_list_all,clicks_list_all,conversions_list_all,ctr_list_all,cvr_list_all,cpc_list_all,cpi_list_all,revenue_list_all,profit_list_all)
-                   revenue_list_new = data_range_result["revenue"][::-1]
-                   cost_list_new = data_range_result["costs"][::-1]
-                   profit_list_new = data_range_result["profit"][::-1]
-                   impressions_list_new = data_range_result["impressions"][::-1]
-                   clicks_list_new = data_range_result["clicks"][::-1]
-                   conversions_list_new = data_range_result["conversions"][::-1]
-                   date_new = data_range_result["date"][::-1]
-                   for i in range(len(date_new)):
-                       impressions_list += [
-                           {
-                               "impressions":float(impressions_list_new[i]),
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       cost_list += [
-                           {
-                               "spend": '%0.2f'%(float(cost_list_new[i])),
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       clicks_list += [
-                           {
-                               "clicks": float(clicks_list_new[i]),
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       conversions_list += [
-                           {
-                               "conversions": float(conversions_list_new[i]),
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       ctr_list += [
-                           {
-                               "ctr": '%0.2f'%(float(clicks_list_new[i])/float(impressions_list_new[i])*100) if impressions_list_new[i] !=0 else 0,
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       cvr_list += [
-                           {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] !=0 else 0,
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       cpc_list += [
-                           {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       cpi_list += [
-                           {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       revenue_list += [
-                           {
-                               "revenue": '%0.2f'%(float(revenue_list_new[i])),
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-                       profit_list += [
-                           {
-                               "profit": '%0.2f'%(float(profit_list_new[i])),
-                               "date_start": date_new[i],
-                               "date_stop": date_new[i]
-                           }
-                       ]
-
-                   data_date_table = {
-                       "impressions_list": impressions_list,
-                       "cost_list": cost_list,
-                       "clicks_list": clicks_list,
-                       "conversions_list": conversions_list,
-                       "ctr_list": ctr_list,
-                       "cvr_list": cvr_list,
-                       "cpc_list": cpc_list,
-                       "cpi_list": cpi_list,
-                       "revenue_list": revenue_list,
-                       "profit_list": profit_list,
-                       "head": ["Date", "Revenue", "Profit", "Cost", "Impressions", "Clicks", "Conversions", "CTR", "CVR", "CPC", "CPI"]
-                   }
-                   data_geo = data_count(impressions_list,cost_list,clicks_list,conversions_list,revenue_list,profit_list)
-                   return json.dumps({
-                       "code": 200,
-                       "data_geo": data_geo,
-                       "data_geo_table": {},
-                       "data_date_table": data_date_table,
-                       "data_range": data_range_result,
-                       "message": "success"
-                   })
-           except Exception as e:
-               print e
+               data_date_table = {
+                   "impressions_list": impressions_list,
+                   "cost_list": cost_list,
+                   "clicks_list": clicks_list,
+                   "conversions_list": conversions_list,
+                   "ctr_list": ctr_list,
+                   "cvr_list": cvr_list,
+                   "cpc_list": cpc_list,
+                   "cpi_list": cpi_list,
+                   "revenue_list": revenue_list,
+                   "profit_list": profit_list,
+                   "head": ["Date", "source","Revenue", "Profit", "Cost", "Impressions", "Clicks", "Conversions", "CTR", "CVR", "CPC", "CPI"]
+               }
+               data_geo = data_count(impressions_list, cost_list, clicks_list, conversions_list, revenue_list, profit_list)
+               data_range_result = data_range(impressions_list,cost_list,clicks_list,conversions_list,ctr_list,cvr_list,cpc_list,cpi_list,revenue_list,profit_list)
                return json.dumps({
-                   "code": 500,
-                   "message": "no bind data or bind wrong data"
+                   "code": 200,
+                   "data_geo": data_geo,
+                   "data_geo_table": {},
+                   "data_date_table": data_date_table,
+                   "data_range": data_range_result,
+                   "message": "success"
                })
+           else:
+               adwords_results = Adwords.query.filter(Adwords.offer_id == offerId, Adwords.date >= start_date, Adwords.date <= end_date).order_by(Adwords.date.desc()).all()
+               data_results = Datas.query.filter(Datas.offer_id==offerId,Datas.date>=start_date,Datas.date<=end_date).order_by(Datas.date.desc()).all()
+               impressions_list_all = []
+               cost_list_all = []
+               clicks_list_all = []
+               conversions_list_all = []
+               ctr_list_all = []
+               cvr_list_all=[]
+               cpc_list_all=[]
+               cpi_list_all=[]
+               revenue_list_all=[]
+               profit_list_all=[]
+               for i in data_results:
+                   date = i.date
+                   impressions_list_all += [
+                       {
+                           "impressions": int(i.impressions),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cost_list_all += [
+                       {
+                           "spend": '%0.2f' % (float(i.cost)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   clicks_list_all += [
+                       {
+                           "clicks": int(i.clicks),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   conversions_list_all += [
+                       {
+                           "conversions": int(i.conversions),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   ctr_list_all += [
+                       {
+                           "ctr": '%0.2f' % (float(i.ctr)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cvr_list_all += [
+                       {
+                           "cvr": '%0.2f' % (float(i.cvr)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cpc_list_all += [
+                       {
+                           "cpc": '%0.2f' % (float(i.cpc)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cpi_list_all += [
+                       {
+                           "cpi": '%0.2f' % (float(i.cpi)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   revenue_list_all += [
+                       {
+                           "revenue": '%0.2f' % (float(i.revenue)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   profit_list_all += [
+                       {
+                           "profit": '%0.2f' % (float(i.profit)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+
+               for i in adwords_results:
+                   date = i.date
+                   impressions_list_all += [
+                       {
+                           "impressions": int(i.impressions),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cost_list_all += [
+                       {
+                           "spend": '%0.2f' % (float(i.cost)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   clicks_list_all += [
+                       {
+                           "clicks": int(i.clicks),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   conversions_list_all += [
+                       {
+                           "conversions": float(i.conversions),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   ctr_list_all += [
+                       {
+                           "ctr": '%0.2f' % (float(i.ctr)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cvr_list_all += [
+                       {
+                           "cvr": '%0.2f' % (float(i.cvr)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cpc_list_all += [
+                       {
+                           "cpc": '%0.2f' % (float(i.cpc)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   cpi_list_all += [
+                       {
+                           "cpi": '%0.2f' % (float(i.cpi)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   revenue_list_all += [
+                       {
+                           "revenue": '%0.2f' % (float(i.revenue)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+                   profit_list_all += [
+                       {
+                           "profit": '%0.2f' % (float(i.profit)),
+                           "date_start": date,
+                           "date_stop": date
+                       }
+                   ]
+
+               data_range_result = data_range(impressions_list_all,cost_list_all,clicks_list_all,conversions_list_all,ctr_list_all,cvr_list_all,cpc_list_all,cpi_list_all,revenue_list_all,profit_list_all)
+               revenue_list_new = data_range_result["revenue"][::-1]
+               cost_list_new = data_range_result["costs"][::-1]
+               profit_list_new = data_range_result["profit"][::-1]
+               impressions_list_new = data_range_result["impressions"][::-1]
+               clicks_list_new = data_range_result["clicks"][::-1]
+               conversions_list_new = data_range_result["conversions"][::-1]
+               date_new = data_range_result["date"][::-1]
+               for i in range(len(date_new)):
+                   impressions_list += [
+                       {
+                           "impressions":float(impressions_list_new[i]),
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   cost_list += [
+                       {
+                           "spend": '%0.2f'%(float(cost_list_new[i])),
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   clicks_list += [
+                       {
+                           "clicks": float(clicks_list_new[i]),
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   conversions_list += [
+                       {
+                           "conversions": float(conversions_list_new[i]),
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   ctr_list += [
+                       {
+                           "ctr": '%0.2f'%(float(clicks_list_new[i])/float(impressions_list_new[i])*100) if impressions_list_new[i] !=0 else 0,
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   cvr_list += [
+                       {
+                           "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if clicks_list_new[i] !=0 else 0,
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   cpc_list += [
+                       {
+                           "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   cpi_list += [
+                       {
+                           "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   revenue_list += [
+                       {
+                           "revenue": '%0.2f'%(float(revenue_list_new[i])),
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+                   profit_list += [
+                       {
+                           "profit": '%0.2f'%(float(profit_list_new[i])),
+                           "date_start": date_new[i],
+                           "date_stop": date_new[i]
+                       }
+                   ]
+
+               data_date_table = {
+                   "impressions_list": impressions_list,
+                   "cost_list": cost_list,
+                   "clicks_list": clicks_list,
+                   "conversions_list": conversions_list,
+                   "ctr_list": ctr_list,
+                   "cvr_list": cvr_list,
+                   "cpc_list": cpc_list,
+                   "cpi_list": cpi_list,
+                   "revenue_list": revenue_list,
+                   "profit_list": profit_list,
+                   "head": ["Date", "Revenue", "Profit", "Cost", "Impressions", "Clicks", "Conversions", "CTR", "CVR", "CPC", "CPI"]
+               }
+               data_geo = data_count(impressions_list,cost_list,clicks_list,conversions_list,revenue_list,profit_list)
+               return json.dumps({
+                   "code": 200,
+                   "data_geo": data_geo,
+                   "data_geo_table": {},
+                   "data_date_table": data_date_table,
+                   "data_range": data_range_result,
+                   "message": "success"
+               })
+           # except Exception as e:
+           #     print e
+           #     return json.dumps({
+           #         "code": 500,
+           #         "message": "no bind data or bind wrong data"
+           #     })
