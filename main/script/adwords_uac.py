@@ -123,6 +123,8 @@ class AdwordsUac(AdwordsSQL):
                             country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
                             cursor.execute(country_sql)
                             country_result = cursor.fetchone()
+                            print "***"*10
+                            print country_result
                             countryName = country_result["countryName"]
                             country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                             cursor.execute(country_sql_notadwords)

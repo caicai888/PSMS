@@ -500,17 +500,30 @@ def updatePlatformOffer(offer_id,platform,data):
     time_now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
     offer = Offer.query.filter_by(id=offer_id).first()
     user_id = offer.user_id
+    if data["price"] != "":
+        price = float(data["price"])
+    else:
+        price = 0
+    if data['daily_budget'] != "":
+        daily_budget = float(data['daily_budget'])
+    else:
+        daily_budget = 0
+    if data['total_budget'] != "":
+        total_budget = float(data["total_budget"])
+    else:
+        total_budget = 0
+
     if platform_offer is not None:
         platform_offer.contract_type = data['contract_type']
-        platform_offer.contract_scale = data['contract_scale']
+        platform_offer.contract_scale = float(data['contract_scale'])
         platform_offer.material = data['material']
         platform_offer.startTime = data['startTime']
         platform_offer.endTime = data['endTime']
         platform_offer.country = data['country']
-        platform_offer.price = float(data['price'])
-        platform_offer.daily_budget = float(data['daily_budget'])
+        platform_offer.price = price
+        platform_offer.daily_budget = daily_budget
         platform_offer.daily_type = data['daily_type']
-        platform_offer.total_budget = float(data['total_budget'])
+        platform_offer.total_budget = total_budget
         platform_offer.total_type = data['total_type']
         platform_offer.distribution = data['distribution']
         platform_offer.authorized = data['authorized']
@@ -524,7 +537,7 @@ def updatePlatformOffer(offer_id,platform,data):
         db.session.commit()
 
     else:
-        platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],float(data['price']),float(data['daily_budget']),data['daily_type'],float(data['total_budget']),data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
+        platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],price,daily_budget,data['daily_type'],total_budget,data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
         db.session.add(platform_offer)
         db.session.commit()
         db.create_all()
