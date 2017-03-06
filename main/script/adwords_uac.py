@@ -59,8 +59,6 @@ class AdwordsSQL(object):
         cursor.close()
 
     def select_campaign_geo(self, campaign_name):
-        print "***"*10
-        print campaign_name
         selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
         selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
         # return selected_msg, selected_geo
@@ -109,7 +107,9 @@ class AdwordsUac(AdwordsSQL):
         column_list = ','.join(self.fields)
         report_downloader = self.client.GetReportDownloader(version='v201609')
         report_query_string = ('SELECT %s FROM %s DURING %s' % (column_list, self.REPORT, self.DATE_RANGE))
-
+        print "+++"*10
+        print customer_id
+        print offer_id
         try:
             report_downloader.DownloadReportWithAwql(
                 report_query_string, 'CSV', self.tempf, skip_report_header=True,

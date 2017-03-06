@@ -23,7 +23,6 @@ headers["Authorization"] = "orgId=152120"
 headers["Content-Type"] = "application/json"
 #根据campign id获取impressions等数据信息
 for i in results:
-    print i
     all_date = []
     all_result = []
     revenue_list = []
@@ -38,11 +37,9 @@ for i in results:
         for n in apple_appNames:
             appleCampaigns.append(n[0])
     appleCampaigns=list(set(appleCampaigns))
-    print offerId
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='apple'"%offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
-    print runtime
     startTime = str(runtime[0])  # 投放的开始时间
     endTime = str(runtime[1])  # 投放的结束时间
     contract_type = runtime[2]
