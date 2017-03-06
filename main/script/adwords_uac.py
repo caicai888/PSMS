@@ -120,12 +120,9 @@ class AdwordsUac(AdwordsSQL):
                     if read['Campaign ID'] != 'Total':
                         if self.is_uac == False:
                             countryNumber = read["Country/Territory"]
-                            print countryNumber
                             country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
                             cursor.execute(country_sql)
                             country_result = cursor.fetchone()
-                            print "***"*10
-                            print country_result
                             countryName = country_result["countryName"]
                             country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                             cursor.execute(country_sql_notadwords)
@@ -155,13 +152,13 @@ class AdwordsUac(AdwordsSQL):
                             cursor.execute(cooperation_sql)
                             cooperation_result = cursor.fetchone()
                             if cooperation_result:
-                                contract_scale = cooperation_result[0]
+                                contract_scale = cooperation_result["contract_scale"]
                             else:
                                 history_scale_sql = "select contract_scale from history where platform='adwords' and offer_id='%d' order by createdTime desc" % (int(offer_id))
                                 cursor.execute(history_scale_sql)
                                 history_scale_result = cursor.fetchone()
                                 if history_scale_result:
-                                    contract_scale = history_scale_result[0]
+                                    contract_scale = history_scale_result["contract_scale"]
                             revenue = '%0.2f' % (round(float(read['Cost']) / (10 ** 6), 2) * (1 + float(contract_scale) / 100))
                         else:
                             timePrice_sql = "select price from timePrice where country_id='%d' and platform='adwords' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (countryId, int(offer_id), read['Day'], offer_result["startTime"])
