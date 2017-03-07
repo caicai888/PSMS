@@ -295,13 +295,14 @@ def offerDetail(id):
         for i in countries:
             historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == fb_offer.id).order_by(
                 desc(History.createdTime)).first()
-            country = historty.country
-            country_price = historty.country_price
-            detail = {
-                "country": country,
-                "price": country_price
-            }
-            country_detail += [detail]
+            if historty:
+                country = historty.country
+                country_price = historty.country_price
+                detail = {
+                    "country": country,
+                    "price": country_price
+                }
+                country_detail += [detail]
         facebook["country_detail"] = country_detail
     else:
         facebook = {}
