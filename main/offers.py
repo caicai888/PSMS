@@ -569,6 +569,7 @@ def updatePlatformOffer(offer_id,platform,data):
         db.create_all()
     return platform_offer
 
+#编辑offer
 @offers.route('/api/update_offer', methods=["POST", "GET"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateOffer():
@@ -1341,32 +1342,33 @@ def offer_search_detail(offers):
     for i in offers:
         sales = User.query.filter_by(id=int(i.user_id)).first()
         platform_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").first()
-        contract_type = platform_offer.contract_type
-        if contract_type == "1":
-            contract_type = u"服务费"
-        elif contract_type == "2":
-            contract_type = "cpa"
-        if platform_offer.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
-            endTime = "TBD"
-        else:
-            endTime = platform_offer.endTime
-        customerId = i.customer_id
-        customer = Customers.query.filter_by(id=customerId).first()
-        customerName = customer.company_name
-        offer_result_list += [
-            {
-                "offer_id": i.id,
-                "status": i.status,
-                "contract_type": contract_type,
-                "os": i.os,
-                "customer_id": customerName,
-                "app_name": i.app_name,
-                "startTime": platform_offer.startTime,
-                "endTime": endTime,
-                "country": str(platform_offer.country),
-                "price": platform_offer.price,
-                "updateTime": i.updateTime,
-                "sale_name": sales.name
-            }
-        ]
+        if platform_offer:
+            contract_type = platform_offer.contract_type
+            if contract_type == "1":
+                contract_type = u"服务费"
+            elif contract_type == "2":
+                contract_type = "cpa"
+            if platform_offer.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+                endTime = "TBD"
+            else:
+                endTime = platform_offer.endTime
+            customerId = i.customer_id
+            customer = Customers.query.filter_by(id=customerId).first()
+            customerName = customer.company_name
+            offer_result_list += [
+                {
+                    "offer_id": i.id,
+                    "status": i.status,
+                    "contract_type": contract_type,
+                    "os": i.os,
+                    "customer_id": customerName,
+                    "app_name": i.app_name,
+                    "startTime": platform_offer.startTime,
+                    "endTime": endTime,
+                    "country": str(platform_offer.country),
+                    "price": platform_offer.price,
+                    "updateTime": i.updateTime,
+                    "sale_name": sales.name
+                }
+            ]
     return offer_result_list
