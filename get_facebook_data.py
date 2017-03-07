@@ -408,6 +408,7 @@ for i in results:
                             "date_stop": date_start
                         }
                     ]
+        print cost_list
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
             date_fb = impressions_list[l].get("date_start")
