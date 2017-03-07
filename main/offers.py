@@ -342,13 +342,14 @@ def offerDetail(id):
         for i in countries:
             historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == ad_offer.id).order_by(
                 desc(History.createdTime)).first()
-            country = historty.country
-            country_price = historty.country_price
-            detail = {
-                "country": country,
-                "price": country_price
-            }
-            country_detail += [detail]
+            if historty:
+                country = historty.country
+                country_price = historty.country_price
+                detail = {
+                    "country": country,
+                    "price": country_price
+                }
+                country_detail += [detail]
         adwords["country_detail"] = country_detail
     else:
         adwords = {}
@@ -388,13 +389,14 @@ def offerDetail(id):
         for i in countries:
             historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == ap_offer.id).order_by(
                 desc(History.createdTime)).first()
-            country = historty.country
-            country_price = historty.country_price
-            detail = {
-                "country": country,
-                "price": country_price
-            }
-            country_detail += [detail]
+            if historty:
+                country = historty.country
+                country_price = historty.country_price
+                detail = {
+                    "country": country,
+                    "price": country_price
+                }
+                country_detail += [detail]
         apple["country_detail"] = country_detail
     else:
         apple = {}
