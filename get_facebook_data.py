@@ -220,6 +220,8 @@ for i in results:
                 pass
         tempList = []
         cost_list = []
+        print "++++"*10
+        print cost_list
         for ele in cost_list_unique:
             key = ele['date_start'] + ele['country']
             if key in tempList:
@@ -408,6 +410,7 @@ for i in results:
                             "date_stop": date_start
                         }
                     ]
+        print "****"*10
         print cost_list
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
