@@ -106,7 +106,6 @@ class AdwordsUac(AdwordsSQL):
     def query(self, customer_id, offer_id):
         print offer_id
         print "+++"*10
-        print customer_id
         self.set_customerId(customer_id)
         column_list = ','.join(self.fields)
         report_downloader = self.client.GetReportDownloader(version='v201609')
