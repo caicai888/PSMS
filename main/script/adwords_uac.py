@@ -26,8 +26,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=33"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=33"
         try:
             cursor.execute(query_string)
         finally:
@@ -106,7 +106,6 @@ class AdwordsUac(AdwordsSQL):
     def query(self, customer_id, offer_id):
         print offer_id
         print "+++"*10
-        print customer_id
         self.set_customerId(customer_id)
         column_list = ','.join(self.fields)
         report_downloader = self.client.GetReportDownloader(version='v201609')
