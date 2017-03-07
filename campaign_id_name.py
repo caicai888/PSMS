@@ -44,7 +44,7 @@ for account in accountIds:
             cursor.execute(search_sql)
             exists = cursor.fetchone()
             if exists:
-                update_sql = "update campaignRelations set campaignId='%s' where campaignName='%s'"%(campaignId,campaignName)
+                update_sql = "update campaignRelations set campaignId='%s' where campaignName='%s'" % (campaignId,campaignName)
                 cursor.execute(update_sql)
                 db.commit()
             else:
