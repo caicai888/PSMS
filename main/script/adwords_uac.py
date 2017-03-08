@@ -9,6 +9,10 @@ import MySQLdb
 import csv
 import tempfile
 import re
+import time
+import smtplib
+from email.mime.text import MIMEText
+from email.MIMEMultipart import MIMEMultipart
 
 adwordsuac = Blueprint('adwordsuac', __name__)
 conn = MySQLdb.connect(
@@ -247,6 +251,25 @@ def main():
     my_process = MyProcess(account_dict)
     my_process.build_thread_task()
     print 'finished'
+    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "15:00":
+        mail_body = "adwords data finished"
+        mail_from = "ads_reporting@newborntown.com"
+        mail_to = "liyin@newborntown.com"
+        msg = MIMEMultipart()
+        body = MIMEText(mail_body)
+        msg.attach(body)
+        msg['From'] = mail_from
+        msg['To'] = mail_to
+        msg['date'] = time.strftime('%Y-%m-%d')
+        msg['Subject'] = "get adwords Data finished"
+        smtp = smtplib.SMTP()
+        smtp.connect('smtp.exmail.qq.com', 25)
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+        smtp.sendmail(mail_from, mail_to, msg.as_string())
+        smtp.quit()
 
 if __name__ == '__main__':
      main()
