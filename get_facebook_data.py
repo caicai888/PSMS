@@ -436,7 +436,7 @@ for i in results:
                 cursor.execute(update_sql)
                 db.commit()
 
-if time_now.strftime('%H:%M') >= "18:00":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "18:00":
     mail_body = "facebook data finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"
