@@ -527,38 +527,6 @@ def faceReport():
                                 "source": "adwords"
                             }
                         ]
-                        # ctr_list_ad += [
-                        #     {
-                        #         "ctr": '%0.2f' % (float(i.ctr)),
-                        #         "country": country,
-                        #         "date_start": date,
-                        #         "source": "adwords"
-                        #     }
-                        # ]
-                        # cvr_list_ad += [
-                        #     {
-                        #         "cvr": '%0.2f' % (float(i.cvr)),
-                        #         "country": country,
-                        #         "date_start": date,
-                        #         "source": "adwords"
-                        #     }
-                        # ]
-                        # cpc_list_ad += [
-                        #     {
-                        #         "cpc": '%0.2f' % (float(i.cpc)),
-                        #         "country": country,
-                        #         "date_start": date,
-                        #         "source": "adwords"
-                        #     }
-                        # ]
-                        # cpi_list_ad += [
-                        #     {
-                        #         "cpi": '%0.2f' % (float(i.cpi)),
-                        #         "country": country,
-                        #         "date_start": date,
-                        #         "source": "adwords"
-                        #     }
-                        # ]
                         revenue_list_ad += [
                             {
                                 "revenue": '%0.2f' % (float(i.revenue)),
@@ -794,34 +762,6 @@ def faceReport():
                         conversions_list += [
                             {
                                 "conversions": float(i.conversions),
-                                "country": country,
-                                "date_start": date
-                            }
-                        ]
-                        ctr_list += [
-                            {
-                                "ctr": '%0.2f' % (float(i.ctr)),
-                                "country": country,
-                                "date_start": date
-                            }
-                        ]
-                        cvr_list += [
-                            {
-                                "cvr": '%0.2f' % (float(i.cvr)),
-                                "country": country,
-                                "date_start": date
-                            }
-                        ]
-                        cpc_list += [
-                            {
-                                "cpc": '%0.2f' % (float(i.cpc)),
-                                "country": country,
-                                "date_start": date
-                            }
-                        ]
-                        cpi_list += [
-                            {
-                                "cpi": '%0.2f' % (float(i.cpi)),
                                 "country": country,
                                 "date_start": date
                             }
