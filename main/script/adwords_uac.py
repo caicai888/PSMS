@@ -30,8 +30,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=33"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=30"
         try:
             cursor.execute(query_string)
         finally:
@@ -64,6 +64,7 @@ class AdwordsSQL(object):
         cursor.close()
 
     def select_campaign_geo(self, campaign_name):
+        print campaign_name
         selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
         selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
         # return selected_msg, selected_geo
