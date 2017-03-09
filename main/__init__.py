@@ -23,5 +23,7 @@ def create_app(config_name):
     app.register_blueprint(facebook_blueprint)
     from adwordsData import adwordsData as adwords_blueprint
     app.register_blueprint(adwords_blueprint)
+    from accountRebate import accountRebate as account_blueprint
+    app.register_blueprint(account_blueprint)
 
     return app

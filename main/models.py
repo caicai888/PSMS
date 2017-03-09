@@ -374,8 +374,10 @@ class Datas(db.Model):
     cpi = db.Column(db.String(100), nullable=True)
     date = db.Column(db.String(100), nullable=True)
     country = db.Column(db.String(100), nullable=True)
+    rebate = db.Column(db.Float, nullable=True)
+    updateTime = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country):
+    def __init__(self,offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,updateTime):
         self.offer_id = offer_id
         self.type = type
         self.revenue = revenue
@@ -390,6 +392,8 @@ class Datas(db.Model):
         self.cpi = cpi
         self.date = date
         self.country = country
+        self.rebate = rebate
+        self.updateTime = updateTime
 
     def __repr__(self):
         return '<Dates {}>'.format(self.id)
@@ -485,3 +489,17 @@ class AdwordsGeo(db.Model):
 
     def __repr__(self):
         return '<AdwordsGeo {}>'.format(self.id)
+
+#Facebook返点的account与返点比列的对应表
+class Rebate(db.Model):
+    __tablename__="rebate"
+    id = db.Column(db.Integer, primary_key=True)
+    accountId = db.Column(db.String(100), nullable=True)
+    scale = db.Column(db.Float, nullable=True)
+
+    def __init__(self,accountId, scale):
+        self.accountId = accountId
+        self.scale = scale
+
+    def __repr__(self):
+        return '<Rebate {}>'.format(self.id)
