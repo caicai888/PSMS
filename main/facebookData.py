@@ -1087,16 +1087,26 @@ def faceReport():
 
                     tempList = []
                     cpi_list_unique = []
-                    for ele in cpi_list:
-                        key = ele['date_start'] + ele['country']
-                        if key in tempList:
-                            for x in cpi_list_unique:
-                                if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
-                                    x['cpi'] += float(ele['cpi'])
-                        else:
-                            ele['cpi'] = float(ele['cpi'])
-                            tempList.append(key)
-                            cpi_list_unique.append(ele)
+                    # for ele in cpi_list:
+                    #     key = ele['date_start'] + ele['country']
+                    #     if key in tempList:
+                    #         for x in cpi_list_unique:
+                    #             if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
+                    #                 x['cpi'] += float(ele['cpi'])
+                    #     else:
+                    #         ele['cpi'] = float(ele['cpi'])
+                    #         tempList.append(key)
+                    #         cpi_list_unique.append(ele)
+
+                    for c in range(len(cost_list_unique)):
+                        cpi_list_unique += [
+                            {
+                                "cpi": '%0.2f' % (float(cost_list_unique[c]["spend"])/float(conversions_list_unique[c]['conversions']) if float(conversions_list_unique[c]['conversions']) != 0 else 0),
+                                "country": cost_list_unique[c]["country"],
+                                "date_start": cost_list_unique[c]["date_start"],
+                                "date_stop": cost_list_unique[c]["date_start"]
+                            }
+                        ]
 
                     tempList = []
                     profit_list_unique = []
