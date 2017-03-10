@@ -236,8 +236,10 @@ class MyProcess(object):
 
     @staticmethod
     def get_uac_account_msg(self, account_id, offer_id, is_UAC=False):
-        today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
-        a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        # today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
+        # a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        today = "2017-03-06"
+        a_month_ago = "2017-03-06"
         if is_UAC == False:
             fields = ['CampaignId', 'CampaignName', 'CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
         else:
