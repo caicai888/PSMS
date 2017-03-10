@@ -156,8 +156,7 @@ class AdwordsUac(AdwordsSQL):
                             conversions = read['Conversions'].replace(',','')
                         else:
                             conversions = read['Conversions']
-                        print conversions
-                        print countryName
+                        print conversions,round(float(read['Cost'])/(10**6), 2),countryName
                         print "***"*10
                         if contract_type == "1":
                             cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
@@ -197,7 +196,7 @@ class AdwordsUac(AdwordsSQL):
                         cpi = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(conversions)) if float(conversions) != 0 else 0
                         ctr = '%0.2f'%(float(read['Clicks'])/float(read['Impressions'])*100) if float(read['Impressions']) != 0 else 0
                         profit = '%0.2f'%(float(revenue)-(round(float(read['Cost'])/(10**6), 2)))
-                        sql_ad = "select id from adwords where offer_id='%d' and account_id='%s' and date='%s' and campaignId='%d'" % (int(offer_id), str(customer_id), str(read['Day']),int(read['Campaign ID']))
+                        sql_ad = "select id from adwords where offer_id='%d' and account_id='%s' and date='%s' and campaignId='%d' and country='%s'" % (int(offer_id), str(customer_id), str(read['Day']),int(read['Campaign ID']),countryName)
                         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
                         cursor.execute(sql_ad)
                         result_ad = cursor.fetchone()
