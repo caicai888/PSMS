@@ -5,7 +5,7 @@ import csv
 import tempfile
 
 client = adwords.AdWordsClient.LoadFromStorage()
-client.SetClientCustomerId("940-185-4298")
+client.SetClientCustomerId("932-670-7990")
 tempf = tempfile.NamedTemporaryFile(delete=True)
 REPORT = 'GEO_PERFORMANCE_REPORT'
 start = "2017-03-06"
