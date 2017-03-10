@@ -30,8 +30,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=30"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=38"
         try:
             cursor.execute(query_string)
         finally:
@@ -110,6 +110,7 @@ class AdwordsUac(AdwordsSQL):
 
     def query(self, customer_id, offer_id):
         print offer_id
+        print customer_id
         print "+++"*10
         self.set_customerId(customer_id)
         column_list = ','.join(self.fields)
@@ -155,6 +156,9 @@ class AdwordsUac(AdwordsSQL):
                             conversions = read['Conversions'].replace(',','')
                         else:
                             conversions = read['Conversions']
+                        print conversions
+                        print countryName
+                        print "***"*10
                         if contract_type == "1":
                             cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(cooperation_sql)
@@ -200,7 +204,6 @@ class AdwordsUac(AdwordsSQL):
                         if not result_ad:
                             self.insert_sql(int(offer_id), str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']),str(read['Impressions']), int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2),float(profit), str(conversions), cpc, cvr, cpi, ctr, str(read['Day']),countryName)
                         else:
-                            # update_sql = "update adwords set account_id='%s',is_UAC='%d',campaignId='%d',campaignName='%s',impressions='%s',clicks='%d',revenue='%f',cost='%f',profit='%f',conversions='%s',cpc='%s',cvr='%s',cpi='%s',ctr='%s',date='%s',country='%s' where id='%d'" % (str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']), str(read['Impressions']),int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2), float(profit), str(conversions), cpc, cvr,cpi, ctr, str(read['Day']),str(countryName),result_ad["id"])
                             update_sql = "update adwords set account_id=%s,is_UAC=%s,campaignId=%s,campaignName=%s,impressions=%s,clicks=%s,revenue=%s,cost=%s,profit=%s,conversions=%s,cpc=%s,cvr=%s,cpi=%s,ctr=%s,date=%s,country=%s where id=%s"
 
                             cursor.execute(update_sql,(str(customer_id), is_uac, read['Campaign ID'], read['Campaign'], read['Impressions'],read['Clicks'],revenue,round(float(read['Cost']) / (10 ** 6), 2),profit, conversions,cpc,cvr, cpi, ctr, read['Day'], countryName, result_ad["id"]))
