@@ -30,8 +30,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=38"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=38"
         try:
             cursor.execute(query_string)
         finally:
@@ -156,8 +156,6 @@ class AdwordsUac(AdwordsSQL):
                             conversions = read['Conversions'].replace(',','')
                         else:
                             conversions = read['Conversions']
-                        print conversions,round(float(read['Cost'])/(10**6), 2),countryName
-                        print "***"*10
                         if contract_type == "1":
                             cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(cooperation_sql)
@@ -235,10 +233,10 @@ class MyProcess(object):
 
     @staticmethod
     def get_uac_account_msg(self, account_id, offer_id, is_UAC=False):
-        # today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
-        # a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
-        today = "2017-03-06"
-        a_month_ago = "2017-03-06"
+        today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
+        a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        # today = "2017-03-06"
+        # a_month_ago = "2017-03-06"
         if is_UAC == False:
             fields = ['CampaignId', 'CampaignName', 'CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
         else:
