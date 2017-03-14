@@ -311,7 +311,6 @@ for i in results:
                 cpc_list.append(ele)
 
         if contract_type == "1":
-            print "+++++"*10
             for r in range(len(cost_list)):
                 country = cost_list[r].get("country")
                 date = cost_list[r].get("date_start")
@@ -347,8 +346,10 @@ for i in results:
                 cursor.execute(country_sql)
                 country_result = cursor.fetchone()
                 countryId = country_result[0]
-
-                timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date" %(countryId,offerId,date,startTime)
+                print "###"*10
+                print date
+                print startTime
+                timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date desc" %(countryId,offerId,date,startTime)
                 cursor.execute(timePrice_sql)
                 timePrice_result = cursor.fetchone()
                 if timePrice_result:
@@ -365,7 +366,7 @@ for i in results:
                         price = history_result[0]
                         print "history"
                         print price
-                print price
+
                 revenue_list += [
                     {
                         "country": country,
