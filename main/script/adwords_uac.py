@@ -157,7 +157,7 @@ class AdwordsUac(AdwordsSQL):
                         else:
                             conversions = read['Conversions']
                         if contract_type == "1":
-                            cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
+                            cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date desc" % (int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(cooperation_sql)
                             cooperation_result = cursor.fetchone()
                             if cooperation_result:
@@ -170,7 +170,7 @@ class AdwordsUac(AdwordsSQL):
                                     contract_scale = history_scale_result["contract_scale"]
                             revenue = '%0.2f' % (round(float(read['Cost']) / (10 ** 6), 2) * (1 + float(contract_scale) / 100))
                         else:
-                            timePrice_sql = "select price from timePrice where country_id='%d' and platform='adwords' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (countryId, int(offer_id), read['Day'], offer_result["startTime"])
+                            timePrice_sql = "select price from timePrice where country_id='%d' and platform='adwords' and offer_id='%d' and date<='%s' and date>='%s' order by date desc" % (countryId, int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(timePrice_sql)
                             timePrice_result = cursor.fetchone()
                             if timePrice_result:
