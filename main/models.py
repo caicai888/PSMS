@@ -405,11 +405,13 @@ class CampaignRelations(db.Model):
     campaignId = db.Column(db.String(100), nullable=False)
     campaignName = db.Column(db.String(150), nullable=False)
     account_id = db.Column(db.String(100), nullable=False)
+    optName = db.Column(db.String(100),nullable=False)
 
-    def __init__(self,campaignId,campaignName,account_id):
+    def __init__(self,campaignId,campaignName,account_id,optName):
         self.campaignId = campaignId
         self.campaignName = campaignName
         self.account_id = account_id
+        self.optName = optName
 
     def __repr__(self):
         return '<CampaignRelations {}>'.format(self.id)
@@ -503,3 +505,19 @@ class Rebate(db.Model):
 
     def __repr__(self):
         return '<Rebate {}>'.format(self.id)
+
+#优化师关系对应表
+class Optimization(db.Model):
+    __tablename__="optimization"
+    id = db.Column(db.Integer, primary_key=True)
+    simple = db.Column(db.String(100), nullable=True)
+    name = db.Column(db.String(100), nullable = True)
+    createdTime = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,simple,name,createdTime):
+        self.simple = simple
+        self.name = name
+        self.createdTime = createdTime
+
+    def __repr__(self):
+        return '<Optimization {}>'.format(self.id)
