@@ -19,8 +19,8 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=34"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -311,6 +311,7 @@ for i in results:
                 cpc_list.append(ele)
 
         if contract_type == "1":
+            print "+++++"*10
             for r in range(len(cost_list)):
                 country = cost_list[r].get("country")
                 date = cost_list[r].get("date_start")
@@ -336,6 +337,7 @@ for i in results:
                     }
                 ]
         else:
+            print "****"*10
             for r in range(len(conversions_list)):
                 country = conversions_list[r].get("country")
                 date = conversions_list[r].get("date_start")
@@ -359,6 +361,7 @@ for i in results:
                         price = offer_price
                     else:
                         price = history_result[0]
+                print price
                 revenue_list += [
                     {
                         "country": country,
