@@ -353,6 +353,8 @@ for i in results:
                 timePrice_result = cursor.fetchone()
                 if timePrice_result:
                     price = timePrice_result[0]
+                    print "timePrice"
+                    print price
                 else:
                     history_sql = "select country_price from history where country='%s' and platform='facebook' and offer_id='%d'order by createdTime desc"%(country,offerId)
                     cursor.execute(history_sql)
@@ -361,6 +363,8 @@ for i in results:
                         price = offer_price
                     else:
                         price = history_result[0]
+                        print "history"
+                        print price
                 print price
                 revenue_list += [
                     {
