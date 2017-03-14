@@ -19,8 +19,8 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -336,7 +336,6 @@ for i in results:
                     }
                 ]
         else:
-            print "****"*10
             for r in range(len(conversions_list)):
                 country = conversions_list[r].get("country")
                 date = conversions_list[r].get("date_start")
@@ -346,16 +345,11 @@ for i in results:
                 cursor.execute(country_sql)
                 country_result = cursor.fetchone()
                 countryId = country_result[0]
-                print "###"*10
-                print date
-                print startTime
                 timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date desc" %(countryId,offerId,date,startTime)
                 cursor.execute(timePrice_sql)
                 timePrice_result = cursor.fetchone()
                 if timePrice_result:
                     price = timePrice_result[0]
-                    print "timePrice"
-                    print price
                 else:
                     history_sql = "select country_price from history where country='%s' and platform='facebook' and offer_id='%d'order by createdTime desc"%(country,offerId)
                     cursor.execute(history_sql)
@@ -364,8 +358,6 @@ for i in results:
                         price = offer_price
                     else:
                         price = history_result[0]
-                        print "history"
-                        print price
 
                 revenue_list += [
                     {
