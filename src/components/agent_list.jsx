@@ -4,7 +4,7 @@ require("../js/FileSaver");
 var tableExport = require("../js/tableExport");
 var time = null;
 
-var ManagerList = React.createClass({
+var AgentList = React.createClass({
     getInitialState() {
         return {
             result:[],
@@ -35,7 +35,7 @@ var ManagerList = React.createClass({
     },
     componentDidMount(){
         let _this = this;
-        ajax("get","/api/users").then(function (data) {
+        ajax("get","/api/rebate/show").then(function (data) {
             var data = JSON.parse(data);
             if(data.code=="200"){
                 _this.setState({
@@ -55,9 +55,9 @@ var ManagerList = React.createClass({
                 <div className="col-md-8">&nbsp;</div>
                 <div className="form-group col-md-4 text-right">
                     <div className="input-group">
-                    <div style={{cursor:"pointer"}} onClick={_this.export_table} className="input-group-addon">Export</div>
-                    <input onKeyUp={_this.search_table}  className="form-control" type="email" placeholder="Search..." />
-                    <div style={{cursor:"pointer"}} onClick={_this.search_table} className="input-group-addon">Search</div>
+                        <div style={{cursor:"pointer"}} onClick={_this.export_table} className="input-group-addon">Export</div>
+                        <input onKeyUp={_this.search_table}  className="form-control" type="email" placeholder="Search..." />
+                        <div style={{cursor:"pointer"}} onClick={_this.search_table} className="input-group-addon">Search</div>
                     </div>
                 </div>
                 <div className="col-sm-12">
@@ -66,28 +66,20 @@ var ManagerList = React.createClass({
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>名称</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Phone</th>
-                                <th>优化师编号</th>
+                                <th>代理商名字</th>
+                                <th>返点比例</th>
                                 <th>操作</th>
-                                <th>最后登录</th>
                             </tr>
                             </thead>
                             <tbody>
                             {
                                 this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
-                                                <td>{ele.id}</td>
-                                                <td>{ele.name}</td>
-                                                <td>{ele.email}</td>
-                                                <td>{ele.role}</td>
-                                                <td>{ele.phone}</td>
-                                                <td>{ele.code}</td>
-                                                <td><a className={_this.state.permissions.includes("manager_edit")?"btn btn-primary":"none"} href={"#/create_manager/"+ele.id}>Edit</a></td>
-                                                <td>{ele.last_datetime}</td>
-                                            </tr>
+                                        <td>{ele.id}</td>
+                                        <td>{ele.accountId}</td>
+                                        <td>{ele.scale}</td>
+                                        <td><a className="btn btn-primary" href={"#/create_agent/"+ele.id}>Edit</a></td>
+                                    </tr>
                                 })
                             }
                             </tbody>
@@ -98,4 +90,4 @@ var ManagerList = React.createClass({
         )
     }
 });
-export default  ManagerList;
+export default  AgentList;
