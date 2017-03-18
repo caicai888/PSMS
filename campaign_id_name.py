@@ -27,7 +27,6 @@ sql_token = "select accessToken from token where account='rongchangzhang@gmail.c
 cursor.execute(sql_token)
 token_result = cursor.fetchone()
 accessToken = token_result[0]
-
 for account in accountIds:
     print account
     url = "https://graph.facebook.com/v2.8/act_"+str(account)+"/campaigns"

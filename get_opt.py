@@ -6,7 +6,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 import MySQLdb
 
-db = MySQLdb.connect("localhost","root","123456","psms",charset='utf8')
+db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
 sql = "select id,campaignName from campaignRelations"
