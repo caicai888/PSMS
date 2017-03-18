@@ -64,16 +64,16 @@ def dashboard():
             ctr_count = float('%0.2f' % (clicks_count / impressions_count * 100))
 
         result_count = {
-            "renvenue": float('%0.2f'%(revenue_count)),
-            "profit": float('%0.2f'%(profit_count)),
-            "cost": float('%0.2f'%(cost_count)),
-            "impressions": impressions_count,
-            "clicks": clicks_count,
-            "conversions": conversions_count,
-            "ctr": ctr_count,
-            "cvr": cvr_count,
-            "cpc": cpc_count,
-            "cpi": cpi_count
+            "Renvenue": float('%0.2f'%(revenue_count)),
+            "Profit": float('%0.2f'%(profit_count)),
+            "Cost": float('%0.2f'%(cost_count)),
+            "Impressions": impressions_count,
+            "Clicks": clicks_count,
+            "Conversions": conversions_count,
+            "CTR": ctr_count,
+            "CVR": cvr_count,
+            "CPC": cpc_count,
+            "CPI": cpi_count
         }
 
         #折线图
@@ -159,19 +159,19 @@ def dashboard():
                 rebate += 0
             table_list += [
                 {
-                    "date": i[0],
-                    "source": i[1],
-                    "revenue": float(i[2]),
-                    "cost": float('%0.2f'%(float(i[3]))),
-                    "profit": float('%0.2f'%(float(i[4]))),
-                    "impressions": int(i[5]),
-                    "clicks": int(i[6]),
-                    "conversions": int(i[7]),
-                    "rebate": float('%0.2f'%(rebate)),
-                    "cpi": cpi,
-                    "cvr": cvr,
-                    "cpc": cpc,
-                    "ctr": ctr
+                    "Date": i[0],
+                    "Source": i[1],
+                    "Revenue": float(i[2]),
+                    "Cost": float('%0.2f'%(float(i[3]))),
+                    "Profit": float('%0.2f'%(float(i[4]))),
+                    "Impressions": int(i[5]),
+                    "Clicks": int(i[6]),
+                    "Conversions": int(i[7]),
+                    "Rebate": float('%0.2f'%(rebate)),
+                    "CPI": cpi,
+                    "CVR": cvr,
+                    "CPC": cpc,
+                    "CTR": ctr
                 }
             ]
 
@@ -194,34 +194,34 @@ def dashboard():
                 ctr = 0
             table_list += [
                 {
-                    "date": i[0],
-                    "source": "adwords",
-                    "revenue": float(i[1]),
-                    "cost": float('%0.2f'%(float(i[2]))),
-                    "profit": float('%0.2f'%(float(i[3]))),
-                    "impressions": int(i[4]),
-                    "clicks": int(i[5]),
-                    "conversions": int(i[6]),
-                    "rebate": 0,
-                    "cpi": cpi,
-                    "cvr": cvr,
-                    "cpc": cpc,
-                    "ctr": ctr
+                    "Date": i[0],
+                    "Source": "adwords",
+                    "Revenue": float(i[1]),
+                    "Cost": float('%0.2f'%(float(i[2]))),
+                    "Profit": float('%0.2f'%(float(i[3]))),
+                    "Impressions": int(i[4]),
+                    "Clicks": int(i[5]),
+                    "Conversions": int(i[6]),
+                    "Rebate": 0,
+                    "CPI": cpi,
+                    "CVR": cvr,
+                    "CPC": cpc,
+                    "CTR": ctr
                 }
             ]
 
         result_range = {
-            "date": all_date,
-            "revenue": revenue_list,
-            "profit": profit_list,
-            "cost": cost_list,
-            "impressions": impressions_list,
-            "clicks": clicks_list,
-            "conversions": conversions_list,
-            "cpi": cpi_list,
-            "ctr": ctr_list,
-            "cvr": cvr_list,
-            "cpc": cpc_list
+            "Date": all_date,
+            "Revenue": revenue_list,
+            "Profit": profit_list,
+            "Cost": cost_list,
+            "Impressions": impressions_list,
+            "Clicks": clicks_list,
+            "Conversions": conversions_list,
+            "CPI": cpi_list,
+            "CTR": ctr_list,
+            "CVR": cvr_list,
+            "CPC": cpc_list
         }
         result = {
             "count": result_count,
@@ -855,8 +855,13 @@ def dbTable():
                     ]
             all_data_list = facebook_data + apple_data + adwords_data
             dimission = ["Date", "Offer", "MB","Source","GEO", "Revenue", "Cost", "Porfit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
-        all_data_list.append(dimission)
-        return json.dumps(all_data_list)
+        response = {
+            "code": 200,
+            "message": "success",
+            "results":all_data_list,
+            "dimission": dimission
+        }
+        return json.dumps(response)
 
 def cData(denominator,molecular):
     if float(molecular)==0:
