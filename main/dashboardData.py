@@ -161,7 +161,7 @@ def dashboard():
                 {
                     "Date": i[0],
                     "Source": i[1],
-                    "Revenue": float(i[2]),
+                    "Revenue": float('%0.2f'%(float(i[2]))),
                     "Cost": float('%0.2f'%(float(i[3]))),
                     "Profit": float('%0.2f'%(float(i[4]))),
                     "Impressions": int(i[5]),
@@ -196,7 +196,7 @@ def dashboard():
                 {
                     "Date": i[0],
                     "Source": "adwords",
-                    "Revenue": float(i[1]),
+                    "Revenue": float('%0.2f'%(float(i[1]))),
                     "Cost": float('%0.2f'%(float(i[2]))),
                     "Profit": float('%0.2f'%(float(i[3]))),
                     "Impressions": int(i[4]),
@@ -331,7 +331,7 @@ def dbTable():
                 l["CountProfit"] = float('%0.2f'%(l['CountProfit']))
                 l["ROI"] = float('%0.2f'%(cData(float(l["Profit"]),float(l["Cost"]))))
                 all_data_list.append(l)
-            dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Porfit","Rebate","CountProfit","ROI"]
+            dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Profit","Rebate","CountProfit","ROI"]
             all_data_list = [
                 {
                     "Conversions": 305,
@@ -548,7 +548,7 @@ def dbTable():
                 l['Cost'] = float('%0.2f' % (l["Cost"]))
                 l["Profit"] = float('%0.2f' % (l['Profit']))
                 all_data_list.append(l)
-            dimission = ["Date", "Offer", "Revenue","Cost","Porfit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
+            dimission = ["Date", "Offer", "Revenue","Cost","Profit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
             all_data_list = [
                 {
                     "CPI": 0.28,
@@ -683,7 +683,7 @@ def dbTable():
                     ]
 
             all_data_list = facebook_data + apple_data + adwords_data
-            dimission = ["Date", "Offer","Source", "Revenue","Cost","Porfit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
+            dimission = ["Date", "Offer","Source", "Revenue","Cost","Profit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
             all_data_list = [
                 {
                     "CPI": 0.28,
@@ -839,7 +839,7 @@ def dbTable():
                     ]
 
             all_data_list = facebook_data + apple_data + adwords_data
-            dimission = ["Date", "Offer", "Source","GEO", "Revenue", "Cost", "Porfit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions", "Clicks"]
+            dimission = ["Date", "Offer", "Source","GEO", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions", "Clicks"]
             all_data_list = [
                 {
                     "CPI": 0.15,
@@ -983,7 +983,7 @@ def dbTable():
                         }
                     ]
             all_data_list = facebook_data + apple_data + adwords_data
-            dimission = ["Date", "Offer", "MB","Source", "Revenue", "Cost", "Porfit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
+            dimission = ["Date", "Offer", "MB","Source", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
 
             all_data_list = [
                 {
@@ -1130,7 +1130,7 @@ def dbTable():
                         }
                     ]
             all_data_list = facebook_data + apple_data + adwords_data
-            dimission = ["Date", "Offer", "MB","Source","GEO", "Revenue", "Cost", "Porfit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
+            dimission = ["Date", "Offer", "MB","Source","GEO", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
 
             all_data_list = [
                 {
