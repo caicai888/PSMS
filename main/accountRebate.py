@@ -38,11 +38,12 @@ def show_rebate():
         rebate_lists += [
             {
                 "accountId": i.accountId,
-                "scale": str(i.scale)
+                "scale": str(i.scale),
+                "id": i.id
             }
         ]
 
-    return json.dumps({"code":200,"message":"success","result": rebate_lists})
+    return json.dumps({"code":200,"message":"success","results": rebate_lists})
 @accountRebate.route('/api/rebate/show/<id>', methods=['GET','POST'])
 def show_rebate_detail(id):
     rebate = Rebate.query.filter_by(id=int(id)).first()
