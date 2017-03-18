@@ -227,6 +227,7 @@ def dashboard():
             "count": result_count,
             "range": result_range,
             "table": table_list,
+            "dimission":["Date","Source","Revenue","Cost","Profit","Impressions","Conversions","Clicks","Rebate","CVR","CPC","CTR","CPI"],
             "code": 200,
             "message": "success"
         }
