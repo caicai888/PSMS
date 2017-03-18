@@ -490,6 +490,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[3]), float(i[5]))))
+                    cpc = float('%0.2f' % (cData(float(i[3]), float(i[7]))))
+                    cvr = float('%0.2f' % (cData(float(i[5]), float(i[7])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[7]), float(i[6])) * 100))
                     facebook_data += [
                         {
                             "Date": i[0],
@@ -500,6 +504,10 @@ def dbTable():
                             "Conversions": int(i[5]),
                             "Impressions": int(i[6]),
                             "Clicks": int(i[7]),
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr,
                             "Source": "facebook"
                         }
                     ]
@@ -510,6 +518,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[3]), float(i[5]))))
+                    cpc = float('%0.2f' % (cData(float(i[3]), float(i[7]))))
+                    cvr = float('%0.2f' % (cData(float(i[5]), float(i[7])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[7]), float(i[6])) * 100))
                     apple_data += [
                         {
                             "Date": i[0],
@@ -520,6 +532,10 @@ def dbTable():
                             "Conversions": int(i[5]),
                             "Impressions": int(i[6]),
                             "Clicks": int(i[7]),
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr,
                             "Source": "apple"
                         }
                     ]
@@ -530,6 +546,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[3]), float(i[5]))))
+                    cpc = float('%0.2f' % (cData(float(i[3]), float(i[7]))))
+                    cvr = float('%0.2f' % (cData(float(i[5]), float(i[7])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[7]), float(i[6])) * 100))
                     adwords_data += [
                         {
                             "Date": i[0],
@@ -540,6 +560,10 @@ def dbTable():
                             "Conversions": int(i[5]),
                             "Impressions": int(i[6]),
                             "Clicks": int(i[7]),
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr,
                             "Source": "adwords"
                         }
                     ]
@@ -557,6 +581,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[4]), float(i[6]))))
+                    cpc = float('%0.2f' % (cData(float(i[4]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[6]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[7])) * 100))
                     facebook_data += [
                         {
                             "Date": i[0],
@@ -568,7 +596,11 @@ def dbTable():
                             "Impressions": int(i[7]),
                             "Clicks": int(i[8]),
                             "Source": "facebook",
-                            "GEO": i[2]
+                            "GEO": i[2],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
             ap_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date, Datas.type == "apple").with_entities(Datas.date,
@@ -579,6 +611,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[4]), float(i[6]))))
+                    cpc = float('%0.2f' % (cData(float(i[4]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[6]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[7])) * 100))
                     apple_data += [
                         {
                             "Date": i[0],
@@ -590,6 +626,10 @@ def dbTable():
                             "Impressions": int(i[7]),
                             "Clicks": int(i[8]),
                             "Source": "apple",
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr,
                             "GEO": i[2]
                         }
                     ]
@@ -600,6 +640,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[4]), float(i[6]))))
+                    cpc = float('%0.2f' % (cData(float(i[4]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[6]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[7])) * 100))
                     adwords_data += [
                         {
                             "Date": i[0],
@@ -611,6 +655,10 @@ def dbTable():
                             "Impressions": int(i[7]),
                             "Clicks": int(i[8]),
                             "Source": "adwords",
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr,
                             "GEO": i[2]
                         }
                     ]
@@ -628,6 +676,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[4]), float(i[6]))))
+                    cpc = float('%0.2f' % (cData(float(i[4]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[6]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[7])) * 100))
                     facebook_data += [
                         {
                             "Date": i[0],
@@ -639,7 +691,11 @@ def dbTable():
                             "Impressions": int(i[7]),
                             "Clicks": int(i[8]),
                             "Source": "facebook",
-                            "MB": i[2]
+                            "MB": i[2],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
             ap_data = DataDetail.query.filter(DataDetail.date >= start_date, DataDetail.date <= end_date,DataDetail.type == 'apple').with_entities(DataDetail.date, DataDetail.offer_id,DataDetail.optName, func.sum(DataDetail.revenue),func.sum(DataDetail.cost), func.sum(DataDetail.profit),func.sum(DataDetail.conversions),func.sum(DataDetail.impressions),func.sum(DataDetail.clicks))
@@ -649,6 +705,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[4]), float(i[6]))))
+                    cpc = float('%0.2f' % (cData(float(i[4]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[6]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[7])) * 100))
                     apple_data += [
                         {
                             "Date": i[0],
@@ -660,7 +720,11 @@ def dbTable():
                             "Impressions": int(i[7]),
                             "Clicks": int(i[8]),
                             "Source": "apple",
-                            "MB": i[2]
+                            "MB": i[2],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
 
@@ -671,6 +735,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[4]), float(i[6]))))
+                    cpc = float('%0.2f' % (cData(float(i[4]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[6]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[7])) * 100))
                     adwords_data += [
                         {
                             "Date": i[0],
@@ -682,7 +750,11 @@ def dbTable():
                             "Impressions": int(i[7]),
                             "Clicks": int(i[8]),
                             "Source": "adwords",
-                            "MB": i[2]
+                            "MB": i[2],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
             all_data_list = facebook_data + apple_data + adwords_data
@@ -698,6 +770,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[5]), float(i[7]))))
+                    cpc = float('%0.2f' % (cData(float(i[5]), float(i[8]))))
+                    cvr = float('%0.2f' % (cData(float(i[7]), float(i[8])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[8])) * 100))
                     facebook_data += [
                         {
                             "Date": i[0],
@@ -710,7 +786,11 @@ def dbTable():
                             "Clicks": int(i[9]),
                             "Source": "facebook",
                             "MB": i[2],
-                            "GEO": i[3]
+                            "GEO": i[3],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
             ap_data = DataDetail.query.filter(DataDetail.date >= start_date, DataDetail.date <= end_date,DataDetail.type == 'apple').with_entities(DataDetail.date, DataDetail.offer_id, DataDetail.optName,DataDetail.country, func.sum(DataDetail.revenue),func.sum(DataDetail.cost), func.sum(DataDetail.profit),func.sum(DataDetail.conversions),func.sum(DataDetail.impressions),func.sum(DataDetail.clicks))
@@ -720,6 +800,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[5]), float(i[7]))))
+                    cpc = float('%0.2f' % (cData(float(i[5]), float(i[9]))))
+                    cvr = float('%0.2f' % (cData(float(i[7]), float(i[9])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[9]), float(i[8])) * 100))
                     apple_data += [
                         {
                             "Date": i[0],
@@ -732,7 +816,11 @@ def dbTable():
                             "Clicks": int(i[9]),
                             "Source": "apple",
                             "MB": i[2],
-                            "GEO": i[3]
+                            "GEO": i[3],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
             adword_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.date, Adwords.offer_id,Adwords.optName,Adwords.country,func.sum(Adwords.revenue),func.sum(Adwords.cost),func.sum(Adwords.profit),func.sum(Adwords.conversions),func.sum(Adwords.impressions),func.sum(Adwords.clicks))
@@ -742,6 +830,10 @@ def dbTable():
                 if offer_sql.status == "deleted":
                     pass
                 else:
+                    cpi = float('%0.2f' % (cData(float(i[5]), float(i[7]))))
+                    cpc = float('%0.2f' % (cData(float(i[5]), float(i[9]))))
+                    cvr = float('%0.2f' % (cData(float(i[7]), float(i[9])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[9]), float(i[8])) * 100))
                     adwords_data += [
                         {
                             "Date": i[0],
@@ -754,7 +846,11 @@ def dbTable():
                             "Clicks": int(i[9]),
                             "Source": "adwords",
                             "MB": i[2],
-                            "GEO":i[3]
+                            "GEO":i[3],
+                            "CPI": cpi,
+                            "CPC": cpc,
+                            "CVR": cvr,
+                            "CTR": ctr
                         }
                     ]
             all_data_list = facebook_data + apple_data + adwords_data
