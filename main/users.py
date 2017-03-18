@@ -30,6 +30,7 @@ def get_users():
                 "email": user.email,
                 "role": role[:-1],
                 "phone": user.phone,
+                "code": user.optName,
                 "last_datetime": str(user.last_datetime+ timedelta(hours=8))
             }
             result += [data]
@@ -45,7 +46,7 @@ def create_user():
         data = request.get_json(force=True)
         if db.session.query(User).filter_by(email=data["email"]).first():
             return json.dumps({"code": "500", "message": "user has exist"})
-        user = User(data["name"], data["email"], base64.encodestring(data["passwd"]), data["phone"])
+        user = User(data["name"], data["email"], base64.encodestring(data["passwd"]), data["code"], data["phone"])
         db.session.add(user)
         db.session.commit()
         userid = db.session.query(User).filter_by(email=data["email"]).first().id
@@ -74,6 +75,7 @@ def do_edit_user(id):
         msg['email'] = user.email
         msg['passwd'] = base64.decodestring(user.passwd)
         msg['phone'] = user.phone
+        msg['code'] = user.optName
         msg['role_ids'] = db.session.query(UserRole).filter_by(user_id=id).first().role_id
         msg['permission_ids'] = db.session.query(UserPermissions).filter_by(user_id=id).first().permissions_id
         return json.dumps({"code": "200", "message": "success", "results": msg})
@@ -93,6 +95,7 @@ def edit_user(id):
         user.email = data["email"]
         user.passwd = base64.encodestring(data["passwd"])
         user.phone = data["phone"]
+        user.optName = data['code']
         db.session.add(user)
         db.session.commit()
 
