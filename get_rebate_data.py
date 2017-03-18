@@ -14,7 +14,7 @@ start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.time
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
-db = MySQLdb.connect("localhost","root","123456","psms",charset='utf8')
+db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
 cursor.execute(sql)
@@ -31,59 +31,59 @@ for i in results:
     rebateAmount = 0
     all_date = []
     cost_list = []
-    # sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='facebook'" % offerId
-    # cursor.execute(sql_offer)
-    # runtime = cursor.fetchone()
-    # startTime = str(runtime[0])  # 投放的开始时间
-    # endTime = str(runtime[1])  # 投放的结束时间
-    # contract_type = runtime[2]
-    # contract_scale = runtime[3]
-    # offer_price = runtime[4]
-    # if time_now <= endTime:
-    #     if start_date >= startTime:
-    #         # 获取时间段中的每一天
-    #         date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-    #         date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
-    #         date_timelta = datetime.timedelta(days=1)
-    #         all_date.append(start_date)
-    #         while date_timelta < (date2 - date1):
-    #             all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-    #             date_timelta += datetime.timedelta(days=1)
-    #         all_date.append(time_now)
-    #
-    #         time_ranges = []
-    #         for day in all_date[::-1]:
-    #             time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-    #     else:
-    #         date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
-    #         date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
-    #         date_timelta = datetime.timedelta(days=1)
-    #         all_date.append(startTime)
-    #         while date_timelta < (date2 - date1):
-    #             all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-    #             date_timelta += datetime.timedelta(days=1)
-    #         all_date.append(time_now)
-    #
-    #         time_ranges = []
-    #         for day in all_date[::-1]:
-    #             time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-    # else:
-    #     if start_date <= endTime:
-    #         date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-    #         date2 = datetime.datetime.strptime(endTime, '%Y-%m-%d')
-    #         date_timelta = datetime.timedelta(days=1)
-    #         all_date.append(start_date)
-    #         while date_timelta < (date2 - date1):
-    #             all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-    #             date_timelta += datetime.timedelta(days=1)
-    #         all_date.append(endTime)
-    #
-    #         time_ranges = []
-    #         for day in all_date[::-1]:
-    #             time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
-    #     else:
-    #         time_ranges = []
-    time_ranges="[{'since':'2017-02-08','until':'2017-02-08'},{'since':'2017-02-09','until':'2017-02-09'},{'since':'2017-02-10','until':'2017-02-10'},{'since':'2017-02-11','until':'2017-02-11'}]"
+    sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='facebook'" % offerId
+    cursor.execute(sql_offer)
+    runtime = cursor.fetchone()
+    startTime = str(runtime[0])  # 投放的开始时间
+    endTime = str(runtime[1])  # 投放的结束时间
+    contract_type = runtime[2]
+    contract_scale = runtime[3]
+    offer_price = runtime[4]
+    if time_now <= endTime:
+        if start_date >= startTime:
+            # 获取时间段中的每一天
+            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
+            date_timelta = datetime.timedelta(days=1)
+            all_date.append(start_date)
+            while date_timelta < (date2 - date1):
+                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                date_timelta += datetime.timedelta(days=1)
+            all_date.append(time_now)
+
+            time_ranges = []
+            for day in all_date[::-1]:
+                time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
+        else:
+            date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
+            date_timelta = datetime.timedelta(days=1)
+            all_date.append(startTime)
+            while date_timelta < (date2 - date1):
+                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                date_timelta += datetime.timedelta(days=1)
+            all_date.append(time_now)
+
+            time_ranges = []
+            for day in all_date[::-1]:
+                time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
+    else:
+        if start_date <= endTime:
+            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(endTime, '%Y-%m-%d')
+            date_timelta = datetime.timedelta(days=1)
+            all_date.append(start_date)
+            while date_timelta < (date2 - date1):
+                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                date_timelta += datetime.timedelta(days=1)
+            all_date.append(endTime)
+
+            time_ranges = []
+            for day in all_date[::-1]:
+                time_ranges.append("{'since': " + "'" + str(day) + "'" + ", 'until': " + "'" + str(day) + "'" + "}")
+        else:
+            time_ranges = []
+
     for key in keywords:
         account_sql = "select campaignId,account_id from campaignRelations where campaignName like '%s'"%(key+"%")
         cursor.execute(account_sql)

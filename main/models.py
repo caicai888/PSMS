@@ -49,12 +49,14 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True)
     passwd = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(100), nullable=False)
+    optName = db.Column(db.String(100), nullable=False)
     last_datetime = db.Column(db.DateTime, default=datetime.now())
 
-    def __init__(self, name, email, passwd, phone):
+    def __init__(self, name, email, passwd, optName, phone):
         self.name = name
         self.email = email
         self.passwd = passwd
+        self.optName = optName
         self.phone = phone
 
     def __repr__(self):
@@ -398,6 +400,54 @@ class Datas(db.Model):
     def __repr__(self):
         return '<Dates {}>'.format(self.id)
 
+#fb ap campaign维度data
+class DataDetail(db.Model):
+    __tablename__ = "dataDetail"
+    id = db.Column(db.Integer, primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    account_id = db.Column(db.String(100), nullable=False)
+    campaignId = db.Column(db.String(100), nullable=False)
+    type = db.Column(db.String(100), nullable=False)
+    revenue = db.Column(db.Float, nullable=True)
+    profit = db.Column(db.Float, nullable=True)
+    cost = db.Column(db.Float, nullable=True)
+    impressions = db.Column(db.Integer, nullable=True)
+    clicks = db.Column(db.Integer, nullable=True)
+    conversions = db.Column(db.Integer, nullable=True)
+    ctr = db.Column(db.Float, nullable=True)
+    cvr = db.Column(db.Float, nullable=True)
+    cpc = db.Column(db.Float, nullable=True)
+    cpi = db.Column(db.Float, nullable=True)
+    date = db.Column(db.String(100), nullable=True)
+    country = db.Column(db.String(100), nullable=True)
+    rebate = db.Column(db.Float, nullable=True)
+    optName = db.Column(db.String(100), nullable=True)
+    updateTime = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,offer_id,account_id,campaignId,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,optName,updateTime):
+        self.offer_id = offer_id
+        self.account_id = account_id
+        self.campaignId = campaignId
+        self.type = type
+        self.revenue = revenue
+        self.profit = profit
+        self.cost = cost
+        self.impressions = impressions
+        self.clicks = clicks
+        self.conversions = conversions
+        self.ctr = ctr
+        self.cvr = cvr
+        self.cpc = cpc
+        self.cpi = cpi
+        self.date = date
+        self.country = country
+        self.rebate = rebate
+        self.optName = optName
+        self.updateTime = updateTime
+
+    def __repr__(self):
+        return '<DataDetail {}>'.format(self.id)
+
 #fb campaign id与name的对应表
 class CampaignRelations(db.Model):
     __tablename__ = "campaignRelations"
@@ -405,13 +455,15 @@ class CampaignRelations(db.Model):
     campaignId = db.Column(db.String(100), nullable=False)
     campaignName = db.Column(db.String(150), nullable=False)
     account_id = db.Column(db.String(100), nullable=False)
-    optName = db.Column(db.String(100),nullable=False)
+    optName = db.Column(db.String(100),nullable=False)  #优化师的代码
 
     def __init__(self,campaignId,campaignName,account_id,optName):
+
         self.campaignId = campaignId
         self.campaignName = campaignName
         self.account_id = account_id
         self.optName = optName
+
 
     def __repr__(self):
         return '<CampaignRelations {}>'.format(self.id)
@@ -424,12 +476,14 @@ class CampaignAppName(db.Model):
     campaignName = db.Column(db.String(150), nullable=False)
     appId = db.Column(db.String(100), nullable=False)
     appName = db.Column(db.String(100), nullable=False)
+    optName = db.Column(db.String(100), nullable=False)
 
-    def __init__(self,campaignId,campaignName,appId,appName):
+    def __init__(self,campaignId,campaignName,appId,appName,optName):
         self.campaignId = campaignId
         self.campaignName = campaignName
         self.appId = appId
         self.appName = appName
+        self.optName = optName
 
     def __repr__(self):
         return '<CampaignAppName {}>'.format(self.id)
@@ -455,8 +509,10 @@ class Adwords(db.Model):
     ctr = db.Column(db.String(100), nullable=True)
     date = db.Column(db.String(100), nullable=True)
     country = db.Column(db.String(100), nullable=True)
+    rebate = db.Column(db.Float, nullable=True)
+    optName = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date,country):
+    def __init__(self,offer_id,account_id,is_UAC,campaignId,campaignName,impressions,clicks,revenue,cost,profit,conversions,cpc,cvr,cpi,ctr,date,country,rebate,optName):
         self.offer_id = offer_id
         self.account_id = account_id
         self.is_UAC = is_UAC
@@ -474,6 +530,8 @@ class Adwords(db.Model):
         self.ctr = ctr
         self.date = date
         self.country = country
+        self.rebate = rebate
+        self.optName = optName
 
     def __repr__(self):
         return '<Adwords {}>'.format(self.id)
@@ -505,19 +563,3 @@ class Rebate(db.Model):
 
     def __repr__(self):
         return '<Rebate {}>'.format(self.id)
-
-#优化师关系对应表
-class Optimization(db.Model):
-    __tablename__="optimization"
-    id = db.Column(db.Integer, primary_key=True)
-    simple = db.Column(db.String(100), nullable=True)
-    name = db.Column(db.String(100), nullable = True)
-    createdTime = db.Column(db.String(100), nullable=True)
-
-    def __init__(self,simple,name,createdTime):
-        self.simple = simple
-        self.name = name
-        self.createdTime = createdTime
-
-    def __repr__(self):
-        return '<Optimization {}>'.format(self.id)

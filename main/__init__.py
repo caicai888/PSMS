@@ -25,5 +25,7 @@ def create_app(config_name):
     app.register_blueprint(adwords_blueprint)
     from accountRebate import accountRebate as account_blueprint
     app.register_blueprint(account_blueprint)
+    from dashboardData import dashboardData as dashboard_blueprint
+    app.register_blueprint(dashboard_blueprint)
 
     return app
