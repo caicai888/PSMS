@@ -9,6 +9,10 @@ import MySQLdb
 import csv
 import tempfile
 import re
+import time
+import smtplib
+from email.mime.text import MIMEText
+from email.MIMEMultipart import MIMEMultipart
 
 adwordsuac = Blueprint('adwordsuac', __name__)
 conn = MySQLdb.connect(
@@ -27,6 +31,7 @@ class PSMSOffer(object):
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
         query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=38"
         try:
             cursor.execute(query_string)
         finally:
@@ -59,6 +64,7 @@ class AdwordsSQL(object):
         cursor.close()
 
     def select_campaign_geo(self, campaign_name):
+        print campaign_name
         selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
         selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
         # return selected_msg, selected_geo
@@ -103,6 +109,9 @@ class AdwordsUac(AdwordsSQL):
             start += step
 
     def query(self, customer_id, offer_id):
+        print offer_id
+        print customer_id
+        print "+++"*10
         self.set_customerId(customer_id)
         column_list = ','.join(self.fields)
         report_downloader = self.client.GetReportDownloader(version='v201609')
@@ -143,21 +152,25 @@ class AdwordsUac(AdwordsSQL):
                         offer_price = offer_result["price"]
                         contract_type = offer_result["contract_type"]
                         contract_scale = offer_result['contract_scale']
+                        if ',' in read['Conversions']:
+                            conversions = read['Conversions'].replace(',','')
+                        else:
+                            conversions = read['Conversions']
                         if contract_type == "1":
-                            cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date" % (int(offer_id), read['Day'], offer_result["startTime"])
+                            cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='adwords' and date<='%s' and date>='%s' order by date desc" % (int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(cooperation_sql)
                             cooperation_result = cursor.fetchone()
                             if cooperation_result:
-                                contract_scale = cooperation_result[0]
+                                contract_scale = cooperation_result["contract_scale"]
                             else:
                                 history_scale_sql = "select contract_scale from history where platform='adwords' and offer_id='%d' order by createdTime desc" % (int(offer_id))
                                 cursor.execute(history_scale_sql)
                                 history_scale_result = cursor.fetchone()
                                 if history_scale_result:
-                                    contract_scale = history_scale_result[0]
+                                    contract_scale = history_scale_result["contract_scale"]
                             revenue = '%0.2f' % (round(float(read['Cost']) / (10 ** 6), 2) * (1 + float(contract_scale) / 100))
                         else:
-                            timePrice_sql = "select price from timePrice where country_id='%d' and platform='adwords' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (countryId, int(offer_id), read['Day'], offer_result["startTime"])
+                            timePrice_sql = "select price from timePrice where country_id='%d' and platform='adwords' and offer_id='%d' and date<='%s' and date>='%s' order by date desc" % (countryId, int(offer_id), read['Day'], offer_result["startTime"])
                             cursor.execute(timePrice_sql)
                             timePrice_result = cursor.fetchone()
                             if timePrice_result:
@@ -176,24 +189,21 @@ class AdwordsUac(AdwordsSQL):
                             is_uac = 0
                         else:
                             is_uac = 1
-                        if ',' in read['Conversions']:
-                            conversions = read['Conversions'].replace(',','')
-                        else:
-                            conversions = read['Conversions']
                         cpc = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(read['Clicks'])) if float(read['Clicks']) != 0 else 0
                         cvr = '%0.2f'%(float(conversions)/float(read['Clicks'])*100) if float(read['Clicks']) != 0 else 0
                         cpi = '%0.2f'%(round(float(read['Cost'])/(10**6), 2)/float(conversions)) if float(conversions) != 0 else 0
                         ctr = '%0.2f'%(float(read['Clicks'])/float(read['Impressions'])*100) if float(read['Impressions']) != 0 else 0
                         profit = '%0.2f'%(float(revenue)-(round(float(read['Cost'])/(10**6), 2)))
-                        sql_ad = "select id from adwords where offer_id='%d' and account_id='%s' and date='%s' and campaignId='%d'" % (int(offer_id), str(customer_id), str(read['Day']),int(read['Campaign ID']))
+                        sql_ad = "select id from adwords where offer_id='%d' and account_id='%s' and date='%s' and campaignId='%d' and country='%s'" % (int(offer_id), str(customer_id), str(read['Day']),int(read['Campaign ID']),countryName)
                         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
                         cursor.execute(sql_ad)
                         result_ad = cursor.fetchone()
                         if not result_ad:
                             self.insert_sql(int(offer_id), str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']),str(read['Impressions']), int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2),float(profit), str(conversions), cpc, cvr, cpi, ctr, str(read['Day']),countryName)
                         else:
-                            update_sql = "update adwords set account_id='%s',is_UAC='%d',campaignId='%d',campaignName='%s',impressions='%s',clicks='%d',revenue='%f',cost='%f',profit='%f',conversions='%s',cpc='%s',cvr='%s',cpi='%s',ctr='%s',date='%s',country='%s' where id='%d'" % (str(customer_id), int(is_uac), int(read['Campaign ID']), str(read['Campaign']), str(read['Impressions']),int(read['Clicks']), float(revenue), round(float(read['Cost']) / (10 ** 6), 2), float(profit), str(conversions), cpc, cvr,cpi, ctr, str(read['Day']),str(countryName),result_ad["id"])
-                            cursor.execute(update_sql)
+                            update_sql = "update adwords set account_id=%s,is_UAC=%s,campaignId=%s,campaignName=%s,impressions=%s,clicks=%s,revenue=%s,cost=%s,profit=%s,conversions=%s,cpc=%s,cvr=%s,cpi=%s,ctr=%s,date=%s,country=%s where id=%s"
+
+                            cursor.execute(update_sql,(str(customer_id), is_uac, read['Campaign ID'], read['Campaign'], read['Impressions'],read['Clicks'],revenue,round(float(read['Cost']) / (10 ** 6), 2),profit, conversions,cpc,cvr, cpi, ctr, read['Day'], countryName, result_ad["id"]))
                             conn.commit()
 
         finally:
@@ -225,6 +235,8 @@ class MyProcess(object):
     def get_uac_account_msg(self, account_id, offer_id, is_UAC=False):
         today = (datetime.now()+timedelta(hours=8)).strftime("%Y-%m-%d")
         a_month_ago = ((datetime.now()+timedelta(hours=8)) - timedelta(days=30)).strftime("%Y-%m-%d")
+        # today = "2017-03-06"
+        # a_month_ago = "2017-03-06"
         if is_UAC == False:
             fields = ['CampaignId', 'CampaignName', 'CountryCriteriaId', 'Impressions', 'Clicks', 'Cost', 'Conversions', 'Date']
         else:
@@ -242,6 +254,25 @@ def main():
     my_process = MyProcess(account_dict)
     my_process.build_thread_task()
     print 'finished'
+    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "15:00":
+        mail_body = "adwords data finished"
+        mail_from = "ads_reporting@newborntown.com"
+        mail_to = "liyin@newborntown.com"
+        msg = MIMEMultipart()
+        body = MIMEText(mail_body)
+        msg.attach(body)
+        msg['From'] = mail_from
+        msg['To'] = mail_to
+        msg['date'] = time.strftime('%Y-%m-%d')
+        msg['Subject'] = "get adwords Data finished"
+        smtp = smtplib.SMTP()
+        smtp.connect('smtp.exmail.qq.com', 25)
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+        smtp.sendmail(mail_from, mail_to, msg.as_string())
+        smtp.quit()
 
 if __name__ == '__main__':
      main()

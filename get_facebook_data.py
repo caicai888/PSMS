@@ -6,7 +6,10 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 import MySQLdb
 import requests
-import datetime, time
+import datetime,time
+import smtplib
+from email.mime.text import MIMEText
+from email.MIMEMultipart import MIMEMultipart
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 # time_now = datetime.datetime.now()
@@ -17,7 +20,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=17"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -312,7 +315,7 @@ for i in results:
                 country = cost_list[r].get("country")
                 date = cost_list[r].get("date_start")
                 cost = float(cost_list[r].get("spend"))
-                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='facebook' and date<='%s' and date>='%s' order by date"%(offerId,date,startTime)
+                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='facebook' and date<='%s' and date>='%s' order by date desc"%(offerId,date,startTime)
                 cursor.execute(cooperation_sql)
                 cooperation_result = cursor.fetchone()
                 if cooperation_result:
@@ -342,8 +345,7 @@ for i in results:
                 cursor.execute(country_sql)
                 country_result = cursor.fetchone()
                 countryId = country_result[0]
-
-                timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date" %(countryId,offerId,date,startTime)
+                timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date desc" %(countryId,offerId,date,startTime)
                 cursor.execute(timePrice_sql)
                 timePrice_result = cursor.fetchone()
                 if timePrice_result:
@@ -356,6 +358,7 @@ for i in results:
                         price = offer_price
                     else:
                         price = history_result[0]
+
                 revenue_list += [
                     {
                         "country": country,
@@ -421,7 +424,7 @@ for i in results:
             cvr_fb = cvr_list[l].get("cvr")
             cpc_fb = cpc_list[l].get("cpc")
             cpi_fb = cpi_list[l].get("cpi")
-            data_sql = "select id from datas where offer_id='%d' and country='%s' and date='%s'"%(offerId,country_fb,date_fb)
+            data_sql = "select id from datas where offer_id='%d' and country='%s' and date='%s' and type='facebook'"%(offerId,country_fb,date_fb)
             cursor.execute(data_sql)
             result = cursor.fetchone()
             if not result:
@@ -432,3 +435,23 @@ for i in results:
                 update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'"%(float(revenue_fb),float(profit_fb),float(cost_fb),impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,result[0])
                 cursor.execute(update_sql)
                 db.commit()
+
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "18:00":
+    mail_body = "facebook data finished"
+    mail_from = "ads_reporting@newborntown.com"
+    mail_to = "liyin@newborntown.com"
+    msg = MIMEMultipart()
+    body = MIMEText(mail_body)
+    msg.attach(body)
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    msg['date'] = time.strftime('%Y-%m-%d')
+    msg['Subject'] = "get facebook Data finished"
+    smtp = smtplib.SMTP()
+    smtp.connect('smtp.exmail.qq.com', 25)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+    smtp.sendmail(mail_from, mail_to, msg.as_string())
+    smtp.quit()

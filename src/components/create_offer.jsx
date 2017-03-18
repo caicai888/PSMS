@@ -113,7 +113,7 @@ var CreateOffer = React.createClass({
             var html=$(dd[i]).find(".cal-price").html().toString();
             result.push({
                 date:$(".cal-year").html()+"-"+($(".cal-month").html().toString().length<2?"0"+$(".cal-month").html():$(".cal-month").html())+"-"+($(dd[i]).find(".cal-day").html().toString().length<2?"0"+$(dd[i]).find(".cal-day").html():$(dd[i]).find(".cal-day").html()),
-                price:html.length>0?(html.indexOf("￥")>-1?html.substring(1):html):""
+                price:html.length>0?(html.indexOf("$")>-1?html.substring(1):html):""
             })
         }
         var platform="";

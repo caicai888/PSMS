@@ -295,13 +295,14 @@ def offerDetail(id):
         for i in countries:
             historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == fb_offer.id).order_by(
                 desc(History.createdTime)).first()
-            country = historty.country
-            country_price = historty.country_price
-            detail = {
-                "country": country,
-                "price": country_price
-            }
-            country_detail += [detail]
+            if historty:
+                country = historty.country
+                country_price = historty.country_price
+                detail = {
+                    "country": country,
+                    "price": country_price
+                }
+                country_detail += [detail]
         facebook["country_detail"] = country_detail
     else:
         facebook = {}
@@ -341,13 +342,14 @@ def offerDetail(id):
         for i in countries:
             historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == ad_offer.id).order_by(
                 desc(History.createdTime)).first()
-            country = historty.country
-            country_price = historty.country_price
-            detail = {
-                "country": country,
-                "price": country_price
-            }
-            country_detail += [detail]
+            if historty:
+                country = historty.country
+                country_price = historty.country_price
+                detail = {
+                    "country": country,
+                    "price": country_price
+                }
+                country_detail += [detail]
         adwords["country_detail"] = country_detail
     else:
         adwords = {}
@@ -387,13 +389,14 @@ def offerDetail(id):
         for i in countries:
             historty = History.query.filter(History.offer_id == id, History.country == i, History.platformOffer_id == ap_offer.id).order_by(
                 desc(History.createdTime)).first()
-            country = historty.country
-            country_price = historty.country_price
-            detail = {
-                "country": country,
-                "price": country_price
-            }
-            country_detail += [detail]
+            if historty:
+                country = historty.country
+                country_price = historty.country_price
+                detail = {
+                    "country": country,
+                    "price": country_price
+                }
+                country_detail += [detail]
         apple["country_detail"] = country_detail
     else:
         apple = {}
@@ -500,17 +503,30 @@ def updatePlatformOffer(offer_id,platform,data):
     time_now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
     offer = Offer.query.filter_by(id=offer_id).first()
     user_id = offer.user_id
+    if data["price"] != "":
+        price = float(data["price"])
+    else:
+        price = 0
+    if data['daily_budget'] != "":
+        daily_budget = float(data['daily_budget'])
+    else:
+        daily_budget = 0
+    if data['total_budget'] != "":
+        total_budget = float(data["total_budget"])
+    else:
+        total_budget = 0
+
     if platform_offer is not None:
         platform_offer.contract_type = data['contract_type']
-        platform_offer.contract_scale = data['contract_scale']
+        platform_offer.contract_scale = float(data['contract_scale'])
         platform_offer.material = data['material']
         platform_offer.startTime = data['startTime']
         platform_offer.endTime = data['endTime']
         platform_offer.country = data['country']
-        platform_offer.price = float(data['price'])
-        platform_offer.daily_budget = float(data['daily_budget'])
+        platform_offer.price = price
+        platform_offer.daily_budget = daily_budget
         platform_offer.daily_type = data['daily_type']
-        platform_offer.total_budget = float(data['total_budget'])
+        platform_offer.total_budget = total_budget
         platform_offer.total_type = data['total_type']
         platform_offer.distribution = data['distribution']
         platform_offer.authorized = data['authorized']
@@ -524,7 +540,7 @@ def updatePlatformOffer(offer_id,platform,data):
         db.session.commit()
 
     else:
-        platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],float(data['price']),float(data['daily_budget']),data['daily_type'],float(data['total_budget']),data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
+        platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],price,daily_budget,data['daily_type'],total_budget,data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
         db.session.add(platform_offer)
         db.session.commit()
         db.create_all()
@@ -556,6 +572,7 @@ def updatePlatformOffer(offer_id,platform,data):
         db.create_all()
     return platform_offer
 
+#编辑offer
 @offers.route('/api/update_offer', methods=["POST", "GET"])
 @Permission.check(models=["offer_create","offer_edit","offer_query"])
 def updateOffer():
@@ -1328,32 +1345,33 @@ def offer_search_detail(offers):
     for i in offers:
         sales = User.query.filter_by(id=int(i.user_id)).first()
         platform_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").first()
-        contract_type = platform_offer.contract_type
-        if contract_type == "1":
-            contract_type = u"服务费"
-        elif contract_type == "2":
-            contract_type = "cpa"
-        if platform_offer.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
-            endTime = "TBD"
-        else:
-            endTime = platform_offer.endTime
-        customerId = i.customer_id
-        customer = Customers.query.filter_by(id=customerId).first()
-        customerName = customer.company_name
-        offer_result_list += [
-            {
-                "offer_id": i.id,
-                "status": i.status,
-                "contract_type": contract_type,
-                "os": i.os,
-                "customer_id": customerName,
-                "app_name": i.app_name,
-                "startTime": platform_offer.startTime,
-                "endTime": endTime,
-                "country": str(platform_offer.country),
-                "price": platform_offer.price,
-                "updateTime": i.updateTime,
-                "sale_name": sales.name
-            }
-        ]
+        if platform_offer:
+            contract_type = platform_offer.contract_type
+            if contract_type == "1":
+                contract_type = u"服务费"
+            elif contract_type == "2":
+                contract_type = "cpa"
+            if platform_offer.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+                endTime = "TBD"
+            else:
+                endTime = platform_offer.endTime
+            customerId = i.customer_id
+            customer = Customers.query.filter_by(id=customerId).first()
+            customerName = customer.company_name
+            offer_result_list += [
+                {
+                    "offer_id": i.id,
+                    "status": i.status,
+                    "contract_type": contract_type,
+                    "os": i.os,
+                    "customer_id": customerName,
+                    "app_name": i.app_name,
+                    "startTime": platform_offer.startTime,
+                    "endTime": endTime,
+                    "country": str(platform_offer.country),
+                    "price": platform_offer.price,
+                    "updateTime": i.updateTime,
+                    "sale_name": sales.name
+                }
+            ]
     return offer_result_list

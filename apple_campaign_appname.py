@@ -19,10 +19,11 @@ headers = {}
 headers["Authorization"] = "orgId=152120"
 headers["Content-Type"] = "application/json"
 
-date1 = "2016-10-01"
 all_date = []
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
+yestarday = datetime.datetime.now()-datetime.timedelta(hours=16)
+date1 = datetime.datetime.strftime(yestarday, '%Y-%m-%d')
 all_date.append(date1)
 date1 = datetime.datetime.strptime(date1, '%Y-%m-%d')
 date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')

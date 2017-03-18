@@ -4,7 +4,10 @@ from __future__ import division
 import requests
 import json
 import MySQLdb
-import datetime
+import datetime,time
+import smtplib
+from email.mime.text import MIMEText
+from email.MIMEMultipart import MIMEMultipart
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
@@ -23,7 +26,6 @@ headers["Authorization"] = "orgId=152120"
 headers["Content-Type"] = "application/json"
 #根据campign id获取impressions等数据信息
 for i in results:
-    print i
     all_date = []
     all_result = []
     revenue_list = []
@@ -38,11 +40,9 @@ for i in results:
         for n in apple_appNames:
             appleCampaigns.append(n[0])
     appleCampaigns=list(set(appleCampaigns))
-    print offerId
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='apple'"%offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
-    print runtime
     startTime = str(runtime[0])  # 投放的开始时间
     endTime = str(runtime[1])  # 投放的结束时间
     contract_type = runtime[2]
@@ -199,3 +199,23 @@ for i in results:
             update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi, result_apple[0])
             cursor.execute(update_sql)
             db.commit()
+
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "16:00":
+    mail_body = "apple data finished"
+    mail_from = "ads_reporting@newborntown.com"
+    mail_to = "liyin@newborntown.com"
+    msg = MIMEMultipart()
+    body = MIMEText(mail_body)
+    msg.attach(body)
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    msg['date'] = time.strftime('%Y-%m-%d')
+    msg['Subject'] = "get apple Data finished"
+    smtp = smtplib.SMTP()
+    smtp.connect('smtp.exmail.qq.com', 25)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+    smtp.sendmail(mail_from, mail_to, msg.as_string())
+    smtp.quit()
