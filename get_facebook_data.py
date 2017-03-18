@@ -315,7 +315,7 @@ for i in results:
                 country = cost_list[r].get("country")
                 date = cost_list[r].get("date_start")
                 cost = float(cost_list[r].get("spend"))
-                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='facebook' and date<='%s' and date>='%s' order by date"%(offerId,date,startTime)
+                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='facebook' and date<='%s' and date>='%s' order by date desc"%(offerId,date,startTime)
                 cursor.execute(cooperation_sql)
                 cooperation_result = cursor.fetchone()
                 if cooperation_result:
