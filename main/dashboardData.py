@@ -331,7 +331,7 @@ def dbTable():
                 l["CountProfit"] = float('%0.2f'%(l['CountProfit']))
                 l["ROI"] = float('%0.2f'%(cData(float(l["Profit"]),float(l["Cost"]))))
                 all_data_list.append(l)
-                dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Porfit","Rebate","CountProfit","ROI"]
+            dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Porfit","Rebate","CountProfit","ROI"]
             all_data_list = [
                 {
                     "Conversions": 305,
@@ -435,7 +435,7 @@ def dbTable():
             for l in all_data_list_unique:
                 l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
                 all_data_list.append(l)
-                dimission = ["Date", "BD", "appName", "CountProfit"]
+            dimission = ["Date", "BD", "appName", "CountProfit"]
             all_data_list = [
                 {
                     "Date": "2017-02-10",
@@ -548,7 +548,7 @@ def dbTable():
                 l['Cost'] = float('%0.2f' % (l["Cost"]))
                 l["Profit"] = float('%0.2f' % (l['Profit']))
                 all_data_list.append(l)
-                dimission = ["Date", "Offer", "Revenue","Cost","Porfit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
+            dimission = ["Date", "Offer", "Revenue","Cost","Porfit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
             all_data_list = [
                 {
                     "CPI": 0.28,
