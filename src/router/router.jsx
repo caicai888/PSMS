@@ -23,6 +23,9 @@ import GroupList from "../components/group_list";
 
 import Dashboard from "../components/dashboard";
 
+import CreateAgent from "../components/create_agent";
+import AgentList from "../components/agent_list";
+
 
 var Routers = <Router history={hashHistory}>
                 <Route path="/"  component={App}>
@@ -46,6 +49,9 @@ var Routers = <Router history={hashHistory}>
                     <Route path="/create_offer(/:id)" component={CreateOffer}/>
                     <Route path="/offer_list" component={OfferList}/>
                     <Route path="/offer_detail/:id(/:three)" component={OfferDetail}/>
+
+                    <Route path="/create_agent(/:id)" component={CreateAgent}/>
+                    <Route path="/agent_list" component={AgentList}/>
 
                     <Route path="list(/:name)" component={List}/>
                     <Route path="about" component={About}/>

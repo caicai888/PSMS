@@ -27,7 +27,6 @@ sql_token = "select accessToken from token where account='rongchangzhang@gmail.c
 cursor.execute(sql_token)
 token_result = cursor.fetchone()
 accessToken = token_result[0]
-
 for account in accountIds:
     print account
     url = "https://graph.facebook.com/v2.8/act_"+str(account)+"/campaigns"
@@ -48,13 +47,19 @@ for account in accountIds:
             cursor.execute(search_sql)
             exists = cursor.fetchone()
             if exists:
-                update_sql = "update campaignRelations set campaignId='%s' where campaignName='%s'" % (campaignId,campaignName)
-                cursor.execute(update_sql)
-                db.commit()
+                campaign_name = campaignName.split('_')
+                for c in campaign_name:
+                    if "66" in c:
+                        update_sql = "update campaignRelations set campaignId='%s',optName='%s' where campaignName='%s'" % (campaignId,c,campaignName)
+                        cursor.execute(update_sql)
+                        db.commit()
             else:
-                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id) values('%s','%s','%s')" % (campaignId,campaignName,account)
-                cursor.execute(insert_sql)
-                db.commit()
+                campaign_name = campaignName.split('_')
+                for c in campaign_name:
+                    if "66" in c:
+                        insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId,campaignName,account,c)
+                        cursor.execute(insert_sql)
+                        db.commit()
     except Exception:
         pass
 

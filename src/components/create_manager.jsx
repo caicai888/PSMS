@@ -173,6 +173,12 @@ var CreateManager = React.createClass({
                         </div>
                     </div>
                     <div className="form-group">
+                        <label  className="col-sm-2 control-label text-right">优化师编号</label>
+                        <div className="col-sm-10">
+                            <input type="text"  data-key="code"  name="name" className="form-control"   placeholder="" />
+                        </div>
+                    </div>
+                    <div className="form-group">
                         <label htmlFor="company_address" className="col-sm-2 control-label text-right">组</label>
                         <div className="col-sm-10 ">
                             <div className="table-responsive">

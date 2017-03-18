@@ -12,7 +12,8 @@ var Daterange = React.createClass({
         function cb(start, end) {
             $('#'+_this.props.id+' span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
             $(".reportRange").val(start.format("YYYY-MM-DD")+":"+end.format("YYYY-MM-DD"));
-            $(".report_weidu li:last").click();
+            //$(".report_weidu li:last").click();
+            _this.props.onClick()
         }
         $('#'+_this.props.id).daterangepicker({
             startDate: start,
