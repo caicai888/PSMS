@@ -6,16 +6,18 @@ import csv
 import tempfile
 import datetime
 
-time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
-time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
+# time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
+# time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=72)
+end_date = (datetime.datetime.now()-datetime.timedelta(hours=64))-datetime.timedelta(hours=232)  #10天
 # start_date = datetime.datetime.now()-datetime.timedelta(hours=240)
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
+end_date = datetime.datetime.strftime(end_date,'%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
-adwords_sql = "select account_id,id from adwords where date >= '%s' and date <= '%s'" % (start_date,time_now)
+adwords_sql = "select account_id,id from adwords where date >= '%s' and date <= '%s'" % (start_date,end_date)
 # adwords_sql = "select account_id,id from adwords where date = '2017-02-15'"
 cursor.execute(adwords_sql)
 apple_results = cursor.fetchall()
