@@ -43,7 +43,7 @@ for account in accountIds:
             campaignName = j["name"]
             campaignId = j['id']
 
-            search_sql = "select id from campaignRelations where campaignName='%s'"%campaignName
+            search_sql = "select id from campaignRelations where campaignId='%s'"%campaignId
             cursor.execute(search_sql)
             exists = cursor.fetchone()
             if exists:
