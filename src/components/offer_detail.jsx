@@ -126,7 +126,6 @@ var OfferDetail = React.createClass({
                 $("#modal").modal("toggle");
             }
         });
-        _this.getData();
         $(".report_weidu li").on("click",function () {
             let index = parseInt($(this).index()+1);
             if(!$(this).index()){
@@ -403,7 +402,7 @@ var OfferDetail = React.createClass({
                         <div className="row">
                             <div className="col-md-3">
                                 <input type="hidden" className="reportRange"/>
-                                <Daterange id="reportRange" start="1" end="1" />
+                                <Daterange onClick={_this.getData} id="reportRange" start="1" end="1" />
                             </div>
                             <div className="col-md-4">
                                 <ul className="box-center report_weidu">

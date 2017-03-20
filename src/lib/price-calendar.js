@@ -50,7 +50,7 @@ module.exports = (function ($) {
                 days.each(function (idx, ele) {
                     var defaultFlag = $(ele).attr("data-default");
                     if (defaultFlag === "true" && _this.val()) {
-                        $(ele).children(".cal-price").html("￥" + price);
+                        $(ele).children(".cal-price").html("$" + price);
                     }else if(defaultFlag === "true") {
 
                     }
@@ -60,10 +60,11 @@ module.exports = (function ($) {
             if(!IsEdit){
                 // 修改某日价格
                 $("#cal-set").on("click", "dd", function () {
+                    console.log($(this).children(".cal-price").html())
                     if($(this).children(".cal-price").html()==undefined){
                         return;
                     }
-                    var old_price = $(this).children(".cal-price").html().replace(/\￥/g,"");
+                    var old_price = $(this).children(".cal-price").html().replace(/\$/g,"");
                     $(this).children(".cal-price").replaceWith('<input type="number" class="cal-price-input">');
                     $(this).children(".cal-price-input").val(old_price);
                     $(this).children(".cal-price-input").focus();
@@ -78,7 +79,7 @@ module.exports = (function ($) {
                 $("#cal-set").on("blur", "dd", function () {
                     var price = $(this).children(".cal-price-input");
                     if(price.val()){
-                        $(this).children(".cal-price-input").replaceWith('<span class="cal-price">'+ (sessionStorage.getItem('isPrice')?''+ price.val():'￥'+ price.val()) + '</span>');
+                        $(this).children(".cal-price-input").replaceWith('<span class="cal-price">'+ (sessionStorage.getItem('isPrice')?''+ price.val():'$'+ price.val()) + '</span>');
                         $(this).attr("data-default", false);
                     }else {
                         $(this).children(".cal-price-input").replaceWith('<span class="cal-price"></span>');
@@ -129,13 +130,13 @@ module.exports = (function ($) {
                 var calHTML = '<dd style="margin-left: ' + 70*parseInt(data[0].week) + 'px" data-default="' + data[0].default + '">' +
                         '<span class="cal-day">' + data[0].day + '</span>' +
                         '<span class="cal-special">' + data[0].special + '</span>' +
-                        '<span class="cal-price">' + (data[0].price === "" ? "" : "￥" + data[0].price) + '</span>' +
+                        '<span class="cal-price">' + (data[0].price === "" ? "" : "$" + data[0].price) + '</span>' +
                     '</dd>';
                 for (var i = 1, len = data.length; i < len; i++) {
                     calHTML += '<dd data-default="' + data[i].default + '">' +
                         '<span class="cal-day">' + data[i].day + '</span>' +
                         '<span class="cal-special">' + data[i].special + '</span>' +
-                        '<span class="cal-price">' + (data[i].price === "" ? "" : "￥" + data[i].price) + '</span>' +
+                        '<span class="cal-price">' + (data[i].price === "" ? "" : "$" + data[i].price) + '</span>' +
                     '</dd>';
                 };
                 $(".cal-year").html(data.year);
