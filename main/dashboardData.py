@@ -921,6 +921,7 @@ def dbTable():
             tempList = []
             all_data_list_unique = []
             for ele in all_data_list:
+                print ele
                 key = ele['Date'] + ele['MB']
                 if key in tempList:
                     for x in all_data_list_unique:
