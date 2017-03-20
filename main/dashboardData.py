@@ -921,7 +921,6 @@ def dbTable():
             tempList = []
             all_data_list_unique = []
             for ele in all_data_list:
-                print ele
                 if ele['MB'] is None:
                     pass
                 else:
