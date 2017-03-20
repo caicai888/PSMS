@@ -313,7 +313,7 @@ for l in range(len(impressions_list)):
         cursor.execute(update_sql,(revenue_fb,profit_fb,cost_fb,impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,rebate_fb,optName,updateTime,datadetail_result[0]))
         db.commit()
     else:
-        insert_sql = "insert into dataDetail(offer_id,account_id,campaignId,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,optName,updateTime) values('%d','%s','%s','%s','%f','%f','%f','%d','%d','%d','%f','%f','%f','%f','%s','%s','%f','%s')" % (offer_id,accountId,campaignId,'facebook',revenue_fb,profit_fb,cost_fb,impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,date_fb,country_fb,rebate_fb,optName,updateTime)
+        insert_sql = "insert into dataDetail(offer_id,account_id,campaignId,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,optName,updateTime) values('%d','%s','%s','%s','%f','%f','%f','%d','%d','%d','%f','%f','%f','%f','%s','%s','%f','%s','%s')" % (offer_id,accountId,campaignId,'facebook',revenue_fb,profit_fb,cost_fb,impressions_fb,clicks_fb,conversions_fb,ctr_fb,cvr_fb,cpc_fb,cpi_fb,date_fb,country_fb,rebate_fb,optName,updateTime)
         cursor.execute(insert_sql)
         db.commit()
 
