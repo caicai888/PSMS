@@ -15,7 +15,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
-adwords_sql = "select account_id from adwords where date >= '%s' and date <= '%s'" % (start_date,time_now)
+adwords_sql = "select account_id,id from adwords where date >= '%s' and date <= '%s'" % (start_date,time_now)
 # adwords_sql = "select account_id,id from adwords where date = '2017-02-15'"
 cursor.execute(adwords_sql)
 apple_results = cursor.fetchall()
