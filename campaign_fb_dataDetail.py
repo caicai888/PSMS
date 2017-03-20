@@ -35,7 +35,7 @@ profit_list = []
 ctr_list = []
 cpc_list = []
 # keywords_sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-keywords_sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=2"
+keywords_sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=3"
 cursor.execute(keywords_sql)
 keywords_result = cursor.fetchall()
 for i in keywords_result:
