@@ -95,7 +95,10 @@ for i in results:
                 rebate_sql = "select scale from rebate where accountId='%s'" %(accountId)
                 cursor.execute(rebate_sql)
                 rebate_result = cursor.fetchone()
-                scale = float(rebate_result[0])
+                if rebate_result:
+                    scale = float(rebate_result[0])
+                else:
+                    scale = 100
                 url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
                 params = {
                     "access_token": accessToken,
