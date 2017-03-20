@@ -332,44 +332,44 @@ def dbTable():
                 l["ROI"] = float('%0.2f'%(cData(float(l["Profit"]),float(l["Cost"]))))
                 all_data_list.append(l)
             dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Profit","Rebate","CountProfit","ROI"]
-            all_data_list = [
-                {
-                    "Conversions": 305,
-                    "Profit": 523.98,
-                    "Cost": 86.02,
-                    "CountProfit": 535.44,
-                    "appName": "德州扑克",
-                    "Date": "2017-02-10",
-                    "CPI": 0.28,
-                    "Revenue": 610,
-                    "ROI": 6.09,
-                    "Rebate": 11.46
-                },
-                {
-                    "Conversions": 1565,
-                    "Profit": 3289,
-                    "Cost": 1406,
-                    "CountProfit": 3456.58,
-                    "appName": "大乱斗",
-                    "Date": "2017-02-10",
-                    "CPI": 0.9,
-                    "Revenue": 4695,
-                    "ROI": 2.34,
-                    "Rebate": 167.58
-                },
-                {
-                    "Conversions": 230,
-                    "Profit": 381.08,
-                    "Cost": 78.92,
-                    "CountProfit": 391.72,
-                    "appName": "德州扑克",
-                    "Date": "2017-02-11",
-                    "CPI": 0.34,
-                    "Revenue": 460,
-                    "ROI": 4.83,
-                    "Rebate": 10.64
-                },
-            ]
+            # all_data_list = [
+            #     {
+            #         "Conversions": 305,
+            #         "Profit": 523.98,
+            #         "Cost": 86.02,
+            #         "CountProfit": 535.44,
+            #         "appName": "德州扑克",
+            #         "Date": "2017-02-10",
+            #         "CPI": 0.28,
+            #         "Revenue": 610,
+            #         "ROI": 6.09,
+            #         "Rebate": 11.46
+            #     },
+            #     {
+            #         "Conversions": 1565,
+            #         "Profit": 3289,
+            #         "Cost": 1406,
+            #         "CountProfit": 3456.58,
+            #         "appName": "大乱斗",
+            #         "Date": "2017-02-10",
+            #         "CPI": 0.9,
+            #         "Revenue": 4695,
+            #         "ROI": 2.34,
+            #         "Rebate": 167.58
+            #     },
+            #     {
+            #         "Conversions": 230,
+            #         "Profit": 381.08,
+            #         "Cost": 78.92,
+            #         "CountProfit": 391.72,
+            #         "appName": "德州扑克",
+            #         "Date": "2017-02-11",
+            #         "CPI": 0.34,
+            #         "Revenue": 460,
+            #         "ROI": 4.83,
+            #         "Rebate": 10.64
+            #     },
+            # ]
 
         elif flag == "PM-BD":
             role = UserRole.query.filter(UserRole.role_id == 4).all()
@@ -436,40 +436,40 @@ def dbTable():
                 l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
                 all_data_list.append(l)
             dimission = ["Date", "BD", "appName", "CountProfit"]
-            all_data_list = [
-                {
-                    "Date": "2017-02-10",
-                    "BD": "liyin",
-                    "CountProfit": 3456.58,
-                    "appName": "大乱斗"
-                },
-                {
-                    "Date": "2017-02-11",
-                    "BD": "liyin",
-                    "CountProfit": 3501.26,
-                    "appName": "大乱斗"
-                },
-                {
-                    "Date": "2017-02-12",
-                    "BD": "liyin",
-                    "CountProfit": 1401.67,
-                    "appName": "大乱斗"
-                },
-                {
-                    "Date": "2017-02-13",
-                    "BD": "liyin",
-                    "CountProfit": 1881.98,
-                    "appName": "大乱斗"
-                },
-                {
-                    "Date": "2017-02-10",
-                    "BD": "yinli",
-                    "CountProfit": 535.44,
-                    "appName": "德州扑克"
-                }
-            ]
+            # all_data_list = [
+            #     {
+            #         "Date": "2017-02-10",
+            #         "BD": "liyin",
+            #         "CountProfit": 3456.58,
+            #         "appName": "大乱斗"
+            #     },
+            #     {
+            #         "Date": "2017-02-11",
+            #         "BD": "liyin",
+            #         "CountProfit": 3501.26,
+            #         "appName": "大乱斗"
+            #     },
+            #     {
+            #         "Date": "2017-02-12",
+            #         "BD": "liyin",
+            #         "CountProfit": 1401.67,
+            #         "appName": "大乱斗"
+            #     },
+            #     {
+            #         "Date": "2017-02-13",
+            #         "BD": "liyin",
+            #         "CountProfit": 1881.98,
+            #         "appName": "大乱斗"
+            #     },
+            #     {
+            #         "Date": "2017-02-10",
+            #         "BD": "yinli",
+            #         "CountProfit": 535.44,
+            #         "appName": "德州扑克"
+            #     }
+            # ]
 
-        elif flag == "Offer-1":
+        elif flag == "Offer":
             fb_ap_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date).with_entities(Datas.date,Datas.offer_id,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
             fb_ap_result = fb_ap_data.group_by(Datas.date,Datas.offer_id).all()
             for i in fb_ap_result:
@@ -549,52 +549,52 @@ def dbTable():
                 l["Profit"] = float('%0.2f' % (l['Profit']))
                 all_data_list.append(l)
             dimission = ["Date", "Offer", "Revenue","Cost","Profit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
-            all_data_list = [
-                {
-                    "CPI": 0.28,
-                    "CTR": 2.05,
-                    "Profit": 523.98,
-                    "CPC": 0.07,
-                    "CVR": 24,
-                    "Clicks": 1271,
-                    "Conversions": 305,
-                    "Offer": 2,
-                    "Revenue": 610,
-                    "Cost": 86.02,
-                    "Date": "2017-02-10",
-                    "Impressions": 61940
-                },
-                {
-                    "CPI": 0.9,
-                    "CTR": 3.03,
-                    "Profit": 3289,
-                    "CPC": 0.14,
-                    "CVR": 15.87,
-                    "Clicks": 9863,
-                    "Conversions": 1565,
-                    "Offer": 3,
-                    "Revenue": 4695,
-                    "Cost": 1406,
-                    "Date": "2017-02-10",
-                    "Impressions": 325345
-                },
-                {
-                    "CPI": 0.34,
-                    "CTR": 2.05,
-                    "Profit": 381.08,
-                    "CPC": 0.07,
-                    "CVR": 21.2,
-                    "Clicks": 1085,
-                    "Conversions": 230,
-                    "Offer": 2,
-                    "Revenue": 460,
-                    "Cost": 78.92,
-                    "Date": "2017-02-11",
-                    "Impressions": 52841
-                }
-            ]
+            # all_data_list = [
+            #     {
+            #         "CPI": 0.28,
+            #         "CTR": 2.05,
+            #         "Profit": 523.98,
+            #         "CPC": 0.07,
+            #         "CVR": 24,
+            #         "Clicks": 1271,
+            #         "Conversions": 305,
+            #         "Offer": 2,
+            #         "Revenue": 610,
+            #         "Cost": 86.02,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 61940
+            #     },
+            #     {
+            #         "CPI": 0.9,
+            #         "CTR": 3.03,
+            #         "Profit": 3289,
+            #         "CPC": 0.14,
+            #         "CVR": 15.87,
+            #         "Clicks": 9863,
+            #         "Conversions": 1565,
+            #         "Offer": 3,
+            #         "Revenue": 4695,
+            #         "Cost": 1406,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 325345
+            #     },
+            #     {
+            #         "CPI": 0.34,
+            #         "CTR": 2.05,
+            #         "Profit": 381.08,
+            #         "CPC": 0.07,
+            #         "CVR": 21.2,
+            #         "Clicks": 1085,
+            #         "Conversions": 230,
+            #         "Offer": 2,
+            #         "Revenue": 460,
+            #         "Cost": 78.92,
+            #         "Date": "2017-02-11",
+            #         "Impressions": 52841
+            #     }
+            # ]
 
-        elif flag == "Offer-2":
+        elif flag == "Offer-1":
             facebook_data = []
             apple_data = []
             fb_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date, Datas.type == "facebook").with_entities(Datas.date,Datas.offer_id,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
@@ -684,69 +684,69 @@ def dbTable():
 
             all_data_list = facebook_data + apple_data + adwords_data
             dimission = ["Date", "Offer","Source", "Revenue","Cost","Profit","Conversions", "CPI","CPC","CVR","CTR","Impressions","Clicks"]
-            all_data_list = [
-                {
-                    "CPI": 0.28,
-                    "CTR": 2.05,
-                    "Profit": 523.98,
-                    "CPC": 0.07,
-                    "CVR": 24,
-                    "Source": "facebook",
-                    "Clicks": 1271,
-                    "Conversions": 305,
-                    "Offer": 2,
-                    "Revenue": 610,
-                    "Cost": 86.02,
-                    "Date": "2017-02-10",
-                    "Impressions": 61940
-                },
-                {
-                    "CPI": 0.5,
-                    "CTR": 2.03,
-                    "Profit": 284.46,
-                    "CPC": 0.08,
-                    "CVR": 15.94,
-                    "Source": "facebook",
-                    "Clicks": 715,
-                    "Conversions": 114,
-                    "Offer": 3,
-                    "Revenue": 342,
-                    "Cost": 57.54,
-                    "Date": "2017-02-10",
-                    "Impressions": 35246
-                },
-                {
-                    "CPI": 0.34,
-                    "CTR": 2.05,
-                    "Profit": 381.08,
-                    "CPC": 0.07,
-                    "CVR": 21.2,
-                    "Source": "facebook",
-                    "Clicks": 1085,
-                    "Conversions": 230,
-                    "Offer": 2,
-                    "Revenue": 460,
-                    "Cost": 78.92,
-                    "Date": "2017-02-11",
-                    "Impressions": 52841
-                },
-                {
-                    "CPI": 0.59,
-                    "CTR": 1.95,
-                    "Profit": 209.64,
-                    "CPC": 0.09,
-                    "CVR": 14.55,
-                    "Source": "facebook",
-                    "Clicks": 598,
-                    "Conversions": 87,
-                    "Offer": 3,
-                    "Revenue": 261,
-                    "Cost": 51.36,
-                    "Date": "2017-02-11",
-                    "Impressions": 30680
-                }
-            ]
-        elif flag == "Offer-3":
+            # all_data_list = [
+            #     {
+            #         "CPI": 0.28,
+            #         "CTR": 2.05,
+            #         "Profit": 523.98,
+            #         "CPC": 0.07,
+            #         "CVR": 24,
+            #         "Source": "facebook",
+            #         "Clicks": 1271,
+            #         "Conversions": 305,
+            #         "Offer": 2,
+            #         "Revenue": 610,
+            #         "Cost": 86.02,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 61940
+            #     },
+            #     {
+            #         "CPI": 0.5,
+            #         "CTR": 2.03,
+            #         "Profit": 284.46,
+            #         "CPC": 0.08,
+            #         "CVR": 15.94,
+            #         "Source": "facebook",
+            #         "Clicks": 715,
+            #         "Conversions": 114,
+            #         "Offer": 3,
+            #         "Revenue": 342,
+            #         "Cost": 57.54,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 35246
+            #     },
+            #     {
+            #         "CPI": 0.34,
+            #         "CTR": 2.05,
+            #         "Profit": 381.08,
+            #         "CPC": 0.07,
+            #         "CVR": 21.2,
+            #         "Source": "facebook",
+            #         "Clicks": 1085,
+            #         "Conversions": 230,
+            #         "Offer": 2,
+            #         "Revenue": 460,
+            #         "Cost": 78.92,
+            #         "Date": "2017-02-11",
+            #         "Impressions": 52841
+            #     },
+            #     {
+            #         "CPI": 0.59,
+            #         "CTR": 1.95,
+            #         "Profit": 209.64,
+            #         "CPC": 0.09,
+            #         "CVR": 14.55,
+            #         "Source": "facebook",
+            #         "Clicks": 598,
+            #         "Conversions": 87,
+            #         "Offer": 3,
+            #         "Revenue": 261,
+            #         "Cost": 51.36,
+            #         "Date": "2017-02-11",
+            #         "Impressions": 30680
+            #     }
+            # ]
+        elif flag == "Offer-2":
             facebook_data = []
             apple_data = []
             fb_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date, Datas.type == "facebook").with_entities(Datas.date,Datas.offer_id,Datas.country,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
@@ -840,56 +840,56 @@ def dbTable():
 
             all_data_list = facebook_data + apple_data + adwords_data
             dimission = ["Date", "Offer", "Source","GEO", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions", "Clicks"]
-            all_data_list = [
-                {
-                    "CPI": 0.15,
-                    "CTR": 2.08,
-                    "Profit": 353.52,
-                    "CPC": 0.05,
-                    "CVR": 34.35,
-                    "Source": "facebook",
-                    "Clicks": 556,
-                    "Conversions": 191,
-                    "Offer": 2,
-                    "Revenue": 382,
-                    "Cost": 28.48,
-                    "Date": "2017-02-10",
-                    "Impressions": 26694,
-                    "GEO": "MY"
-                },
-                {
-                    "CPI": 0.5,
-                    "CTR": 2.03,
-                    "Profit": 170.46,
-                    "CPC": 0.08,
-                    "CVR": 15.94,
-                    "Source": "facebook",
-                    "Clicks": 715,
-                    "Conversions": 114,
-                    "Offer": 2,
-                    "Revenue": 228,
-                    "Cost": 57.54,
-                    "Date": "2017-02-10",
-                    "Impressions": 35246,
-                    "GEO": "TH"
-                },
-                {
-                    "CPI": 0.5,
-                    "CTR": 2.03,
-                    "Profit": 284.46,
-                    "CPC": 0.08,
-                    "CVR": 15.94,
-                    "Source": "facebook",
-                    "Clicks": 715,
-                    "Conversions": 114,
-                    "Offer": 3,
-                    "Revenue": 342,
-                    "Cost": 57.54,
-                    "Date": "2017-02-10",
-                    "Impressions": 35246,
-                    "GEO": "TH"
-                }
-            ]
+            # all_data_list = [
+            #     {
+            #         "CPI": 0.15,
+            #         "CTR": 2.08,
+            #         "Profit": 353.52,
+            #         "CPC": 0.05,
+            #         "CVR": 34.35,
+            #         "Source": "facebook",
+            #         "Clicks": 556,
+            #         "Conversions": 191,
+            #         "Offer": 2,
+            #         "Revenue": 382,
+            #         "Cost": 28.48,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 26694,
+            #         "GEO": "MY"
+            #     },
+            #     {
+            #         "CPI": 0.5,
+            #         "CTR": 2.03,
+            #         "Profit": 170.46,
+            #         "CPC": 0.08,
+            #         "CVR": 15.94,
+            #         "Source": "facebook",
+            #         "Clicks": 715,
+            #         "Conversions": 114,
+            #         "Offer": 2,
+            #         "Revenue": 228,
+            #         "Cost": 57.54,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 35246,
+            #         "GEO": "TH"
+            #     },
+            #     {
+            #         "CPI": 0.5,
+            #         "CTR": 2.03,
+            #         "Profit": 284.46,
+            #         "CPC": 0.08,
+            #         "CVR": 15.94,
+            #         "Source": "facebook",
+            #         "Clicks": 715,
+            #         "Conversions": 114,
+            #         "Offer": 3,
+            #         "Revenue": 342,
+            #         "Cost": 57.54,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 35246,
+            #         "GEO": "TH"
+            #     }
+            # ]
 
         elif flag == "MB-1":
             facebook_data = []
@@ -985,56 +985,56 @@ def dbTable():
             all_data_list = facebook_data + apple_data + adwords_data
             dimission = ["Date", "Offer", "MB","Source", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
 
-            all_data_list = [
-                {
-                    "CPI": 0.35,
-                    "CTR": 1.72,
-                    "Profit": 0.3,
-                    "CPC": 0.06,
-                    "CVR": 17.82,
-                    "Source": "facebook",
-                    "Clicks": 275,
-                    "MB": "oygd66",
-                    "Conversions": 49,
-                    "Offer": 2,
-                    "Revenue": 18.93,
-                    "Cost": 17.21,
-                    "Date": "2017-02-10",
-                    "Impressions": 16006
-                },
-                {
-                    "CPI": 0.44,
-                    "CTR": 1.74,
-                    "Profit": 11.42,
-                    "CPC": 0.08,
-                    "CVR": 17.45,
-                    "Source": "facebook",
-                    "Clicks": 212,
-                    "MB": "oygd66",
-                    "Conversions": 37,
-                    "Offer": 2,
-                    "Revenue": 17.77,
-                    "Cost": 16.15,
-                    "Date": "2017-02-11",
-                    "Impressions": 12176
-                },
-                {
-                    "CPI": 0.26,
-                    "CTR": 1.44,
-                    "Profit": -19.22,
-                    "CPC": 0.08,
-                    "CVR": 30.07,
-                    "Source": "facebook",
-                    "Clicks": 306,
-                    "MB": "oygd66",
-                    "Conversions": 92,
-                    "Offer": 2,
-                    "Revenue": 26.03,
-                    "Cost": 23.66,
-                    "Date": "2017-02-12",
-                    "Impressions": 21294
-                }
-            ]
+            # all_data_list = [
+            #     {
+            #         "CPI": 0.35,
+            #         "CTR": 1.72,
+            #         "Profit": 0.3,
+            #         "CPC": 0.06,
+            #         "CVR": 17.82,
+            #         "Source": "facebook",
+            #         "Clicks": 275,
+            #         "MB": "oygd66",
+            #         "Conversions": 49,
+            #         "Offer": 2,
+            #         "Revenue": 18.93,
+            #         "Cost": 17.21,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 16006
+            #     },
+            #     {
+            #         "CPI": 0.44,
+            #         "CTR": 1.74,
+            #         "Profit": 11.42,
+            #         "CPC": 0.08,
+            #         "CVR": 17.45,
+            #         "Source": "facebook",
+            #         "Clicks": 212,
+            #         "MB": "oygd66",
+            #         "Conversions": 37,
+            #         "Offer": 2,
+            #         "Revenue": 17.77,
+            #         "Cost": 16.15,
+            #         "Date": "2017-02-11",
+            #         "Impressions": 12176
+            #     },
+            #     {
+            #         "CPI": 0.26,
+            #         "CTR": 1.44,
+            #         "Profit": -19.22,
+            #         "CPC": 0.08,
+            #         "CVR": 30.07,
+            #         "Source": "facebook",
+            #         "Clicks": 306,
+            #         "MB": "oygd66",
+            #         "Conversions": 92,
+            #         "Offer": 2,
+            #         "Revenue": 26.03,
+            #         "Cost": 23.66,
+            #         "Date": "2017-02-12",
+            #         "Impressions": 21294
+            #     }
+            # ]
 
         elif flag == "MB-2":
             facebook_data = []
@@ -1047,9 +1047,9 @@ def dbTable():
                     pass
                 else:
                     cpi = float('%0.2f' % (cData(float(i[5]), float(i[7]))))
-                    cpc = float('%0.2f' % (cData(float(i[5]), float(i[8]))))
-                    cvr = float('%0.2f' % (cData(float(i[7]), float(i[8])) * 100))
-                    ctr = float('%0.2f' % (cData(float(i[8]), float(i[8])) * 100))
+                    cpc = float('%0.2f' % (cData(float(i[5]), float(i[9]))))
+                    cvr = float('%0.2f' % (cData(float(i[7]), float(i[9])) * 100))
+                    ctr = float('%0.2f' % (cData(float(i[9]), float(i[8])) * 100))
                     facebook_data += [
                         {
                             "Date": i[0],
@@ -1132,59 +1132,129 @@ def dbTable():
             all_data_list = facebook_data + apple_data + adwords_data
             dimission = ["Date", "Offer", "MB","Source","GEO", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
 
-            all_data_list = [
-                {
-                    "CPI": 0.35,
-                    "CTR": 100,
-                    "Profit": 0.3,
-                    "CPC": 0,
-                    "CVR": 0.31,
-                    "Source": "facebook",
-                    "Clicks": 275,
-                    "MB": "oygd66",
-                    "Conversions": 49,
-                    "Offer": 2,
-                    "Revenue": 18.93,
-                    "Cost": 17.21,
-                    "Date": "2017-02-10",
-                    "Impressions": 16006,
-                    "GEO": "TH"
-                },
-                {
-                    "CPI": 0.44,
-                    "CTR": 100,
-                    "Profit": 11.42,
-                    "CPC": 0,
-                    "CVR": 0.3,
-                    "Source": "facebook",
-                    "Clicks": 212,
-                    "MB": "oygd66",
-                    "Conversions": 37,
-                    "Offer": 2,
-                    "Revenue": 17.77,
-                    "Cost": 16.15,
-                    "Date": "2017-02-11",
-                    "Impressions": 12176,
-                    "GEO": "TH"
-                },
-                {
-                    "CPI": 0.26,
-                    "CTR": 100,
-                    "Profit": -19.22,
-                    "CPC": 0,
-                    "CVR": 0.43,
-                    "Source": "facebook",
-                    "Clicks": 306,
-                    "MB": "oygd66",
-                    "Conversions": 92,
-                    "Offer": 2,
-                    "Revenue": 26.03,
-                    "Cost": 23.66,
-                    "Date": "2017-02-12",
-                    "Impressions": 21294,
-                    "GEO": "TH"
-                }
-            ]
+            # all_data_list = [
+            #     {
+            #         "CPI": 0.35,
+            #         "CTR": 100,
+            #         "Profit": 0.3,
+            #         "CPC": 0,
+            #         "CVR": 0.31,
+            #         "Source": "facebook",
+            #         "Clicks": 275,
+            #         "MB": "oygd66",
+            #         "Conversions": 49,
+            #         "Offer": 2,
+            #         "Revenue": 18.93,
+            #         "Cost": 17.21,
+            #         "Date": "2017-02-10",
+            #         "Impressions": 16006,
+            #         "GEO": "TH"
+            #     },
+            #     {
+            #         "CPI": 0.44,
+            #         "CTR": 100,
+            #         "Profit": 11.42,
+            #         "CPC": 0,
+            #         "CVR": 0.3,
+            #         "Source": "facebook",
+            #         "Clicks": 212,
+            #         "MB": "oygd66",
+            #         "Conversions": 37,
+            #         "Offer": 2,
+            #         "Revenue": 17.77,
+            #         "Cost": 16.15,
+            #         "Date": "2017-02-11",
+            #         "Impressions": 12176,
+            #         "GEO": "TH"
+            #     },
+            #     {
+            #         "CPI": 0.26,
+            #         "CTR": 100,
+            #         "Profit": -19.22,
+            #         "CPC": 0,
+            #         "CVR": 0.43,
+            #         "Source": "facebook",
+            #         "Clicks": 306,
+            #         "MB": "oygd66",
+            #         "Conversions": 92,
+            #         "Offer": 2,
+            #         "Revenue": 26.03,
+            #         "Cost": 23.66,
+            #         "Date": "2017-02-12",
+            #         "Impressions": 21294,
+            #         "GEO": "TH"
+            #     }
+            # ]
+
+        elif flag == "MB":
+            fb_ap_data = DataDetail.query.filter(DataDetail.date >= start_date, DataDetail.date <= end_date).with_entities(DataDetail.date,DataDetail.optName,func.sum(DataDetail.revenue),func.sum(DataDetail.cost),func.sum(DataDetail.profit),func.sum(DataDetail.conversions),func.sum(DataDetail.impressions),func.sum(DataDetail.clicks))
+            fb_ap_result = fb_ap_data.group_by(DataDetail.optName,DataDetail.date).all()
+            for i in fb_ap_result:
+                facebook_apple_data += [
+                    {
+                        "Date": i[0],
+                        "Revenue": float('%0.2f' % (float(i[2]))),
+                        "Cost": float('%0.2f' % (float(i[3]))),
+                        "Profit": float('%0.2f' % (float(i[4]))),
+                        "Conversions": int(i[5]),
+                        "Impressions": int(i[6]),
+                        "Clicks": int(i[7]),
+                        "MB": i[1]
+                    }
+                ]
+            adword_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.date,Adwords.optName,func.sum(Adwords.revenue),func.sum(Adwords.cost),func.sum(Adwords.profit),func.sum(Adwords.conversions),func.sum(Adwords.impressions),func.sum(Adwords.clicks))
+            adword_result = adword_data.group_by(Adwords.optName,Adwords.date).all()
+            for i in adword_result:
+                adwords_data += [
+                    {
+                        "Date": i[0],
+                        "Revenue": float('%0.2f' % (float(i[2]))),
+                        "Cost": float('%0.2f' % (float(i[3]))),
+                        "Profit": float('%0.2f' % (float(i[4]))),
+                        "Conversions": int(i[5]),
+                        "Impressions": int(i[6]),
+                        "Clicks": int(i[7]),
+                        "MB": i[1]
+                    }
+                ]
+
+            all_data_list = facebook_apple_data + adwords_data
+            tempList = []
+            all_data_list_unique = []
+            for ele in all_data_list:
+                key = ele['Date'] + ele['MB']
+                if key in tempList:
+                    for x in all_data_list_unique:
+                        if x['Date'] == ele['Date'] and x['MB'] == ele['MB']:
+                            x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
+                            x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
+                            x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
+                            x['Conversions'] += int(ele['Conversions'])
+                            x['Impressions'] += int(ele['Impressions'])
+                            x['Clicks'] += int(ele['Clicks'])
+
+                else:
+                    ele['Revenue'] = float('%0.2f' % (float(ele['Revenue'])))
+                    ele['Cost'] = float('%0.2f' % (float(ele['Cost'])))
+                    ele['Profit'] = float('%0.2f' % (float(ele['Profit'])))
+                    ele['Conversions'] = float('%0.2f' % (float(ele['Conversions'])))
+                    ele['Impressions'] = float('%0.2f' % (float(ele['Impressions'])))
+                    ele['Clicks'] = float('%0.2f' % (float(ele['Clicks'])))
+
+                    tempList.append(key)
+                    all_data_list_unique.append(ele)
+
+            all_data_list = []
+            for l in all_data_list_unique:
+                l['CPI'] = float('%0.2f' % (cData(float(l['Cost']), float(l['Conversions']))))
+                l['CPC'] = float('%0.2f' % (cData(float(l['Cost']), float(l['Clicks']))))
+                l['CVR'] = float('%0.2f' % (cData(float(l['Conversions']), float(l['Clicks'])) * 100))
+                l['CTR'] = float('%0.2f' % (cData(float(l['Clicks']), float(l['Impressions'])) * 100))
+                l['Revenue'] = float('%0.2f' % (l["Revenue"]))
+                l['Cost'] = float('%0.2f' % (l["Cost"]))
+                l['Profit'] = float('%0.2f' % (l["Profit"]))
+                all_data_list.append(l)
+            dimission = ["Date", "MB", "Revenue", "Cost", "Profit", "Conversions", "CPI", "CPC", "CVR", "CTR", "Impressions","Clicks"]
 
         response = {
             "code": 200,
