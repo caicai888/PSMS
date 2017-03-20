@@ -84,8 +84,8 @@ for i in apple_results:
 
     for campaignId in appleCampaigns:
         print campaignId
-        pem = "/Users/liyin/Downloads/appleapi.pem"
-        key = "/Users/liyin/Downloads/appleapi.key"
+        pem = "/home/ubuntu/appleapi.pem"
+        key = "/home/ubuntu/appleapi.key"
         campaign_url = "https://api.searchads.apple.com/api/v1/reports/campaigns/" + str(campaignId) + "/searchterms"
         for date in all_date:
             count_impressions = 0
