@@ -924,27 +924,28 @@ def dbTable():
                 print ele
                 if ele['MB'] is None:
                     pass
-                key = ele['Date'] + ele['MB']
-                if key in tempList:
-                    for x in all_data_list_unique:
-                        if x['Date'] == ele['Date'] and x['MB'] == ele['MB']:
-                            x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
-                            x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
-                            x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
-                            x['Conversions'] += int(ele['Conversions'])
-                            x['Impressions'] += int(ele['Impressions'])
-                            x['Clicks'] += int(ele['Clicks'])
-
                 else:
-                    ele['Revenue'] = float('%0.2f' % (float(ele['Revenue'])))
-                    ele['Cost'] = float('%0.2f' % (float(ele['Cost'])))
-                    ele['Profit'] = float('%0.2f' % (float(ele['Profit'])))
-                    ele['Conversions'] = float('%0.2f' % (float(ele['Conversions'])))
-                    ele['Impressions'] = float('%0.2f' % (float(ele['Impressions'])))
-                    ele['Clicks'] = float('%0.2f' % (float(ele['Clicks'])))
+                    key = ele['Date'] + ele['MB']
+                    if key in tempList:
+                        for x in all_data_list_unique:
+                            if x['Date'] == ele['Date'] and x['MB'] == ele['MB']:
+                                x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
+                                x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
+                                x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
+                                x['Conversions'] += int(ele['Conversions'])
+                                x['Impressions'] += int(ele['Impressions'])
+                                x['Clicks'] += int(ele['Clicks'])
 
-                    tempList.append(key)
-                    all_data_list_unique.append(ele)
+                    else:
+                        ele['Revenue'] = float('%0.2f' % (float(ele['Revenue'])))
+                        ele['Cost'] = float('%0.2f' % (float(ele['Cost'])))
+                        ele['Profit'] = float('%0.2f' % (float(ele['Profit'])))
+                        ele['Conversions'] = float('%0.2f' % (float(ele['Conversions'])))
+                        ele['Impressions'] = float('%0.2f' % (float(ele['Impressions'])))
+                        ele['Clicks'] = float('%0.2f' % (float(ele['Clicks'])))
+
+                        tempList.append(key)
+                        all_data_list_unique.append(ele)
 
             all_data_list = []
             for l in all_data_list_unique:
