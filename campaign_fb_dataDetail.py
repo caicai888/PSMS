@@ -17,9 +17,9 @@ cursor = db.cursor()
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
-start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=72)
-# start_date = datetime.datetime.now()-datetime.timedelta(hours=888)
-start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
+# start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=72)
+# start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
+start_date = "2017-02-02"
 
 sql_token = "select accessToken from token where account='rongchangzhang@gmail.com'"
 cursor.execute(sql_token)
@@ -34,7 +34,8 @@ conversions_list = []
 profit_list = []
 ctr_list = []
 cpc_list = []
-keywords_sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+# keywords_sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+keywords_sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=2"
 cursor.execute(keywords_sql)
 keywords_result = cursor.fetchall()
 for i in keywords_result:
