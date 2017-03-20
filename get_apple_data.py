@@ -182,6 +182,7 @@ for i in results:
             templist.append(key)
             resultlist.append(ele)
 
+    updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
     for l in resultlist:
         l_cpc = '%0.2f'%(float(l["cost"]) / float(l["clicks"])) if l["clicks"] != 0 else 0
         l_cvr = '%0.2f' % (float(l["conversions"] / l["clicks"] * 100)) if l["clicks"] != 0 else 0
@@ -191,12 +192,12 @@ for i in results:
         cursor.execute(data_sql)
         result_apple = cursor.fetchone()
         if not result_apple:
-            insert_sql = "insert into datas(offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country) values('%d','%s','%f','%f','%f','%d','%d','%d','%s','%s','%s','%s','%s','%s')" % (
-            offerId, "apple", float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"], l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi, l["date"], l["country"])
+            insert_sql = "insert into datas(offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,updateTime) values('%d','%s','%f','%f','%f','%d','%d','%d','%s','%s','%s','%s','%s','%s')" % (
+            offerId, "apple", float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"], l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi, l["date"], l["country"],0,updateTime)
             cursor.execute(insert_sql)
             db.commit()
         else:
-            update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi, result_apple[0])
+            update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s',rebate='%f' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi,0, result_apple[0])
             cursor.execute(update_sql)
             db.commit()
 

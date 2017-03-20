@@ -136,7 +136,7 @@ for i in results:
             cost_list.append(ele)
 
     for cost in cost_list:
-        updateTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        updateTime = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
         data_sql = "select id from datas where offer_id='%d' and type='facebook' and date='%s' and country='%s'" % (offerId,cost["date_start"],cost["country"])
         cursor.execute(data_sql)
         data_result = cursor.fetchone()
