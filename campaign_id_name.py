@@ -43,22 +43,22 @@ for account in accountIds:
             campaignName = j["name"]
             campaignId = j['id']
 
-            search_sql = "select id from campaignRelations where campaignId='%s'"%(campaignId)
+            search_sql = "select id from campaignRelations where campaignId='%s' and campaignName='%s'"%(campaignId,campaignName)
             cursor.execute(search_sql)
             exists = cursor.fetchone()
-            if exists:
+            if not exists:
                 campaign_name = campaignName.split('_')
                 for c in campaign_name:
                     if "66" in c:
-                        update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (c,campaignName,campaignId,exists[0])
-                        cursor.execute(update_sql)
+                        insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId, campaignName, account, c)
+                        cursor.execute(insert_sql)
                         db.commit()
             else:
                 campaign_name = campaignName.split('_')
                 for c in campaign_name:
                     if "66" in c:
-                        insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId,campaignName,account,c)
-                        cursor.execute(insert_sql)
+                        update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (c, campaignName, campaignId, exists[0])
+                        cursor.execute(update_sql)
                         db.commit()
     except Exception:
         pass
