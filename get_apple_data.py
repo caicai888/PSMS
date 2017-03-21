@@ -192,10 +192,8 @@ for i in results:
         cursor.execute(data_sql)
         result_apple = cursor.fetchone()
         if not result_apple:
-            print offerId, "apple", float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"], l["conversions"], str(l_ctr), str(l_cvr),str(l_cpc), str(l_cpi), str(l["date"]), str(l["country"]),float(0),str(updateTime)
             insert_sql = "insert into datas(offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,updateTime) values('%d','%s','%f','%f','%f','%d','%d','%d','%s','%s','%s','%s','%s','%s','%f','%s')" % (
             offerId, "apple", float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"], l["conversions"], str(l_ctr), str(l_cvr),str(l_cpc), str(l_cpi), str(l["date"]), str(l["country"]),float(0),str(updateTime))
-            print insert_sql
             cursor.execute(insert_sql)
             db.commit()
         else:
