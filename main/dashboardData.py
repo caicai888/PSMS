@@ -5,6 +5,7 @@ from models import Datas, Adwords,Offer, User, DataDetail,UserRole
 import json
 import datetime
 from sqlalchemy import func
+import MySQLdb
 
 dashboardData = Blueprint('dashboardData', __name__)
 
@@ -972,3 +973,108 @@ def cData(denominator,molecular):
     else:
         result = float(denominator/molecular)
     return result
+
+#soloERP系统的接口
+@dashboardData.route('/api/soloERP/<start_date>', methods=["POST","GET"])
+def erpData(start_date):
+    psms_db = MySQLdb.connect("localhost", "root", "chizicheng521", "psms", charset='utf8')
+    psms_cursor = psms_db.cursor()
+    time_now = datetime.datetime.now() + datetime.timedelta(hours=8)
+    end_date = datetime.datetime.strftime(time_now, '%Y-%m-%d')
+
+    all_date = []
+    date2 = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+    all_date.append(start_date)
+    date_timelta = datetime.timedelta(days=1)
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+
+    while date_timelta < (date2 - start_date):
+        all_date.append((start_date + date_timelta).strftime("%Y-%m-%d"))
+        date_timelta += datetime.timedelta(days=1)
+    all_date.append(end_date)
+
+    revenue = 0
+    profit = 0
+    cost = 0
+    adwords_result = []
+    facebook_result = []
+    apple_result = []
+    for i in all_date:
+        ad_revenue = 0
+        ad_cost = 0
+        ad_profit = 0
+
+        fb_revenue = 0
+        fb_cost = 0
+        fb_profit = 0
+
+        ap_revenue = 0
+        ap_cost = 0
+        ap_profit = 0
+        # adwords 部分
+        adwords_data = "select revenue,cost,profit from adwords where date='%s'" % i
+        psms_cursor.execute(adwords_data)
+        result = psms_cursor.fetchall()
+        for j in result:
+            ad_revenue += j[0]
+            ad_cost += j[1]
+            ad_profit += j[2]
+        revenue += ad_revenue
+        cost += ad_cost
+        profit += ad_profit
+        adwords_result += [
+            {
+                "date": i,
+                "cost": ad_cost,
+                "revenue": ad_revenue,
+                "profit": ad_profit
+            }
+        ]
+
+        fb_data = "select revenue,cost,profit from datas where date='%s' and type='facebook'" % i
+        psms_cursor.execute(fb_data)
+        fb_result = psms_cursor.fetchall()
+        for j in fb_result:
+            fb_revenue += j[0]
+            fb_cost += j[1]
+            fb_profit += j[2]
+        revenue += fb_revenue
+        cost += fb_cost
+        profit += fb_profit
+        facebook_result += [
+            {
+                "date": i,
+                "revenue": fb_revenue,
+                "cost": fb_cost,
+                "profit": fb_profit
+            }
+        ]
+
+        ap_data = "select revenue,cost,profit from datas where date='%s' and type='apple'" % i
+        psms_cursor.execute(ap_data)
+        ap_result = psms_cursor.fetchall()
+        for j in ap_result:
+            ap_revenue += j[0]
+            ap_cost += j[1]
+            ap_profit += j[2]
+        revenue += ap_revenue
+        cost += ap_cost
+        profit += ap_profit
+        apple_result += [
+            {
+                "date": i,
+                "revenue": ap_revenue,
+                "cost": ap_cost,
+                "profit": ap_profit
+            }
+        ]
+
+    response = {
+        "apple": apple_result,
+        "facebook": facebook_result,
+        "adwords": adwords_result,
+        "cost": cost,
+        "revenue": revenue,
+        "profit": profit
+    }
+    return json.dumps(response)

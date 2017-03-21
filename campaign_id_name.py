@@ -48,18 +48,22 @@ for account in accountIds:
             exists = cursor.fetchone()
             if not exists:
                 campaign_name = campaignName.split('_')
+                optName = ""
                 for c in campaign_name:
                     if "66" in c:
-                        insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId, campaignName, account, c)
-                        cursor.execute(insert_sql)
-                        db.commit()
+                        optName = c
+                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId, campaignName, account, optName)
+                cursor.execute(insert_sql)
+                db.commit()
             else:
                 campaign_name = campaignName.split('_')
+                optName = ""
                 for c in campaign_name:
                     if "66" in c:
-                        update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (c, campaignName, campaignId, exists[0])
-                        cursor.execute(update_sql)
-                        db.commit()
+                        optName = c
+                update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (optName, campaignName, campaignId, exists[0])
+                cursor.execute(update_sql)
+                db.commit()
     except Exception:
         pass
 
