@@ -193,11 +193,11 @@ for i in results:
         result_apple = cursor.fetchone()
         if not result_apple:
             insert_sql = "insert into datas(offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,updateTime) values('%d','%s','%f','%f','%f','%d','%d','%d','%s','%s','%s','%s','%s','%s','%f','s')" % (
-            offerId, "apple", float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"], l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi, l["date"], l["country"],float(0),updateTime)
+            offerId, "apple", float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"], l["conversions"], str(l_ctr), str(l_cvr),str(l_cpc), str(l_cpi), str(l["date"]), str(l["country"]),float(0),str(updateTime))
             cursor.execute(insert_sql)
             db.commit()
         else:
-            update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s',rebate='%f' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], l_ctr, l_cvr,l_cpc, l_cpi,float(0), result_apple[0])
+            update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s',rebate='%f' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], str(l_ctr), str(l_cvr),str(l_cpc), str(l_cpi),float(0), result_apple[0])
             cursor.execute(update_sql)
             db.commit()
 
