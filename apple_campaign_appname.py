@@ -22,7 +22,7 @@ headers["Content-Type"] = "application/json"
 all_date = []
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
-yestarday = datetime.datetime.now()-datetime.timedelta(hours=16)
+yestarday = datetime.datetime.now()-datetime.timedelta(hours=712)
 date1 = datetime.datetime.strftime(yestarday, '%Y-%m-%d')
 all_date.append(date1)
 date1 = datetime.datetime.strptime(date1, '%Y-%m-%d')
@@ -74,7 +74,9 @@ for i in all_date:
         cursor.execute(search_sql)
         exists = cursor.fetchone()
         if exists:
-            pass
+            update_sql = "update campaignAppName set campaignName='%s',appId='%s'"%(i['campaignName'],i['appId'])
+            cursor.execute(update_sql)
+            db.commit()
         else:
             insert_sql = "insert into campaignAppName(campaignId,campaignName,appId,appName) values('%s','%s','%s','%s')"%(i["campaignId"],i["campaignName"],i["appId"],i["appName"])
             cursor.execute(insert_sql)
