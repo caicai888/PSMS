@@ -993,13 +993,14 @@ def erpData(start_date):
         date_timelta += datetime.timedelta(days=1)
     all_date.append(end_date)
 
-    revenue = 0
-    profit = 0
-    cost = 0
     adwords_result = []
     facebook_result = []
     apple_result = []
+    count_result = []
     for i in all_date:
+        revenue = 0
+        profit = 0
+        cost = 0
         ad_revenue = 0
         ad_cost = 0
         ad_profit = 0
@@ -1069,12 +1070,18 @@ def erpData(start_date):
             }
         ]
 
+        count_result += [
+            {
+                "date": i,
+                "revenue": revenue,
+                "cost": cost,
+                "profit": profit
+            }
+        ]
     response = {
         "apple": apple_result,
         "facebook": facebook_result,
         "adwords": adwords_result,
-        "cost": cost,
-        "revenue": revenue,
-        "profit": profit
+        "count": count_result
     }
     return json.dumps(response)
