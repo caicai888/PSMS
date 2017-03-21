@@ -74,7 +74,7 @@ for i in all_date:
         cursor.execute(search_sql)
         exists = cursor.fetchone()
         if exists:
-            update_sql = "update campaignAppName set campaignName='%s',appId='%s'"%(i['campaignName'],i['appId'])
+            update_sql = "update campaignAppName set campaignName='%s',appId='%s'where id='%d'"%(i['campaignName'],i['appId'],exists[0])
             cursor.execute(update_sql)
             db.commit()
         else:
