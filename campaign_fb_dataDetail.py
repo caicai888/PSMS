@@ -13,7 +13,7 @@ from email.MIMEMultipart import MIMEMultipart
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 # time_now = datetime.datetime.now()
-start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=720)
+start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
@@ -304,23 +304,22 @@ for i in results:
                 cursor.execute(insert_sql)
                 db.commit()
 
-# if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "18:00":
-#     mail_body = "facebook data finished"
-#     mail_from = "ads_reporting@newborntown.com"
-#     mail_to = "liyin@newborntown.com"
-#     msg = MIMEMultipart()
-#     body = MIMEText(mail_body)
-#     msg.attach(body)
-#     msg['From'] = mail_from
-#     msg['To'] = mail_to
-#     msg['date'] = time.strftime('%Y-%m-%d')
-#     msg['Subject'] = "get facebook Data finished"
-#     smtp = smtplib.SMTP()
-#     smtp.connect('smtp.exmail.qq.com', 25)
-#     smtp.ehlo()
-#     smtp.starttls()
-#     smtp.ehlo()
-#     smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
-#     smtp.sendmail(mail_from, mail_to, msg.as_string())
-#     smtp.quit()
-print "ok"
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "21:00":
+    mail_body = "facebook data finished"
+    mail_from = "ads_reporting@newborntown.com"
+    mail_to = "liyin@newborntown.com"
+    msg = MIMEMultipart()
+    body = MIMEText(mail_body)
+    msg.attach(body)
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    msg['date'] = time.strftime('%Y-%m-%d')
+    msg['Subject'] = "get facebook Data detail finished"
+    smtp = smtplib.SMTP()
+    smtp.connect('smtp.exmail.qq.com', 25)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+    smtp.sendmail(mail_from, mail_to, msg.as_string())
+    smtp.quit()
