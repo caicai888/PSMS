@@ -107,6 +107,7 @@ for i in results:
 
     if time_ranges != []:
         for campaignId in advertise_series:
+            print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
@@ -202,10 +203,70 @@ for i in results:
                 }
                 cpc_list += [data_cpc]
 
+        if contract_type == "1":
+            for r in range(len(cost_list)):
+                country = cost_list[r].get("country")
+                date = cost_list[r].get("date_start")
+                cost = float(cost_list[r].get("spend"))
+                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='facebook' and date<='%s' and date>='%s' order by date desc"%(offerId,date,startTime)
+                cursor.execute(cooperation_sql)
+                cooperation_result = cursor.fetchone()
+                if cooperation_result:
+                    contract_scale = cooperation_result[0]
+                else:
+                    history_scale_sql = "select contract_scale from history where platform='facebook' and offer_id='%d' order by createdTime desc"%(offerId)
+                    cursor.execute(history_scale_sql)
+                    history_scale_result = cursor.fetchone()
+                    if history_scale_result:
+                        contract_scale = history_scale_result[0]
+
+                revenue_list += [
+                    {
+                        "country": country,
+                        "revenue": '%0.2f' % (cost * (1 + float(contract_scale) / 100)),
+                        "date_start": date,
+                        "date_stop": date,
+                        "campaignId": campaignId
+                    }
+                ]
+        else:
+            for r in range(len(conversions_list)):
+                country = conversions_list[r].get("country")
+                date = conversions_list[r].get("date_start")
+                conversion = float(conversions_list[r].get("conversions"))
+
+                country_sql = "select id from country where shorthand='%s'"%country
+                cursor.execute(country_sql)
+                country_result = cursor.fetchone()
+                countryId = country_result[0]
+                timePrice_sql = "select price from timePrice where country_id='%d' and platform='facebook' and offer_id='%d' and date<='%s' and date>='%s' order by date desc" %(countryId,offerId,date,startTime)
+                cursor.execute(timePrice_sql)
+                timePrice_result = cursor.fetchone()
+                if timePrice_result:
+                    price = timePrice_result[0]
+                else:
+                    history_sql = "select country_price from history where country='%s' and platform='facebook' and offer_id='%d'order by createdTime desc"%(country,offerId)
+                    cursor.execute(history_sql)
+                    history_result = cursor.fetchone()
+                    if not history_result:
+                        price = offer_price
+                    else:
+                        price = history_result[0]
+
+                revenue_list += [
+                    {
+                        "country": country,
+                        "revenue": '%0.2f' % (float(conversion * price)),
+                        "date_start": date,
+                        "date_stop": date,
+                        "campaignId": campaignId
+                    }
+                ]
+
         for l in range(len(impressions_list)):
             country_fb = impressions_list[l].get("country")
             date_fb = impressions_list[l].get("date_start")
-            revenue_fb = float('%0.2f'%(float(revenue_list[l].get("revenue"))))
+            revenue_fb = float(revenue_list[l].get("revenue"))
             cost_fb = float('%0.2f'%(float(cost_list[l].get("spend"))))
             profit_fb = float(rebate_fb-cost_fb)
             impressions_fb = impressions_list[l].get("impressions")
