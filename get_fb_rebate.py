@@ -98,7 +98,7 @@ for i in results:
                 if rebate_result:
                     scale = float(rebate_result[0])
                 else:
-                    scale = 100
+                    scale = 0
                 url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
                 params = {
                     "access_token": accessToken,

@@ -19,7 +19,6 @@ time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=720)
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
-# start_date = "2017-02-02"
 
 sql_token = "select accessToken from token where account='rongchangzhang@gmail.com'"
 cursor.execute(sql_token)
@@ -304,7 +303,10 @@ for l in range(len(impressions_list)):
     rebate_sql = "select scale from rebate where accountId='%s'" % (accountId)
     cursor.execute(rebate_sql)
     rebate_result = cursor.fetchone()
-    rebate_fb = float('%0.2f' % (float(cost_fb) * float(rebate_result[0]) / 100))
+    if rebate_result:
+        rebate_fb = float('%0.2f' % (float(cost_fb) * float(rebate_result[0]) / 100))
+    else:
+        rebate_fb = 0
 
     datadetail_sql = "select id from dataDetail where offer_id='%d' and country='%s' and date='%s' and campaignId='%s' and type='facebook'"%(offer_id,country_fb,date_fb,campaignId)
     cursor.execute(datadetail_sql)
