@@ -225,7 +225,8 @@ for i in results:
                         "country": country,
                         "revenue": '%0.2f' % (cost * (1 + float(contract_scale) / 100)),
                         "date_start": date,
-                        "date_stop": date
+                        "date_stop": date,
+                        "campaignId": campaignId
                     }
                 ]
         else:
@@ -257,7 +258,8 @@ for i in results:
                         "country": country,
                         "revenue": '%0.2f' % (float(conversion * price)),
                         "date_start": date,
-                        "date_stop": date
+                        "date_stop": date,
+                        "campaignId": campaignId
                     }
                 ]
 
