@@ -272,7 +272,7 @@ for i in results:
             impressions_fb = int(impressions_list[l].get("impressions"))
             clicks_fb = int(clicks_list[l].get("clicks"))
             conversions_fb = int(conversions_list[l].get("conversions"))
-            ctr_fb = ctr_list[l].get("ctr")
+            ctr_fb = float(ctr_list[l].get("ctr"))
             cvr_fb = float('%0.2f'%(float(conversions_fb)/float(clicks_fb)*100) if float(clicks_fb) != 0 else 0)
             cpc_fb = float(cpc_list[l].get("cpc"))
             cpi_fb = float('%0.2f'%(cost_fb/float(conversions_fb)) if float(conversions_fb) !=0 else 0)
@@ -300,7 +300,7 @@ for i in results:
                 cursor.execute(update_sql, (revenue_fb, profit_fb, cost_fb, impressions_fb, clicks_fb, conversions_fb, ctr_fb, cvr_fb, cpc_fb, cpi_fb, rebate_fb, optName, updateTime,datadetail_result[0]))
                 db.commit()
             else:
-                insert_sql = "insert into dataDetail(offer_id,account_id,campaignId,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,optName,updateTime) values('%d','%s','%s','%s','%f','%f','%f','%d','%d','%d','%f','%f','%f','%f','%s','%s','%f','%s','%s')" % (offerId, accountId, campaignId, 'facebook', revenue_fb, profit_fb, cost_fb, impressions_fb, clicks_fb, conversions_fb, ctr_fb, cvr_fb,cpc_fb, cpi_fb, date_fb, country_fb, rebate_fb, optName, updateTime)
+                insert_sql = "insert into dataDetail(offer_id,account_id,campaignId,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,optName,updateTime) values('%d','%s','%s','%s','%f','%f','%f','%d','%d','%d','%f','%f','%f','%f','%s','%s','%f','%s','%s')" % (offerId, accountId, campaignId, 'facebook', revenue_fb, profit_fb, cost_fb, impressions_fb, clicks_fb, conversions_fb, ctr_fb, cvr_fb,cpc_fb, cpi_fb, date_fb, country_fb, float(rebate_fb), optName, updateTime)
                 cursor.execute(insert_sql)
                 db.commit()
 
