@@ -103,110 +103,112 @@ for i in keywords_result:
                 campaignIds.append(c[0])
             else:
                 pass
-        for campaignId in campaignIds:
-            try:
-                url = "https://graph.facebook.com/v2.8/"+str(campaignId)+"/insights"
-                params = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["impressions"],
-                    "breakdowns": ["country"],
-                    "time_ranges": str(time_ranges)
-                }
-                result = requests.get(url=url, params=params)
-                data = result.json()["data"]
-                for d in data:
-                    d["offer_id"] = offer_id
-                    d["campaignId"] = campaignId
-                    impressions_list.append(d)
+    print campaignIds
+    print len(campaignIds)
+    for campaignId in campaignIds:
+        try:
+            url = "https://graph.facebook.com/v2.8/"+str(campaignId)+"/insights"
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["impressions"],
+                "breakdowns": ["country"],
+                "time_ranges": str(time_ranges)
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
+            for d in data:
+                d["offer_id"] = offer_id
+                d["campaignId"] = campaignId
+                impressions_list.append(d)
 
-                params = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["spend"],
-                    "breakdowns": ["country"],
-                    "time_ranges": str(time_ranges)
-                }
-                result = requests.get(url=url, params=params)
-                data = result.json()["data"]
-                for d in data:
-                    d["offer_id"] = offer_id
-                    d["campaignId"] = campaignId
-                    cost_list.append(d)
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["spend"],
+                "breakdowns": ["country"],
+                "time_ranges": str(time_ranges)
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
+            for d in data:
+                d["offer_id"] = offer_id
+                d["campaignId"] = campaignId
+                cost_list.append(d)
 
-                params = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["clicks"],
-                    "breakdowns": ["country"],
-                    "time_ranges": str(time_ranges)
-                }
-                result = requests.get(url=url, params=params)
-                data = result.json()["data"]
-                for d in data:
-                    d["offer_id"] = offer_id
-                    d["campaignId"] = campaignId
-                    clicks_list.append(d)
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["clicks"],
+                "breakdowns": ["country"],
+                "time_ranges": str(time_ranges)
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
+            for d in data:
+                d["offer_id"] = offer_id
+                d["campaignId"] = campaignId
+                clicks_list.append(d)
 
-                params = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["actions"],
-                    "breakdowns": ["country"],
-                    "time_ranges": str(time_ranges)
-                }
-                result = requests.get(url=url, params=params)
-                data = result.json()["data"]
-                for d in data:
-                    actions = d.get("actions", [])
-                    conversions = 0
-                    for action in actions:
-                        if "mobile_app_install" in action["action_type"]:
-                            conversions = int(action["value"])
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["actions"],
+                "breakdowns": ["country"],
+                "time_ranges": str(time_ranges)
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
+            for d in data:
+                actions = d.get("actions", [])
+                conversions = 0
+                for action in actions:
+                    if "mobile_app_install" in action["action_type"]:
+                        conversions = int(action["value"])
 
-                    conver_data = {
-                        "country": d["country"],
-                        "date_start": d["date_start"],
-                        "conversions": conversions,
-                        "offer_id": offer_id,
-                        "campaignId": campaignId
-                    }
-                    conversions_list += [conver_data]
-
-                params = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["ctr"],
-                    "breakdowns": ["country"],
-                    "time_ranges": str(time_ranges)
+                conver_data = {
+                    "country": d["country"],
+                    "date_start": d["date_start"],
+                    "conversions": conversions,
+                    "offer_id": offer_id,
+                    "campaignId": campaignId
                 }
-                result = requests.get(url=url, params=params)
-                data = result.json()["data"]
-                for d in data:
-                    d["offer_id"] = offer_id
-                    d["campaignId"] = campaignId
-                    ctr_list.append(d)
+                conversions_list += [conver_data]
 
-                params = {
-                    "access_token": accessToken,
-                    "level": "campaign",
-                    "fields": ["cpc"],
-                    "breakdowns": ["country"],
-                    "time_ranges": str(time_ranges)
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["ctr"],
+                "breakdowns": ["country"],
+                "time_ranges": str(time_ranges)
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
+            for d in data:
+                d["offer_id"] = offer_id
+                d["campaignId"] = campaignId
+                ctr_list.append(d)
+
+            params = {
+                "access_token": accessToken,
+                "level": "campaign",
+                "fields": ["cpc"],
+                "breakdowns": ["country"],
+                "time_ranges": str(time_ranges)
+            }
+            result = requests.get(url=url, params=params)
+            data = result.json()["data"]
+            for d in data:
+                data_cpc = {
+                    "cpc": float('%0.2f' % (float(d["cpc"]))),
+                    "country": d["country"],
+                    "date_start": d["date_start"],
+                    "offer_id": offer_id,
+                    "campaignId": campaignId
                 }
-                result = requests.get(url=url, params=params)
-                data = result.json()["data"]
-                for d in data:
-                    data_cpc = {
-                        "cpc": float('%0.2f' % (float(d["cpc"]))),
-                        "country": d["country"],
-                        "date_start": d["date_start"],
-                        "offer_id": offer_id,
-                        "campaignId": campaignId
-                    }
-                    cpc_list += [data_cpc]
-            except Exception as e:
-                print e
+                cpc_list += [data_cpc]
+        except Exception as e:
+            print e
 
     if contract_type == "1":
         for r in range(len(cost_list)):
@@ -328,4 +330,22 @@ for l in range(len(impressions_list)):
         cursor.execute(insert_sql)
         db.commit()
 
-print "ok"
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "19:00":
+    mail_body = "facebook data finished"
+    mail_from = "ads_reporting@newborntown.com"
+    mail_to = "liyin@newborntown.com"
+    msg = MIMEMultipart()
+    body = MIMEText(mail_body)
+    msg.attach(body)
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    msg['date'] = time.strftime('%Y-%m-%d')
+    msg['Subject'] = "get facebook Data detail finished"
+    smtp = smtplib.SMTP()
+    smtp.connect('smtp.exmail.qq.com', 25)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+    smtp.sendmail(mail_from, mail_to, msg.as_string())
+    smtp.quit()
