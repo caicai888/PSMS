@@ -268,7 +268,7 @@ for i in results:
             date_fb = impressions_list[l].get("date_start")
             revenue_fb = float(revenue_list[l].get("revenue"))
             cost_fb = float('%0.2f'%(float(cost_list[l].get("spend"))))
-            profit_fb = float(rebate_fb-cost_fb)
+            profit_fb = float(revenue_fb-cost_fb)
             impressions_fb = impressions_list[l].get("impressions")
             clicks_fb = clicks_list[l].get("clicks")
             conversions_fb = conversions_list[l].get("conversions")
