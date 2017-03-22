@@ -6,23 +6,20 @@ import csv
 import tempfile
 import datetime
 
-# time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
-# time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
-start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=72)
-# start_date = datetime.datetime.now()-datetime.timedelta(hours=240)
+start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=720)
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
-adwords_sql = "select account_id from adwords"
+adwords_sql = "select account_id from adwords where date>='%s'" %(start_date)
 cursor.execute(adwords_sql)
 adwords_results = cursor.fetchall()
 accountIds = []
 for i in adwords_results:
     if i[0] not in accountIds:
         accountIds.append(i[0])
-print len(accountIds)
+
 client = adwords.AdWordsClient.LoadFromStorage()
 for j in accountIds:
     client.SetClientCustomerId(j)
@@ -39,8 +36,6 @@ for j in accountIds:
         reader = csv.DictReader(csv_file)
         for read in reader:
             if read['Account'] != "Total":
-                print read['Account']
-                print "+++"*10
                 account_name = read['Account'].split('_')
                 for n in account_name:
                     if "66" in n:
