@@ -197,7 +197,6 @@ for j in all_result:
     cpi = float('%0.2f' % (float(j["cpi"])))
     rebate = j["rebate"]
     opt_sql = "select optName from campaignAppName where campaignId='%s'"%campaignId
-    print opt_sql
     cursor.execute(opt_sql)
     opt_result = cursor.fetchone()
     optName = opt_result[0]
