@@ -17,7 +17,7 @@ cursor = db.cursor()
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
-start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=720)
+start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 sql_token = "select accessToken from token where account='rongchangzhang@gmail.com'"
