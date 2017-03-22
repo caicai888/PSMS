@@ -15,12 +15,10 @@ import json
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
-# time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
-# time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
-# start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
-# start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
-start_date = "2017-02-12"
-time_now = "2017-02-28"
+time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
+time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
+start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
+start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 apple_sql = sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id in (select id from offer where status != 'deleted')"
 cursor.execute(sql)
@@ -214,4 +212,22 @@ for j in all_result:
         cursor.execute(insert_sql)
         db.commit()
 
-print "ok"
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "16:20":
+    mail_body = "apple data finished"
+    mail_from = "ads_reporting@newborntown.com"
+    mail_to = "liyin@newborntown.com"
+    msg = MIMEMultipart()
+    body = MIMEText(mail_body)
+    msg.attach(body)
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    msg['date'] = time.strftime('%Y-%m-%d')
+    msg['Subject'] = "get apple Data finished"
+    smtp = smtplib.SMTP()
+    smtp.connect('smtp.exmail.qq.com', 25)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+    smtp.sendmail(mail_from, mail_to, msg.as_string())
+    smtp.quit()
