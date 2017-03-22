@@ -222,7 +222,7 @@ if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "1
     msg['From'] = mail_from
     msg['To'] = mail_to
     msg['date'] = time.strftime('%Y-%m-%d')
-    msg['Subject'] = "get apple Data finished"
+    msg['Subject'] = "get apple Data detail finished"
     smtp = smtplib.SMTP()
     smtp.connect('smtp.exmail.qq.com', 25)
     smtp.ehlo()
