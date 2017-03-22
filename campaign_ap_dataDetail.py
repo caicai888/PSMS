@@ -121,15 +121,13 @@ for i in apple_results:
                     count_impressions += impressions
                     count_cost += spend
             if contract_type == "1":
-                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='apple' and date<='%s' and date>='%s' order by date" % (
-                offerId, date, startTime)
+                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='apple' and date<='%s' and date>='%s' order by date" % (offerId, date, startTime)
                 cursor.execute(cooperation_sql)
                 cooperation_result = cursor.fetchone()
                 if cooperation_result:
                     contract_scale = cooperation_result[0]
                 else:
-                    history_scale_sql = "select contract_scale from history where platform='apple' and offer_id='%d' order by createdTime desc" % (
-                    offerId)
+                    history_scale_sql = "select contract_scale from history where platform='apple' and offer_id='%d' order by createdTime desc" % (offerId)
                     cursor.execute(history_scale_sql)
                     history_scale_result = cursor.fetchone()
                     if history_scale_result:
@@ -147,8 +145,7 @@ for i in apple_results:
                 if timePrice_result:
                     price = timePrice_result[0]
                 else:
-                    history_sql = "select country_price from history where country='%s' and platform='apple' and offer_id='%d'order by createdTime desc" % (
-                    'US', offerId)
+                    history_sql = "select country_price from history where country='%s' and platform='apple' and offer_id='%d'order by createdTime desc" % ('US', offerId)
                     cursor.execute(history_sql)
                     history_result = cursor.fetchone()
                     if not history_result:
