@@ -358,7 +358,50 @@ class Advertisers(db.Model):
 
     def __repr__(self):
         return '<Advertisers {}>'.format(self.id)
-#拉取facebook数据到本地
+
+#数据固化
+class DataSolidified(db.Model):
+    __tablename__ = "dataSolidified"
+    id = db.Column(db.Integer,primary_key=True)
+    offer_id = db.Column(db.Integer, db.ForeignKey('offer.id'))
+    type = db.Column(db.String(100), nullable=False)
+    revenue = db.Column(db.Float, nullable=True)
+    profit = db.Column(db.Float, nullable=True)
+    cost = db.Column(db.Float, nullable=True)
+    impressions = db.Column(db.Integer, nullable=True)
+    clicks = db.Column(db.Integer, nullable=True)
+    conversions = db.Column(db.Integer, nullable=True)
+    ctr = db.Column(db.String(100), nullable=True)
+    cvr = db.Column(db.String(100), nullable=True)
+    cpc = db.Column(db.String(100), nullable=True)
+    cpi = db.Column(db.String(100), nullable=True)
+    date = db.Column(db.String(100), nullable=True)
+    country = db.Column(db.String(100), nullable=True)
+    rebate = db.Column(db.Float, nullable=True)
+    createdTime = db.Column(db.String(100), nullable=True)
+
+    def __init__(self,offer_id,type,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi,date,country,rebate,createdTime):
+        self.offer_id = offer_id
+        self.type = type
+        self.revenue = revenue
+        self.profit = profit
+        self.cost = cost
+        self.impressions = impressions
+        self.clicks = clicks
+        self.conversions = conversions
+        self.ctr = ctr
+        self.cvr = cvr
+        self.cpc = cpc
+        self.cpi = cpi
+        self.date = date
+        self.country = country
+        self.rebate = rebate
+        self.createdTime = createdTime
+
+    def __repr__(self):
+        return '<DataSolidified {}>'.format(self.id)
+
+#拉取facebook,Apple数据到本地
 class Datas(db.Model):
     __tablename__ = 'datas'
     id = db.Column(db.Integer, primary_key=True)
