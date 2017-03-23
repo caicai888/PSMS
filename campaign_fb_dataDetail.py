@@ -302,7 +302,7 @@ for i in results:
                 cursor.execute(insert_sql)
                 db.commit()
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:00":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:10":
     mail_body = "facebook data finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"
