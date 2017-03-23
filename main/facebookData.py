@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from flask import Blueprint, request
-from models import Advertisers, Datas, Adwords
+from models import Advertisers, Datas, Adwords, DataSolidified
 import json
 import re
+import datetime
+from main import db
 
 facebookDate = Blueprint('facebookDate', __name__)
 
@@ -1644,3 +1646,83 @@ def faceReport():
                    "code": 500,
                    "message": "no bind data or bind wrong data"
                })
+
+#数据固化
+@facebookDate.route('/api/report/solidify',methods=["POST","GET"])
+def dataSolidify():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        offerId = int(data['offer_id'])
+        start_date = data["start_date"]
+        end_date = data["end_date"]
+        solidifies_data = []
+        createdTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        dataSolidifies = DataSolidified.query.filter(DataSolidified.offer_id==offerId,DataSolidified.date >= start_date,DataSolidified.date <= end_date).all()
+        if dataSolidifies:
+            return json.dumps({
+                "code": 500,
+                "message": u"您选择的日期中有固化的数据,请重新选择日期"
+            })
+        else:
+            adwordsDatas = Adwords.query.filter(Adwords.offer_id == offerId,Adwords.date >= start_date,Adwords.date <= end_date).all()
+            for a in adwordsDatas:
+                solidifies_data += [
+                    {
+                        "date": a.date,
+                        "offer_id": offerId,
+                        "type": "adwords",
+                        "revenue": a.revenue,
+                        "cost": a.cost,
+                        "profit": a.profit,
+                        "impressions": a.impressions,
+                        "clicks": a.clicks,
+                        "conversions": a.conversions,
+                        "ctr": a.ctr,
+                        "cvr": a.cvr,
+                        "cpc": a.cpc,
+                        "cpi": a.cpi,
+                        "country": a.country,
+                        "rebate": a.rebate,
+                        "createdTime": createdTime
+                    }
+                ]
+            data_all = Datas.query.filter(Datas.offer_id == offerId, Datas.date >= start_date,Datas.date <= end_date).all()
+            for i in data_all:
+                solidifies_data += [
+                    {
+                        "date": i.date,
+                        "offer_id": offerId,
+                        "type": i.type,
+                        "revenue": i.revenue,
+                        "cost": i.cost,
+                        "profit": i.profit,
+                        "impressions": i.impressions,
+                        "clicks": i.clicks,
+                        "conversions": i.conversions,
+                        "ctr": i.ctr,
+                        "cvr": i.cvr,
+                        "cpc": i.cpc,
+                        "cpi": i.cpi,
+                        "country": i.country,
+                        "rebate": i.rebate,
+                        "createdTime": createdTime,
+                        "id": i.id
+                    }
+                ]
+            for j in solidifies_data:
+                data_solidify = DataSolidified(j['offer_id'],j['type'],j['revenue'],j['profit'],j['cost'],j['impressions'],j['clicks'],j['conversions'],j['ctr'],j['cvr'],j['cpc'],j['cpi'],j['date'],j['country'],j['rebate'],j['createdTime'])
+                try:
+                    db.session.add(data_solidify)
+                    db.session.commit()
+                    db.create_all()
+                except Exception as e:
+                    print e
+                    return json.dumps({
+                        "code": 500,
+                        "message": u"固化失败"
+                    })
+            return json.dumps({
+                "code": 200,
+                "message": "success"
+            })
