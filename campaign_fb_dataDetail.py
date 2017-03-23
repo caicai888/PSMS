@@ -107,7 +107,6 @@ for i in results:
 
     if time_ranges != []:
         for campaignId in advertise_series:
-            print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
@@ -283,7 +282,6 @@ for i in results:
             account_result = cursor.fetchone()
             accountId = account_result[0]
             optName = account_result[1]
-            print optName
             rebate_sql = "select scale from rebate where accountId='%s'" % (accountId)
             cursor.execute(rebate_sql)
             rebate_result = cursor.fetchone()
@@ -304,7 +302,7 @@ for i in results:
                 cursor.execute(insert_sql)
                 db.commit()
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "21:00":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:00":
     mail_body = "facebook data finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"

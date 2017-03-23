@@ -67,7 +67,7 @@ for account in accountIds:
     except Exception:
         pass
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:29":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:00":
     mail_body = "facebook campaign name finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"
