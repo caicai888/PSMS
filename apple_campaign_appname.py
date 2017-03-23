@@ -74,8 +74,20 @@ for i in all_date:
         cursor.execute(search_sql)
         exists = cursor.fetchone()
         if exists:
-            pass
+            campaign_name = i['campaignName'].split('_')
+            optName = ""
+            for c in campaign_name:
+                if "66" in c:
+                    optName = c
+            update_sql = "update campaignAppName set campaignName='%s',appId='%s',optName='%s' where id='%d'"%(i['campaignName'],i['appId'],optName,exists[0])
+            cursor.execute(update_sql)
+            db.commit()
         else:
-            insert_sql = "insert into campaignAppName(campaignId,campaignName,appId,appName) values('%s','%s','%s','%s')"%(i["campaignId"],i["campaignName"],i["appId"],i["appName"])
+            campaign_name = i['campaignName'].split('_')
+            optName = ""
+            for c in campaign_name:
+                if "66" in c:
+                    optName = c
+            insert_sql = "insert into campaignAppName(campaignId,campaignName,appId,appName,optName) values('%s','%s','%s','%s','%s')"%(i["campaignId"],i["campaignName"],i["appId"],i["appName"],optName)
             cursor.execute(insert_sql)
             db.commit()

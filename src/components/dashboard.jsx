@@ -1,6 +1,7 @@
 import React from "react";
 import {ajax} from "../lib/ajax";
 import {DateSingle,Daterange} from "./daterange";
+let _ = require("lodash");
 require("highcharts");
 require("../js/FileSaver");
 var tableExport = require("../js/tableExport");
@@ -10,7 +11,9 @@ var Dashboard = React.createClass({
         return {
             data_geo:[],
             data_geo_table_head:[],
-            data_geo_table_body:[]
+            data_geo_table_body:[],
+            order:"asc",
+            orderName:"Date"
         };
     },
     export_table(){
@@ -144,6 +147,21 @@ var Dashboard = React.createClass({
     componentDidMount(){
 
     },
+    orderBy(e){
+        let orderName = e.target.dataset.id;
+        let order;
+        if(orderName==this.state.orderName){
+             order = this.state.order=="desc"?"asc":"desc";
+        }else {
+            order = "asc";
+        }
+        let arr =  _.orderBy(this.state.data_geo_table_body,[orderName],[order]);
+        this.setState({
+            data_geo_table_body:arr,
+            orderName:orderName,
+            order:order
+        })
+    },
     render:function () {
         let _this = this;
 
@@ -260,7 +278,7 @@ var Dashboard = React.createClass({
                         <tr>
                             {
                                 _this.state.data_geo_table_head.map(function (ele,index,array) {
-                                    return <th key={index}>{ele}</th>
+                                    return <th style={{cursor:"pointer"}} key={index}  data-id={ele} onClick={_this.orderBy} className={_this.state.orderName==ele&&_this.state.order=="asc"?"dropup":""}>{ele} <span className="caret"> </span></th>
                                 })
                             }
                         </tr>

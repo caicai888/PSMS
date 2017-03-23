@@ -43,27 +43,31 @@ for account in accountIds:
             campaignName = j["name"]
             campaignId = j['id']
 
-            search_sql = "select id from campaignRelations where campaignName='%s'"%campaignName
+            search_sql = "select id from campaignRelations where campaignId='%s' and account_id='%s'"%(campaignId,account)
             cursor.execute(search_sql)
             exists = cursor.fetchone()
-            if exists:
+            if not exists:
                 campaign_name = campaignName.split('_')
+                optName = ""
                 for c in campaign_name:
                     if "66" in c:
-                        update_sql = "update campaignRelations set campaignId='%s',optName='%s' where campaignName='%s'" % (campaignId,c,campaignName)
-                        cursor.execute(update_sql)
-                        db.commit()
+                        optName = c
+                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId, campaignName, account, optName)
+                cursor.execute(insert_sql)
+                db.commit()
             else:
                 campaign_name = campaignName.split('_')
+                optName = ""
                 for c in campaign_name:
                     if "66" in c:
-                        insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId,campaignName,account,c)
-                        cursor.execute(insert_sql)
-                        db.commit()
+                        optName = c
+                update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (optName, campaignName, campaignId, exists[0])
+                cursor.execute(update_sql)
+                db.commit()
     except Exception:
         pass
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:29":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "07:00":
     mail_body = "facebook campaign name finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"
