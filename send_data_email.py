@@ -16,10 +16,8 @@ import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
-time_now = "18:00"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-# sql = "select id,email_users,app_name,email_template from offer where email_time='%s' and status != 'deleted'"%(time_now)
 appName_sql = "select app_name from offer where email_time='%s' and status != 'deleted'"%(time_now)
 cursor.execute(appName_sql)
 appName_results = cursor.fetchall()
@@ -29,10 +27,9 @@ for i in appName_results:
 
 app_names = list(set(app_names))
 
-# startTime = ((datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=120)).strftime("%Y-%m-%d")
-# today = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime("%Y-%m-%d")
-startTime = "2017-03-19"
-today = "2017-03-23"
+startTime = ((datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=120)).strftime("%Y-%m-%d")
+today = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime("%Y-%m-%d")
+
 date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
 date2 = datetime.datetime.strptime(today, '%Y-%m-%d')
 date_timelta = datetime.timedelta(days=1)
@@ -468,8 +465,6 @@ for j in app_names:
             sheet.write(count+1, 12, cpi_count)
 
         else:
-            print email_templates
-            print all_data
             count = 0
             temlen = len(email_templates)
             for t in range(len(email_templates)):
