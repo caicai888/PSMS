@@ -116,11 +116,7 @@ for j in app_names:
                                 "Cost": f[5],
                                 "Impressions": f[6],
                                 "Clicks": f[7],
-                                "Conversions": f[8],
-                                "Ctr": f[9],
-                                "Cvr": f[10],
-                                "Cpc": f[11],
-                                "Cpi": f[12]
+                                "Conversions": f[8]
                             }
                         ]
 
@@ -138,11 +134,7 @@ for j in app_names:
                                 "Cost": f[5],
                                 "Impressions": int(f[6]),
                                 "Clicks": int(f[7]),
-                                "Conversions": int(f[8]),
-                                "Ctr": f[9],
-                                "Cvr": f[10],
-                                "Cpc": f[11],
-                                "Cpi": f[12]
+                                "Conversions": int(f[8])
                             }
                         ]
 
@@ -160,11 +152,7 @@ for j in app_names:
                                 "Cost": f[4],
                                 "Impressions": f[5],
                                 "Clicks": f[6],
-                                "Conversions": f[7],
-                                "Ctr": f[8],
-                                "Cvr": f[9],
-                                "Cpc": f[10],
-                                "Cpi": f[11]
+                                "Conversions": f[7]
                             }
                         ]
 
