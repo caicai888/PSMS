@@ -124,7 +124,7 @@ for j in app_names:
                             }
                         ]
 
-                    ap_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date<='%s' and type='apple' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
+                    ap_data_sql = "select date,type,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks, sum(conversions) conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date<='%s' and type='apple' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(ap_data_sql)
                     ap_data_result = cursor.fetchall()
                     for f in ap_data_result:
@@ -136,9 +136,9 @@ for j in app_names:
                                 "Revenue": f[3],
                                 "Profit": f[4],
                                 "Cost": f[5],
-                                "Impressions": f[6],
-                                "Clicks": f[7],
-                                "Conversions": f[8],
+                                "Impressions": int(f[6]),
+                                "Clicks": int(f[7]),
+                                "Conversions": int(f[8]),
                                 "Ctr": f[9],
                                 "Cvr": f[10],
                                 "Cpc": f[11],
