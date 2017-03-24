@@ -108,7 +108,7 @@ for j in app_names:
                     for f in fb_data_result:
                         all_data += [
                             {
-                                "date": f[0],
+                                "Date": f[0],
                                 "Source": f[1],
                                 "GEO": f[2],
                                 "Revenue": f[3],
@@ -130,7 +130,7 @@ for j in app_names:
                     for f in ap_data_result:
                         all_data += [
                             {
-                                "date": f[0],
+                                "Date": f[0],
                                 "Source": f[1],
                                 "GEO": f[2],
                                 "Revenue": f[3],
@@ -152,7 +152,7 @@ for j in app_names:
                     for f in ad_data_result:
                         all_data += [
                             {
-                                "date": f[0],
+                                "Date": f[0],
                                 "Source": f[1],
                                 "GEO": f[2],
                                 "Revenue": f[3],
@@ -174,7 +174,7 @@ for j in app_names:
                     for f in fb_ap_result:
                         all_data += [
                             {
-                                "date": f[0],
+                                "Date": f[0],
                                 "GEO": f[1],
                                 "Revenue": f[2],
                                 "Profit": f[3],
@@ -190,7 +190,7 @@ for j in app_names:
                     for f in ad_result:
                         all_data += [
                             {
-                                "date": f[0],
+                                "Date": f[0],
                                 "GEO": f[1],
                                 "Revenue": f[2],
                                 "Profit": f[3],
@@ -203,10 +203,10 @@ for j in app_names:
                     tempList = []
                     all_data_list_unique = []
                     for ele in all_data:
-                        key = ele['date'] + ele['GEO']
+                        key = ele['Date'] + ele['GEO']
                         if key in tempList:
                             for x in all_data_list_unique:
-                                if x['date'] == ele['date'] and x['GEO'] == ele['GEO']:
+                                if x['Date'] == ele['Date'] and x['GEO'] == ele['GEO']:
                                     x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
                                     x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
                                     x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
@@ -247,7 +247,7 @@ for j in app_names:
                 for f in fb_data_result:
                     all_data += [
                         {
-                            "date": f[0],
+                            "Date": f[0],
                             "Resource": f[1],
                             "Revenue": f[2],
                             "Profit": f[3],
@@ -268,7 +268,7 @@ for j in app_names:
                 for f in ap_data_result:
                     all_data += [
                         {
-                            "date": f[0],
+                            "Date": f[0],
                             "Source": f[1],
                             "Revenue": f[2],
                             "Profit": f[3],
@@ -288,7 +288,7 @@ for j in app_names:
                 for f in ad_data_result:
                     all_data += [
                         {
-                            "date": f[0],
+                            "Date": f[0],
                             "type": f[1],
                             "revenue": f[2],
                             "profit": f[3],
@@ -310,7 +310,7 @@ for j in app_names:
                 for f in fb_ap_result:
                     all_data += [
                         {
-                            "date": f[0],
+                            "Date": f[0],
                             "Revenue": f[1],
                             "Profit": f[2],
                             "Cost": f[3],
@@ -326,7 +326,7 @@ for j in app_names:
                 for f in ad_result:
                     all_data += [
                         {
-                            "date": f[0],
+                            "Date": f[0],
                             "Revenue": f[1],
                             "Profit": f[2],
                             "Cost": f[3],
@@ -339,10 +339,10 @@ for j in app_names:
                 tempList = []
                 all_data_list_unique = []
                 for ele in all_data:
-                    key = ele['date']
+                    key = ele['Date']
                     if key in tempList:
                         for x in all_data_list_unique:
-                            if x['date'] == ele['date']:
+                            if x['Date'] == ele['Date']:
                                 x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
                                 x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
                                 x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
@@ -444,12 +444,12 @@ for j in app_names:
             temlen = len(email_templates)
             for t in range(len(email_templates)):
                 sheet.write(0, t, email_templates[t])
-            sheet.write(0,temlen,"date")
+            sheet.write(0,temlen,"Date")
             for data in all_data:
                 count += 1
                 for n in range(len(email_templates)):
                     sheet.write(count,n,data[email_templates[n]])
-                sheet.write(count,temlen, data['date'])
+                sheet.write(count,temlen, data['Date'])
                 continue
 
 
