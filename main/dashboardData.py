@@ -382,10 +382,10 @@ def dbTable():
             tempList = []
             all_data_list_unique = []
             for ele in all_data:
-                key = ele['Date'] + ele['BD']
+                key = ele['Date'] + ele['BD'] + ele['appName']
                 if key in tempList:
                     for x in all_data_list_unique:
-                        if x['Date'] == ele['Date'] and x['BD'] == ele['BD']:
+                        if x['Date'] == ele['Date'] and x['BD'] == ele['BD'] and x['appName'] == ele['appName']:
                             x['CountProfit'] += float('%0.2f' % (float(ele['CountProfit'])))
 
                 else:
