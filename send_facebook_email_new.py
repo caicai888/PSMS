@@ -124,7 +124,7 @@ for j in app_names:
                             }
                         ]
 
-                    ap_data_sql = "select date,type,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks, sum(conversions) conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date<='%s' and type='apple' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
+                    ap_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date<='%s' and type='apple' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(ap_data_sql)
                     ap_data_result = cursor.fetchall()
                     for f in ap_data_result:
@@ -146,27 +146,69 @@ for j in app_names:
                             }
                         ]
 
-                    ad_data_sql = "select date,'adwords',country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from adwords where date>='%s' and date<='%s' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
+                    ad_data_sql = "select date,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks,sum(conversions) conversions,ctr,cvr,cpc,cpi from adwords where date>='%s' and date<='%s' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(ad_data_sql)
                     ad_data_result = cursor.fetchall()
                     for f in ad_data_result:
                         all_data += [
                             {
                                 "Date": f[0],
-                                "Source": f[1],
-                                "GEO": f[2],
-                                "Revenue": f[3],
-                                "Profit": f[4],
-                                "Cost": f[5],
-                                "Impressions": f[6],
-                                "Clicks": f[7],
-                                "Conversions": f[8],
-                                "Ctr": f[9],
-                                "Cvr": f[10],
-                                "Cpc": f[11],
-                                "Cpi": f[12]
+                                "Source": "adwords",
+                                "GEO": f[1],
+                                "Revenue": f[2],
+                                "Profit": f[3],
+                                "Cost": f[4],
+                                "Impressions": f[5],
+                                "Clicks": f[6],
+                                "Conversions": f[7],
+                                "Ctr": f[8],
+                                "Cvr": f[9],
+                                "Cpc": f[10],
+                                "Cpi": f[11]
                             }
                         ]
+
+                    tempList = []
+                    all_data_list_unique = []
+                    for ele in all_data:
+                        key = ele['Date']+ele['Source']+ele['GEO']
+                        if key in tempList:
+                            for x in all_data_list_unique:
+                                if x['Date'] == ele['Date'] and x['Source'] == ele['Source'] and x['GEO'] == ele['GEO']:
+                                    x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
+                                    x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
+                                    x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
+                                    x['Impressions'] += int(ele['Impressions'])
+                                    x['Clicks'] += int(ele['Clicks'])
+                                    x['Conversions'] += int(ele['Conversions'])
+                        else:
+                            ele['Revenue'] = float('%0.2f' % (float(ele['Revenue'])))
+                            ele['Cost'] = float('%0.2f' % (float(ele['Cost'])))
+                            ele['Profit'] = float('%0.2f' % (float(ele['Profit'])))
+                            ele['Impressions'] = int(ele['Impressions'])
+                            ele['Clicks'] = int(ele['Clicks'])
+                            ele['Conversions'] = int(ele['Conversions'])
+
+                            tempList.append(key)
+                            all_data_list_unique.append(ele)
+                    all_data = all_data_list_unique
+                    for q in all_data:
+                        cvr = 0
+                        cpc = 0
+                        ctr = 0
+                        cpi = 0
+                        if float(q["Clicks"]) != 0:
+                            cvr = float(q['Conversions']) / float(q['Clicks']) * 100
+                            cpc = float(q['Cost']) / float(q['Clicks'])
+                        if float(q['Conversions']) != 0:
+                            cpi = float(q['Cost']) / float(q['Conversions'])
+                        if float(q['Impressions']) != 0:
+                            ctr = float(q['Clicks']) / float(q['Impressions']) * 100
+                        q['Cvr'] = cvr
+                        q['Cpc'] = cpc
+                        q['Cpi'] = cpi
+                        q['Ctr'] = ctr
+
                 else:
                     fb_ap_sql = "select date,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks,sum(conversions) conversions from datas where date>='%s' and date<='%s' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(fb_ap_sql)
