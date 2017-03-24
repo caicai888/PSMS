@@ -102,7 +102,7 @@ for j in app_names:
                 all_data += ad_data_result
             elif "GEO" in email_templates:
                 if "Source" in email_templates:
-                    fb_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date<='%s' and type='facebook' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
+                    fb_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions from datas where date>='%s' and date<='%s' and type='facebook' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(fb_data_sql)
                     fb_data_result = cursor.fetchall()
                     for f in fb_data_result:
@@ -124,7 +124,7 @@ for j in app_names:
                             }
                         ]
 
-                    ap_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date<='%s' and type='apple' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
+                    ap_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions from datas where date>='%s' and date<='%s' and type='apple' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(ap_data_sql)
                     ap_data_result = cursor.fetchall()
                     for f in ap_data_result:
@@ -146,7 +146,7 @@ for j in app_names:
                             }
                         ]
 
-                    ad_data_sql = "select date,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks,sum(conversions) conversions,ctr,cvr,cpc,cpi from adwords where date>='%s' and date<='%s' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
+                    ad_data_sql = "select date,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks,sum(conversions) conversions from adwords where date>='%s' and date<='%s' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
                     cursor.execute(ad_data_sql)
                     ad_data_result = cursor.fetchall()
                     for f in ad_data_result:
