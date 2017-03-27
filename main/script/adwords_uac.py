@@ -65,8 +65,11 @@ class AdwordsSQL(object):
 
     def select_campaign_geo(self, campaign_name):
         print campaign_name
-        selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
-        selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
+        try:
+            selected_msg = re.findall(r'\[(.*)\]', campaign_name)[0]
+            selected_geo = re.findall(r'-(.*)', selected_msg)[0].split('_')[0][:2]
+        except Exception:
+            selected_geo = "UAC"
         # return selected_msg, selected_geo
         return selected_geo
 

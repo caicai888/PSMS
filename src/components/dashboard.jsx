@@ -314,6 +314,13 @@ var Dashboard = React.createClass({
                                    <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
                                        <div className="checkbox">
                                            <label>
+                                               <input type="radio" name="Optimization" value={"PM-AG"}　/> PM-AG
+                                           </label>
+                                       </div>
+                                   </div>
+                                   <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                       <div className="checkbox">
+                                           <label>
                                                <input type="radio" name="Optimization" value={"Offer"}　/> Offer
                                            </label>
                                        </div>

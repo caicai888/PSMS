@@ -213,7 +213,7 @@ for j in all_result:
         db.commit()
 
 if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "16:20":
-    mail_body = "apple data finished"
+    mail_body = "apple data detail finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"
     msg = MIMEMultipart()

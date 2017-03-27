@@ -499,13 +499,15 @@ class CampaignRelations(db.Model):
     campaignName = db.Column(db.String(150), nullable=False)
     account_id = db.Column(db.String(100), nullable=False)
     optName = db.Column(db.String(100),nullable=False)  #优化师的代码
+    account_name = db.Column(db.String(100),nullable=False)
 
-    def __init__(self,campaignId,campaignName,account_id,optName):
+    def __init__(self,campaignId,campaignName,account_id,optName,accountName):
 
         self.campaignId = campaignId
         self.campaignName = campaignName
         self.account_id = account_id
         self.optName = optName
+        self.account_name = accountName
 
 
     def __repr__(self):

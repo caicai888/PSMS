@@ -1710,6 +1710,11 @@ def dataSolidify():
                         "id": i.id
                     }
                 ]
+            if solidifies_data == []:
+                return json.dumps({
+                    "code": 500,
+                    "message": u"该时间段内没有数据,不能固化哦!"
+                })
             for j in solidifies_data:
                 data_solidify = DataSolidified(j['offer_id'],j['type'],j['revenue'],j['profit'],j['cost'],j['impressions'],j['clicks'],j['conversions'],j['ctr'],j['cvr'],j['cpc'],j['cpi'],j['date'],j['country'],j['rebate'],j['createdTime'])
                 try:
