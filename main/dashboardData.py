@@ -78,7 +78,7 @@ def dashboard():
             "CVR": cvr_count,
             "CPC": cpc_count,
             "CPI": cpi_count,
-            "Rebate": rebate_count
+            "Rebate": float('%0.2f'%(rebate_count))
         }
 
         #折线图
@@ -142,7 +142,7 @@ def dashboard():
             cvr_list.append(cvr_date)
             cpc_list.append(cpc_date)
             cpi_list.append(cpi_date)
-            rebate_list.append(rebate_date)
+            rebate_list.append(float('%0.2f'%(rebate_date)))
 
         #table数据
         facebook_apple_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date).with_entities(Datas.date,Datas.type,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.impressions),func.sum(Datas.clicks),func.sum(Datas.conversions),func.sum(Datas.rebate))
