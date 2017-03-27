@@ -70,7 +70,7 @@ var Dashboard = React.createClass({
                     text: ''
                 },
                 xAxis: {
-                    categories: data.range && data.range.date
+                    categories: data.range && data.range.Date
                 },
                 yAxis: {
                     plotLines: [{
@@ -230,6 +230,10 @@ var Dashboard = React.createClass({
                                 <div className="box_20">
                                     <p>CPI($)</p>
                                     <p>{ele.CPI}</p>
+                                </div>
+                                <div className="box_20">
+                                    <p>Rebate($)</p>
+                                    <p>{ele.Rebate}</p>
                                 </div>
                             </div>
                         })
