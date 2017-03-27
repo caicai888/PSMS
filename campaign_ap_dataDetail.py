@@ -212,7 +212,7 @@ for j in all_result:
         cursor.execute(insert_sql)
         db.commit()
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "16:20":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "09:20":
     mail_body = "apple data detail finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"

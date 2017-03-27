@@ -9,6 +9,7 @@ import datetime,time
 import smtplib
 from email.mime.text import MIMEText
 from email.MIMEMultipart import MIMEMultipart
+import re
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
@@ -64,6 +65,42 @@ for account in accountIds:
                 update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (optName, campaignName, campaignId, exists[0])
                 cursor.execute(update_sql)
                 db.commit()
+    except Exception:
+        pass
+    url_account = "https://graph.facebook.com/v2.8/act_"+str(account)+"/insights"
+    params = {
+        "access_token": accessToken,
+        "level": "account",
+        "fields": ["account_name"],
+        "limit": "500"
+    }
+    result_account = requests.get(url=url_account,params=params)
+    try:
+        data_account = result_account.json()["data"]
+        account_name = data_account[0]['account_name']
+        if re.search('mad',account_name,re.IGNORECASE):
+            accountName = 'Madhouse'
+        elif re.search('YOYO', account_name, re.IGNORECASE):
+            accountName = u'品众'
+        elif re.search('Bluefocus',account_name,re.IGNORECASE):
+            accountName = u'蓝标'
+        elif re.search('PAPAYA',account_name,re.IGNORECASE):
+            accountName = u'木瓜'
+        elif re.search('Meetsocial',account_name,re.IGNORECASE):
+            accountName = u'飞书'
+        elif re.search('SUSU',account_name,re.IGNORECASE):
+            accountName = u'常乐'
+        else:
+            accountName = ""
+        search_account_sql = "select id from campaignRelations where account_id='%s'" %(account)
+        cursor.execute(search_account_sql)
+        exists = cursor.fetchone()
+        if exists:
+            update_account_sql = "update campaignRelations set account_name='%s' where account_id='%s'"%(accountName,account)
+            cursor.execute(update_account_sql)
+            db.commit()
+        else:
+            pass
     except Exception:
         pass
 
