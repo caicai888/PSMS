@@ -25,6 +25,7 @@ def dashboard():
         cvr_count = 0
         cpc_count = 0
         cpi_count = 0
+        rebate_count = 0
 
         table_list = []
 
@@ -46,6 +47,7 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(i.conversions)
+            rebate_count += float(i.rebate)
 
         adwords = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).all()
         for i in adwords:
@@ -55,6 +57,7 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(float(i.conversions))
+            rebate_count += float(i.rebate)
 
         if conversions_count != 0:
             cpi_count = float('%0.2f' % (cost_count / float(conversions_count)))
@@ -74,7 +77,8 @@ def dashboard():
             "CTR": ctr_count,
             "CVR": cvr_count,
             "CPC": cpc_count,
-            "CPI": cpi_count
+            "CPI": cpi_count,
+            "Rebate": rebate_count
         }
 
         #折线图
@@ -88,6 +92,7 @@ def dashboard():
         cvr_list = []
         cpc_list = []
         cpi_list = []
+        rebate_list = []
 
         for date in all_date:
             revenue_date = 0
@@ -100,6 +105,7 @@ def dashboard():
             cvr_date = 0
             cpc_date = 0
             cpi_date = 0
+            rebate_date = 0
             datas_list = Datas.query.filter_by(date=date).all()
             for j in datas_list:
                 revenue_date += float(j.revenue)
@@ -108,6 +114,7 @@ def dashboard():
                 impressions_date += int(j.impressions)
                 clicks_date += int(j.clicks)
                 conversions_date += int(j.conversions)
+                rebate_date += float(j.rebate)
             adwords_list = Adwords.query.filter_by(date=date).all()
             for j in adwords_list:
                 revenue_date += float(j.revenue)
@@ -116,6 +123,7 @@ def dashboard():
                 impressions_date += int(j.impressions)
                 clicks_date += int(j.clicks)
                 conversions_date += int(float(j.conversions))
+                rebate_date += float(j.rebate)
             if conversions_date != 0:
                 cpi_date = float('%0.2f' % (cost_date / float(conversions_date)))
             if clicks_date != 0:
@@ -134,6 +142,7 @@ def dashboard():
             cvr_list.append(cvr_date)
             cpc_list.append(cpc_date)
             cpi_list.append(cpi_date)
+            rebate_list.append(rebate_date)
 
         #table数据
         facebook_apple_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date).with_entities(Datas.date,Datas.type,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.impressions),func.sum(Datas.clicks),func.sum(Datas.conversions),func.sum(Datas.rebate))
