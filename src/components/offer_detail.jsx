@@ -139,6 +139,25 @@ var OfferDetail = React.createClass({
             _this.getData();
         })
     },
+    isSolidify(){
+        let isSolidi = confirm("是否固化？");
+        if(isSolidi){
+            ajax("post","/api/report/solidify", JSON.stringify({
+                "start_date":$(".reportRange").val().split(":")[0],
+                "end_date":$(".reportRange").val().split(":")[1],
+                "offer_id":this.props.params.id
+            })).then(function (data) {
+                var data = JSON.parse(data);
+                if (data.code == "200") {
+                    $(".ajax_error").html(data.message);
+                    $("#modal").modal("toggle");
+                } else {
+                    $(".ajax_error").html(data.message);
+                    $("#modal").modal("toggle");
+                }
+            });
+        }
+    },
     getData:function () {
         let _this = this;
         let dimension =[];
@@ -412,11 +431,9 @@ var OfferDetail = React.createClass({
                                     <li style={{display:"none"}}>选择日期用这个（最笨的办法）</li>
                                 </ul>
                             </div>
-                            {/*<div className="col-md-2 pull-right allSlot">
-                                <select className="form-control">
-                                    <option value="all_slot">All Slot</option>
-                                </select>
-                            </div>*/}
+                            <div className="col-md-2 text-right pull-right allSlot">
+                                <button className="btn btn-danger" onClick={_this.isSolidify}>是否固化</button>
+                            </div>
                         </div>
                         <div className="row dashboard_data">
                             {
