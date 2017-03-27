@@ -70,7 +70,7 @@ var Dashboard = React.createClass({
                     text: ''
                 },
                 xAxis: {
-                    categories: data.range && data.range.date
+                    categories: data.range && data.range.Date
                 },
                 yAxis: {
                     plotLines: [{
@@ -231,6 +231,10 @@ var Dashboard = React.createClass({
                                     <p>CPI($)</p>
                                     <p>{ele.CPI}</p>
                                 </div>
+                                <div className="box_20">
+                                    <p>Rebate($)</p>
+                                    <p>{ele.Rebate}</p>
+                                </div>
                             </div>
                         })
                     }
@@ -308,6 +312,13 @@ var Dashboard = React.createClass({
                                        <div className="checkbox">
                                            <label>
                                                <input type="radio" name="Optimization" value={"PM-BD"}　/> PM-BD
+                                           </label>
+                                       </div>
+                                   </div>
+                                   <div className="col-sm-3 col-xs-6" style={{marginTop:"5px"}}>
+                                       <div className="checkbox">
+                                           <label>
+                                               <input type="radio" name="Optimization" value={"PM-AG"}　/> PM-AG
                                            </label>
                                        </div>
                                    </div>
