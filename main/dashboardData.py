@@ -231,7 +231,8 @@ def dashboard():
             "CPI": cpi_list,
             "CTR": ctr_list,
             "CVR": cvr_list,
-            "CPC": cpc_list
+            "CPC": cpc_list,
+            "Rebate": rebate_list
         }
         result = {
             "count": result_count,
