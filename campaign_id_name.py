@@ -90,6 +90,8 @@ for account in accountIds:
             accountName = u'飞书'
         elif re.search('SUSU',account_name,re.IGNORECASE):
             accountName = u'常乐'
+        elif re.search('Advertiser',account_name,re.IGNORECASE):
+            accountName = 'Advertiser'
         else:
             accountName = ""
         search_account_sql = "select id from campaignRelations where account_id='%s'" %(account)
