@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from flask import Blueprint, request
-from models import Datas, Adwords,Offer, User, DataDetail,UserRole
+from models import Datas, Adwords,Offer, User, DataDetail,UserRole,CampaignRelations
 import json
 import datetime
 from sqlalchemy import func
@@ -399,6 +399,23 @@ def dbTable():
                 l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
                 all_data_list.append(l)
             dimission = ["Date", "BD", "appName", "CountProfit"]
+
+        elif flag == "PM-AG":
+            all_data_list = []
+            data_detail = DataDetail.query.filter(DataDetail.date >= start_date,DataDetail.date <= end_date, DataDetail.type=='facebook').with_entities(DataDetail.date,DataDetail.account_id,func.sum(DataDetail.cost))
+            detail_result = data_detail.group_by(DataDetail.date,DataDetail.account_id).all()
+            for i in detail_result:
+                accountName = CampaignRelations.query.filter_by(account_id=i[1]).first()
+                account_name = accountName.account_name
+                all_data_list += [
+                    {
+                        "Date": i[0],
+                        "AccountName": account_name,
+                        "AccountId": i[1],
+                        "Cost": float('%0.2f'%(float(i[2])))
+                    }
+                ]
+            dimission = ["Date", "AccountId", "AccountName", "Cost"]
 
         elif flag == "Offer":
             fb_ap_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date).with_entities(Datas.date,Datas.offer_id,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
