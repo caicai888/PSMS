@@ -215,8 +215,8 @@ def dashboard():
                 ctr = float('%0.2f' % (float(i[5]) / float(i[4]) * 100))
             else:
                 ctr = 0
-            if i[8] is not None:
-                rebate += float(i[8])
+            if i[7] is not None:
+                rebate += float(i[7])
             else:
                 rebate += 0
 
