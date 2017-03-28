@@ -120,7 +120,10 @@ def dashboard():
                 impressions_date += int(j.impressions)
                 clicks_date += int(j.clicks)
                 conversions_date += int(j.conversions)
-                rebate_date += float(j.rebate)
+                if j.rebate == '':
+                    rebate_date += 0
+                else:
+                    rebate_date += float(j.rebate)
             adwords_list = Adwords.query.filter_by(date=date).all()
             for j in adwords_list:
                 revenue_date += float(j.revenue)
@@ -129,7 +132,10 @@ def dashboard():
                 impressions_date += int(j.impressions)
                 clicks_date += int(j.clicks)
                 conversions_date += int(float(j.conversions))
-                rebate_date += float(j.rebate)
+                if j.rebate == "":
+                    rebate_date += 0
+                else:
+                    rebate_date += float(j.rebate)
             if conversions_date != 0:
                 cpi_date = float('%0.2f' % (cost_date / float(conversions_date)))
             if clicks_date != 0:
