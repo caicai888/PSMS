@@ -549,7 +549,10 @@ def dbTable():
                 accountName = CampaignRelations.query.filter_by(account_id=i[1]).first()
                 account_name = accountName.account_name
                 rebate_result = Rebate.query.filter_by(accountId=i[1]).first()
-                rebate = float(rebate_result.scale)
+                if rebate_result:
+                    rebate = float(rebate_result.scale)
+                else:
+                    rebate = 0
                 all_data_list += [
                     {
                         "Date": i[0],
