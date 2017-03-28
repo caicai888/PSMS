@@ -16,8 +16,9 @@ time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
-
-sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id in (select id from offer where status != 'deleted')"
+start_date = "2017-03-27"
+# sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id in (select id from offer where status != 'deleted')"
+sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id=39"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -131,7 +132,11 @@ for i in results:
                             history_scale_result = cursor.fetchone()
                             if history_scale_result:
                                 contract_scale = history_scale_result[0]
+                        print count_cost
+                        print contract_scale
                         count_revenue = '%0.2f' % (count_cost * (1 + float(contract_scale) / 100))
+                        print count_revenue
+                        print "++++"*10
                     else:
                         country_sql = "select id from country where shorthand='US'"
                         cursor.execute(country_sql)
