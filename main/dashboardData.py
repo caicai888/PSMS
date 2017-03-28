@@ -47,6 +47,7 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(i.conversions)
+            print i.rebate
             try:
                 rebate_count += float(i.rebate)
             except Exception:
