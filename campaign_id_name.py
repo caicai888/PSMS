@@ -23,6 +23,8 @@ for i in results:
         accountIds.append(j)
 
 accountIds = list(set(accountIds))
+print accountIds
+accountIds = ['1248484838582922']
 
 sql_token = "select accessToken from token where account='rongchangzhang@gmail.com'"
 cursor.execute(sql_token)
