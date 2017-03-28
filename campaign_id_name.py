@@ -55,7 +55,7 @@ for account in accountIds:
                 for c in campaign_name:
                     if "66" in c:
                         optName = c
-                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName) values('%s','%s','%s','%s')" % (campaignId, campaignName, account, optName)
+                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName,account_name) values('%s','%s','%s','%s','%s')" % (campaignId, campaignName, account, optName,'')
                 cursor.execute(insert_sql)
                 db.commit()
             else:
