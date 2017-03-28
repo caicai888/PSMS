@@ -190,6 +190,8 @@ for i in results:
 
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
         for l in resultlist:
+            print "&&&"*10
+            print l["cost"]
             l_cpc = '%0.2f'%(float(l["cost"]) / float(l["clicks"])) if l["clicks"] != 0 else 0
             l_cvr = '%0.2f' % (float(l["conversions"] / l["clicks"] * 100)) if l["clicks"] != 0 else 0
             l_cpi = '%0.2f'%(float(l["cost"]) / float(l["conversions"])) if l["conversions"] != 0 else 0
