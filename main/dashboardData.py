@@ -47,10 +47,9 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(i.conversions)
-            print i.rebate
-            try:
+            if i.rebate is not None:
                 rebate_count += float(i.rebate)
-            except Exception:
+            else:
                 rebate_count += 0
 
         adwords = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).all()
@@ -61,10 +60,10 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(float(i.conversions))
-            if i.rebate == "":
-                rebate_count += 0
-            else:
+            if i.rebate is not None:
                 rebate_count += float(i.rebate)
+            else:
+                rebate_count += 0
 
         if conversions_count != 0:
             cpi_count = float('%0.2f' % (cost_count / float(conversions_count)))
@@ -121,10 +120,10 @@ def dashboard():
                 impressions_date += int(j.impressions)
                 clicks_date += int(j.clicks)
                 conversions_date += int(j.conversions)
-                if j.rebate == '':
-                    rebate_date += 0
-                else:
+                if j.rebate is not None:
                     rebate_date += float(j.rebate)
+                else:
+                    rebate_date += 0
             adwords_list = Adwords.query.filter_by(date=date).all()
             for j in adwords_list:
                 revenue_date += float(j.revenue)
