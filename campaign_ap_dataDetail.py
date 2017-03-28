@@ -44,140 +44,141 @@ for i in apple_results:
     sql_offer = "select startTime,endTime,contract_type,contract_scale,price from platformOffer where offer_id='%d' and platform='apple'" % offerId
     cursor.execute(sql_offer)
     runtime = cursor.fetchone()
-    startTime = str(runtime[0])  # 投放的开始时间
-    endTime = str(runtime[1])  # 投放的结束时间
-    contract_type = runtime[2]
-    contract_scale = runtime[3]
-    offer_price = runtime[4]
-    if time_now <= endTime:
-        if start_date >= startTime:
-            # 获取时间段中的每一天
-            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-            date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
-            date_timelta = datetime.timedelta(days=1)
-            all_date.append(start_date)
-            while date_timelta < (date2 - date1):
-                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-                date_timelta += datetime.timedelta(days=1)
-            all_date.append(time_now)
+    if runtime:
+        startTime = str(runtime[0])  # 投放的开始时间
+        endTime = str(runtime[1])  # 投放的结束时间
+        contract_type = runtime[2]
+        contract_scale = runtime[3]
+        offer_price = runtime[4]
+        if time_now <= endTime:
+            if start_date >= startTime:
+                # 获取时间段中的每一天
+                date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+                date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
+                date_timelta = datetime.timedelta(days=1)
+                all_date.append(start_date)
+                while date_timelta < (date2 - date1):
+                    all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                    date_timelta += datetime.timedelta(days=1)
+                all_date.append(time_now)
 
-        else:
-            date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
-            date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
-            date_timelta = datetime.timedelta(days=1)
-            all_date.append(startTime)
-            while date_timelta < (date2 - date1):
-                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-                date_timelta += datetime.timedelta(days=1)
-            all_date.append(time_now)
-    else:
-        if start_date <= endTime:
-            date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-            date2 = datetime.datetime.strptime(endTime, '%Y-%m-%d')
-            date_timelta = datetime.timedelta(days=1)
-            all_date.append(start_date)
-            while date_timelta < (date2 - date1):
-                all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
-                date_timelta += datetime.timedelta(days=1)
-            all_date.append(endTime)
-
-    for campaignId in appleCampaigns:
-        print campaignId
-        pem = "/home/ubuntu/appleapi.pem"
-        key = "/home/ubuntu/appleapi.key"
-        campaign_url = "https://api.searchads.apple.com/api/v1/reports/campaigns/" + str(campaignId) + "/searchterms"
-        for date in all_date:
-            count_impressions = 0
-            count_taps = 0
-            count_conversions = 0
-            count_cost = 0
-            count_cpc = 0
-            count_cvr = 0
-            count_cpi = 0
-            count_ctr = 0
-            count_revenue = 0
-            params = {
-                "startTime": date,
-                "endTime": date,
-                "selector": {
-                    "fields": ["impressions", "conversions", "localSpend"],
-                    "orderBy": [{"field": "localSpend", "sortOrder": "DESCENDING"}],
-                    "pagination": {"offset": 0, "limit": 1000}
-                },
-                "groupBy": ["COUNTRY_CODE", "DEVICE_CLASS"],
-                "returnRowTotals": True
-            }
-            result = requests.post(campaign_url, cert=(pem, key), headers=headers, data=json.dumps(params), verify=False)
-            rows = result.json()["data"].get("reportingDataResponse")["row"]
-            if rows is not None:
-                for row in rows:
-                    conversions = row["total"].get("conversions")
-                    taps = row["total"].get("taps")
-                    impressions = row["total"].get("impressions")
-                    spend = float(row["total"].get("localSpend")["amount"])
-                    count_conversions += conversions
-                    count_taps += taps
-                    count_impressions += impressions
-                    count_cost += spend
-            if contract_type == "1":
-                cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='apple' and date<='%s' and date>='%s' order by date" % (offerId, date, startTime)
-                cursor.execute(cooperation_sql)
-                cooperation_result = cursor.fetchone()
-                if cooperation_result:
-                    contract_scale = cooperation_result[0]
-                else:
-                    history_scale_sql = "select contract_scale from history where platform='apple' and offer_id='%d' order by createdTime desc" % (offerId)
-                    cursor.execute(history_scale_sql)
-                    history_scale_result = cursor.fetchone()
-                    if history_scale_result:
-                        contract_scale = history_scale_result[0]
-                count_revenue = '%0.2f' % (count_cost * (1 + float(contract_scale) / 100))
             else:
-                country_sql = "select id from country where shorthand='US'"
-                cursor.execute(country_sql)
-                country_result = cursor.fetchone()
-                countryId = country_result[0]
-                timePrice_sql = "select price from timePrice where country_id='%d' and platform='apple' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (
-                countryId, offerId, date, startTime)
-                cursor.execute(timePrice_sql)
-                timePrice_result = cursor.fetchone()
-                if timePrice_result:
-                    price = timePrice_result[0]
-                else:
-                    history_sql = "select country_price from history where country='%s' and platform='apple' and offer_id='%d'order by createdTime desc" % ('US', offerId)
-                    cursor.execute(history_sql)
-                    history_result = cursor.fetchone()
-                    if not history_result:
-                        price = offer_price
-                    else:
-                        price = history_result[0]
-                count_revenue = '%0.2f' % (float(count_conversions * price))
-            if float(count_conversions) != 0:
-                count_cpi = float('%0.2f' % (float(count_cost) / float(count_conversions)))
-            if float(count_taps) != 0:
-                count_cvr = float('%0.2f' % (float(count_conversions) / float(count_taps) * 100))
-                count_cpc = float('%0.2f' % (float(count_cost) / float(count_taps)))
-            if float(count_impressions) != 0:
-                count_ctr = float('%0.2f' % (float(count_taps) / float(count_impressions)* 100))
-            all_result += [
-                {
-                    "date": date,
-                    "impressions": count_impressions,
-                    "cost": count_cost,
-                    "clicks": count_taps,
-                    "conversions": count_conversions,
-                    "revenue": count_revenue,
-                    "profit": float('%0.2f' % (float(count_revenue) - float(count_cost))),
-                    "country": "US",
-                    "campaignId": campaignId,
-                    "ctr": count_ctr,
-                    "cvr": count_cvr,
-                    "cpc": count_cpc,
-                    "cpi": count_cpi,
-                    "rebate": 0,
-                    "offer_id": offerId
+                date1 = datetime.datetime.strptime(startTime, '%Y-%m-%d')
+                date2 = datetime.datetime.strptime(time_now, '%Y-%m-%d')
+                date_timelta = datetime.timedelta(days=1)
+                all_date.append(startTime)
+                while date_timelta < (date2 - date1):
+                    all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                    date_timelta += datetime.timedelta(days=1)
+                all_date.append(time_now)
+        else:
+            if start_date <= endTime:
+                date1 = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+                date2 = datetime.datetime.strptime(endTime, '%Y-%m-%d')
+                date_timelta = datetime.timedelta(days=1)
+                all_date.append(start_date)
+                while date_timelta < (date2 - date1):
+                    all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
+                    date_timelta += datetime.timedelta(days=1)
+                all_date.append(endTime)
+
+        for campaignId in appleCampaigns:
+            print campaignId
+            pem = "/home/ubuntu/appleapi.pem"
+            key = "/home/ubuntu/appleapi.key"
+            campaign_url = "https://api.searchads.apple.com/api/v1/reports/campaigns/" + str(campaignId) + "/searchterms"
+            for date in all_date:
+                count_impressions = 0
+                count_taps = 0
+                count_conversions = 0
+                count_cost = 0
+                count_cpc = 0
+                count_cvr = 0
+                count_cpi = 0
+                count_ctr = 0
+                count_revenue = 0
+                params = {
+                    "startTime": date,
+                    "endTime": date,
+                    "selector": {
+                        "fields": ["impressions", "conversions", "localSpend"],
+                        "orderBy": [{"field": "localSpend", "sortOrder": "DESCENDING"}],
+                        "pagination": {"offset": 0, "limit": 1000}
+                    },
+                    "groupBy": ["COUNTRY_CODE", "DEVICE_CLASS"],
+                    "returnRowTotals": True
                 }
-            ]
+                result = requests.post(campaign_url, cert=(pem, key), headers=headers, data=json.dumps(params), verify=False)
+                rows = result.json()["data"].get("reportingDataResponse")["row"]
+                if rows is not None:
+                    for row in rows:
+                        conversions = row["total"].get("conversions")
+                        taps = row["total"].get("taps")
+                        impressions = row["total"].get("impressions")
+                        spend = float(row["total"].get("localSpend")["amount"])
+                        count_conversions += conversions
+                        count_taps += taps
+                        count_impressions += impressions
+                        count_cost += spend
+                if contract_type == "1":
+                    cooperation_sql = "select contract_scale from cooperationPer where offer_id='%d' and platform='apple' and date<='%s' and date>='%s' order by date" % (offerId, date, startTime)
+                    cursor.execute(cooperation_sql)
+                    cooperation_result = cursor.fetchone()
+                    if cooperation_result:
+                        contract_scale = cooperation_result[0]
+                    else:
+                        history_scale_sql = "select contract_scale from history where platform='apple' and offer_id='%d' order by createdTime desc" % (offerId)
+                        cursor.execute(history_scale_sql)
+                        history_scale_result = cursor.fetchone()
+                        if history_scale_result:
+                            contract_scale = history_scale_result[0]
+                    count_revenue = '%0.2f' % (count_cost * (1 + float(contract_scale) / 100))
+                else:
+                    country_sql = "select id from country where shorthand='US'"
+                    cursor.execute(country_sql)
+                    country_result = cursor.fetchone()
+                    countryId = country_result[0]
+                    timePrice_sql = "select price from timePrice where country_id='%d' and platform='apple' and offer_id='%d' and date<='%s' and date>='%s' order by date" % (
+                    countryId, offerId, date, startTime)
+                    cursor.execute(timePrice_sql)
+                    timePrice_result = cursor.fetchone()
+                    if timePrice_result:
+                        price = timePrice_result[0]
+                    else:
+                        history_sql = "select country_price from history where country='%s' and platform='apple' and offer_id='%d'order by createdTime desc" % ('US', offerId)
+                        cursor.execute(history_sql)
+                        history_result = cursor.fetchone()
+                        if not history_result:
+                            price = offer_price
+                        else:
+                            price = history_result[0]
+                    count_revenue = '%0.2f' % (float(count_conversions * price))
+                if float(count_conversions) != 0:
+                    count_cpi = float('%0.2f' % (float(count_cost) / float(count_conversions)))
+                if float(count_taps) != 0:
+                    count_cvr = float('%0.2f' % (float(count_conversions) / float(count_taps) * 100))
+                    count_cpc = float('%0.2f' % (float(count_cost) / float(count_taps)))
+                if float(count_impressions) != 0:
+                    count_ctr = float('%0.2f' % (float(count_taps) / float(count_impressions)* 100))
+                all_result += [
+                    {
+                        "date": date,
+                        "impressions": count_impressions,
+                        "cost": count_cost,
+                        "clicks": count_taps,
+                        "conversions": count_conversions,
+                        "revenue": count_revenue,
+                        "profit": float('%0.2f' % (float(count_revenue) - float(count_cost))),
+                        "country": "US",
+                        "campaignId": campaignId,
+                        "ctr": count_ctr,
+                        "cvr": count_cvr,
+                        "cpc": count_cpc,
+                        "cpi": count_cpi,
+                        "rebate": 0,
+                        "offer_id": offerId
+                    }
+                ]
 updateTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 for j in all_result:
     campaignId = j["campaignId"]
@@ -212,7 +213,7 @@ for j in all_result:
         cursor.execute(insert_sql)
         db.commit()
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "16:20":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "09:20":
     mail_body = "apple data detail finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"

@@ -20,7 +20,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=76"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -436,7 +436,7 @@ for i in results:
                 cursor.execute(update_sql)
                 db.commit()
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "18:00":
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "08:00":
     mail_body = "facebook data finished"
     mail_from = "ads_reporting@newborntown.com"
     mail_to = "liyin@newborntown.com"

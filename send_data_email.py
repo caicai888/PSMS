@@ -84,6 +84,10 @@ try:
         else:
             for i in results:
                 offerId = i[0]
+                offer_sql = "select os from offer where id='%d'" % (offerId)
+                cursor.execute(offer_sql)
+                offer_result = cursor.fetchone()
+                os = offer_result[0]
                 if u'全部维度' in email_templates:
                     fb_data_sql = "select date,type,country,revenue,profit,cost,impressions,clicks,conversions,ctr,cvr,cpc,cpi from datas where date>='%s' and date <= '%s' and type='facebook' and offer_id='%d' order by date ASC" % (startTime, today, offerId)
                     cursor.execute(fb_data_sql)
@@ -113,7 +117,8 @@ try:
                                     "Cost": f[5],
                                     "Impressions": f[6],
                                     "Clicks": f[7],
-                                    "Conversions": f[8]
+                                    "Conversions": f[8],
+                                    "System": os
                                 }
                             ]
 
@@ -131,7 +136,8 @@ try:
                                     "Cost": f[5],
                                     "Impressions": int(f[6]),
                                     "Clicks": int(f[7]),
-                                    "Conversions": int(f[8])
+                                    "Conversions": int(f[8]),
+                                    "System": os
                                 }
                             ]
 
@@ -149,7 +155,8 @@ try:
                                     "Cost": f[4],
                                     "Impressions": f[5],
                                     "Clicks": f[6],
-                                    "Conversions": f[7]
+                                    "Conversions": f[7],
+                                    "System": os
                                 }
                             ]
 
@@ -209,6 +216,7 @@ try:
                                     "Impressions": int(f[5]),
                                     "Clicks": int(f[6]),
                                     "Conversions": int(f[7]),
+                                    "System": os
                                 }
                             ]
                         ad_sql = "select date,country,sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks,sum(conversions) conversions from adwords where date>='%s' and date<='%s' and offer_id='%d' group by country,date order by date ASC" % (startTime,today,offerId)
@@ -225,6 +233,7 @@ try:
                                     "Impressions": int(f[5]),
                                     "Clicks": int(f[6]),
                                     "Conversions": int(f[7]),
+                                    "System": os
                                 }
                             ]
                         tempList = []
@@ -285,7 +294,8 @@ try:
                                 "Cpi": f[8],
                                 "Cvr": f[9],
                                 "Cpc": f[10],
-                                "Ctr": f[11]
+                                "Ctr": f[11],
+                                "System": os
                             }
                         ]
 
@@ -306,7 +316,8 @@ try:
                                 "Cpi": f[8],
                                 "Cvr": f[9],
                                 "Cpc": f[10],
-                                "Ctr": f[11]
+                                "Ctr": f[11],
+                                "System": os
                             }
                         ]
                     ad_data_sql = "select date,'adwords',sum(revenue) revenue,sum(profit) profit,sum(cost) cost,sum(impressions) impressions,sum(clicks) clicks,sum(conversions) conversions,sum(cost)/sum(conversions) cpi,sum(conversions)/sum(clicks)*100 cvr, sum(cost)/sum(clicks) cpc,sum(clicks)/sum(impressions)*100 ctr from adwords where date>='%s' and date <= '%s' and offer_id='%d' group by date order by date ASC" % (startTime, today, offerId)
@@ -316,17 +327,18 @@ try:
                         all_data += [
                             {
                                 "Date": f[0],
-                                "type": f[1],
-                                "revenue": f[2],
-                                "profit": f[3],
-                                "cost": f[4],
-                                "impressions": f[5],
-                                "clicks": f[6],
-                                "conversions": f[7],
-                                "cpi": f[8],
-                                "cvr": f[9],
-                                "cpc": f[10],
-                                "ctr": f[11]
+                                "Source": f[1],
+                                "Revenue": f[2],
+                                "Profit": f[3],
+                                "Cost": f[4],
+                                "Impressions": f[5],
+                                "Clicks": f[6],
+                                "Conversions": f[7],
+                                "Cpi": f[8],
+                                "Cvr": f[9],
+                                "Cpc": f[10],
+                                "Ctr": f[11],
+                                "System": os
                             }
                         ]
 
@@ -343,7 +355,8 @@ try:
                                 "Cost": f[3],
                                 "Impressions": f[4],
                                 "Clicks": f[5],
-                                "Conversions": f[6]
+                                "Conversions": f[6],
+                                "System": os
                             }
                         ]
 
@@ -466,16 +479,15 @@ try:
 
             else:
                 count = 0
+                email_templates.append("System")
                 temlen = len(email_templates)
                 for t in range(len(email_templates)):
                     sheet.write(0, t, email_templates[t])
-                sheet.write(0,temlen,"Date")
                 for data in all_data:
                     count += 1
                     for n in range(len(email_templates)):
                         sheet.write(count,n,data[email_templates[n]])
-                    sheet.write(count,temlen, data['Date'])
-                    continue
+                        continue
 
 
             file_name = '=?UTF-8?B?' +base64.b64encode(j)+'?='+ "_data.xls"
