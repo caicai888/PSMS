@@ -132,11 +132,7 @@ for i in results:
                             history_scale_result = cursor.fetchone()
                             if history_scale_result:
                                 contract_scale = history_scale_result[0]
-                        print count_cost
-                        print contract_scale
                         count_revenue = '%0.2f' % (count_cost * (1 + float(contract_scale) / 100))
-                        print count_revenue
-                        print "++++"*10
                     else:
                         country_sql = "select id from country where shorthand='US'"
                         cursor.execute(country_sql)
@@ -170,6 +166,7 @@ for i in results:
                     ]
         templist = []
         resultlist = []
+        print all_result
         for ele in all_result:
             key = ele["date"] + ele["country"]
             if key in templist:
@@ -187,7 +184,8 @@ for i in results:
                 ele["conversions"] = int(ele["conversions"])
                 templist.append(key)
                 resultlist.append(ele)
-
+        print "+++"*10
+        print resultlist
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
         for l in resultlist:
             print "&&&"*10
