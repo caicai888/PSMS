@@ -197,9 +197,10 @@ def dashboard():
                 }
             ]
 
-        adwords_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.date,func.sum(Adwords.revenue),func.sum(Adwords.cost),func.sum(Adwords.profit),func.sum(Adwords.impressions),func.sum(Adwords.clicks),func.sum(Adwords.conversions))
+        adwords_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.date,func.sum(Adwords.revenue),func.sum(Adwords.cost),func.sum(Adwords.profit),func.sum(Adwords.impressions),func.sum(Adwords.clicks),func.sum(Adwords.conversions),func.sum(Adwords.rebate))
         adwords_data_count = adwords_data.group_by(Adwords.date).all()
         for i in adwords_data_count:
+            rebate = 0
             if float(i[6]) != 0:
                 cpi = float('%0.2f' % (float(i[2]) / float(i[6])))
             else:
@@ -214,6 +215,11 @@ def dashboard():
                 ctr = float('%0.2f' % (float(i[5]) / float(i[4]) * 100))
             else:
                 ctr = 0
+            if i[8] is not None:
+                rebate += float(i[8])
+            else:
+                rebate += 0
+
             table_list += [
                 {
                     "Date": i[0],
@@ -224,7 +230,7 @@ def dashboard():
                     "Impressions": int(i[4]),
                     "Clicks": int(i[5]),
                     "Conversions": int(i[6]),
-                    "Rebate": 0,
+                    "Rebate": float('%0.2f'%(rebate)),
                     "CPI": cpi,
                     "CVR": cvr,
                     "CPC": cpc,
