@@ -382,7 +382,7 @@ def dbTable():
                 l["Rebate"] = float('%0.2f' % (l['Rebate']))
                 l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
                 l["ROI"] = float('%0.2f' % (cData(float(l["Profit"]), float(l["Cost"]))))
-                l["appName"] = l["Source"]+"_"+l["appName"]
+                l["appName"] = l["appName"]+"_"+l["Source"]
                 all_data_list.append(l)
             dimission = ["Date", "appName", "Conversions", "CPI", "Cost", "Revenue", "Profit", "Rebate", "CountProfit", "ROI"]
 
@@ -549,7 +549,7 @@ def dbTable():
                 accountName = CampaignRelations.query.filter_by(account_id=i[1]).first()
                 account_name = accountName.account_name
                 rebate_result = Rebate.query.filter_by(accountId=i[1]).first()
-                rebate = float(rebate_result.rebate)
+                rebate = float(rebate_result.scale)
                 all_data_list += [
                     {
                         "Date": i[0],
