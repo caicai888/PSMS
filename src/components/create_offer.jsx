@@ -162,6 +162,9 @@ var CreateOffer = React.createClass({
         /*_this.setState({
             pt:pt
         });*/
+        if(_this.props.params.id){
+            pt = $(e.target).parents("#country_detail").attr("data-pt")
+        }
         sessionStorage.setItem("pt",pt);
         var platform="";
         if(pt=="facebook"){
@@ -701,7 +704,7 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-10">
                             <div className="col-sm-3"> </div>
                             <div className="col-sm-9 table-responsive">
-                                <table className="table table-bordered text-center facebook_tfdj" id="country_detail">
+                                <table className="table table-bordered text-center facebook_tfdj" data-pt="facebook" id="country_detail">
                                     <tbody className="tfdq_price_calendar">
                                     {/*{
                                      this.state.result.map(function (ele,index,array) {
@@ -908,7 +911,7 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-10">
                             <div className="col-sm-3"> </div>
                             <div className="col-sm-9 table-responsive">
-                                <table className="table table-bordered text-center adwords_tfdj" id="country_detail">
+                                <table className="table table-bordered text-center adwords_tfdj" data-pt="adwords" id="country_detail">
                                     <tbody className="tfdq_price_calendar">
                                     {/*{
                                      this.state.result.map(function (ele,index,array) {
@@ -1115,7 +1118,7 @@ var CreateOffer = React.createClass({
                         <div className="col-sm-10">
                             <div className="col-sm-3"> </div>
                             <div className="col-sm-9 table-responsive">
-                                <table className="table table-bordered text-center apple_tfdj" id="country_detail">
+                                <table className="table table-bordered text-center apple_tfdj" data-pt="apple" id="country_detail">
                                     <tbody className="tfdq_price_calendar">
                                     {/*{
                                      this.state.result.map(function (ele,index,array) {
