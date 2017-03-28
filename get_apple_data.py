@@ -17,8 +17,8 @@ start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.time
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 start_date = "2017-03-27"
-# sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id in (select id from offer where status != 'deleted')"
-sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id=39"
+sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id in (select id from offer where status != 'deleted')"
+# sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id=39"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -176,12 +176,16 @@ for i in results:
                         x["cost"] += float(ele["cost"])
                         x["clicks"] += int(ele["clicks"])
                         x["conversions"] += int(ele["conversions"])
+                        x["revenue"] += float(ele["revenue"])
+                        x["profit"] += float(ele["profit"])
 
             else:
                 ele["impressions"] = int(ele["impressions"])
                 ele["cost"] = float(ele["cost"])
                 ele["clicks"] = int(ele["clicks"])
                 ele["conversions"] = int(ele["conversions"])
+                ele["revenue"] = float(ele["revenue"])
+                ele["profit"] = float(ele["profit"])
                 templist.append(key)
                 resultlist.append(ele)
         print "+++"*10
