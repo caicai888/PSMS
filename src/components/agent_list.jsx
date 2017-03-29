@@ -78,7 +78,7 @@ var AgentList = React.createClass({
                                 this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
                                         <td>{ele.id}</td>
-                                        <td>{ele.accountId}</td>
+                                        <td>{ele.accountName}</td>
                                         <td>{ele.scale}</td>
                                         <td>{ele.keywords}</td>
                                         <td>{ele.platform}</td>
