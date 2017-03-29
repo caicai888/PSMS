@@ -14,7 +14,7 @@ from email import Encoders
 import datetime,time
 
 startTime = (datetime.datetime.now()+datetime.timedelta(hours=8)-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
-db = MySQLdb.connect("localhost","root","123456","psms",charset='utf8')
+db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
 all_data = []
