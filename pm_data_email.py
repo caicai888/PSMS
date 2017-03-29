@@ -189,8 +189,10 @@ smtp.connect('smtp.exmail.qq.com',25)
 smtp.ehlo()
 smtp.starttls()
 smtp.ehlo()
+
 smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
 mailTo = mail_to+mail_cc
 smtp.sendmail(mail_from, mailTo, msg.as_string())
+
 smtp.quit()
 print("ok")
