@@ -132,6 +132,7 @@ for l in all_data_list_unique:
     l["Rebate"] = float('%0.2f' % (l['Rebate']))
     l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
     l["ROI"] = ROI
+    all_data_list.append(l)
 
 newlist = sorted(all_data_list, key=lambda k: k['appName'])
 
@@ -148,18 +149,18 @@ sheet.write(0, 7, "Rebate")
 sheet.write(0, 8, "CountProfit")
 sheet.write(0, 9, "ROI")
 
-count = len(all_data_list)
+count = len(newlist)
 for j in range(count):
-    sheet.write(j+1, 0, all_data_list[j].get("Date"))
-    sheet.write(j+1, 1, all_data_list[j].get("appName"))
-    sheet.write(j+1, 2, all_data_list[j].get("Conversions"))
-    sheet.write(j+1, 3, all_data_list[j].get("CPI"))
-    sheet.write(j+1, 4, all_data_list[j].get("Cost"))
-    sheet.write(j+1, 5, all_data_list[j].get("Revenue"))
-    sheet.write(j+1, 6, all_data_list[j].get("Profit"))
-    sheet.write(j+1, 7, all_data_list[j].get("Rebate"))
-    sheet.write(j+1, 8, all_data_list[j].get("CountProfit"))
-    sheet.write(j+1, 9, all_data_list[j].get("ROI"))
+    sheet.write(j+1, 0, newlist[j].get("Date"))
+    sheet.write(j+1, 1, newlist[j].get("appName"))
+    sheet.write(j+1, 2, newlist[j].get("Conversions"))
+    sheet.write(j+1, 3, newlist[j].get("CPI"))
+    sheet.write(j+1, 4, newlist[j].get("Cost"))
+    sheet.write(j+1, 5, newlist[j].get("Revenue"))
+    sheet.write(j+1, 6, newlist[j].get("Profit"))
+    sheet.write(j+1, 7, newlist[j].get("Rebate"))
+    sheet.write(j+1, 8, newlist[j].get("CountProfit"))
+    sheet.write(j+1, 9, newlist[j].get("ROI"))
     continue
 
 file_name = "PSMS_Date.xls"
@@ -186,7 +187,7 @@ smtp.connect('smtp.exmail.qq.com',25)
 smtp.ehlo()
 smtp.starttls()
 smtp.ehlo()
-smtp.login('liyin@newborn-town.com', '920130LiY')
+smtp.login('liyin@newborntown.com', '920130LiY')
 smtp.sendmail(mail_from, mail_to, msg.as_string())
 smtp.quit()
 print("ok")
