@@ -599,12 +599,30 @@ class AdwordsGeo(db.Model):
 class Rebate(db.Model):
     __tablename__="rebate"
     id = db.Column(db.Integer, primary_key=True)
-    accountId = db.Column(db.String(100), nullable=True)
+    accountName = db.Column(db.String(100), nullable=True)
     scale = db.Column(db.Float, nullable=True)
+    keywords = db.Column(db.String(100), nullable=True)
+    companyName = db.Column(db.String(100), nullable=True)
+    address = db.Column(db.String(100), nullable=True)
+    bank_account = db.Column(db.String(100), nullable=True)
+    concordat_code = db.Column(db.String(100), nullable=True)
+    remark = db.Column(db.String(100), nullable=True)
+    platform = db.Column(db.String(100), nullable=True)
+    status = db.Column(db.String(100), nullable=True)
+    createdTime = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,accountId, scale):
-        self.accountId = accountId
+    def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status,createdTime):
+        self.accountId = accountName
         self.scale = scale
+        self.keywords = keywords
+        self.companyName = companyName
+        self.address = address
+        self.bank_account = bank_account
+        self.concordat_code = concordat_code
+        self.remark = remark
+        self.platform = platform
+        self.status = status
+        self.createdTime = createdTime
 
     def __repr__(self):
         return '<Rebate {}>'.format(self.id)
