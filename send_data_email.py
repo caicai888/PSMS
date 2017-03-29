@@ -480,6 +480,7 @@ try:
             else:
                 count = 0
                 email_templates.append("System")
+                email_templates = sorted(all_data, key=lambda k: k['Date'])
                 temlen = len(email_templates)
                 for t in range(len(email_templates)):
                     sheet.write(0, t, email_templates[t])
