@@ -68,6 +68,8 @@ var AgentList = React.createClass({
                                 <th>ID</th>
                                 <th>代理商名字</th>
                                 <th>返点比例</th>
+                                <th>关键词</th>
+                                <th>平台</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -76,8 +78,10 @@ var AgentList = React.createClass({
                                 this.state.result.map(function (ele,index,array) {
                                     return <tr key={index}>
                                         <td>{ele.id}</td>
-                                        <td>{ele.accountId}</td>
+                                        <td>{ele.accountName}</td>
                                         <td>{ele.scale}</td>
+                                        <td>{ele.keywords}</td>
+                                        <td>{ele.platform}</td>
                                         <td><a className="btn btn-primary" href={"#/create_agent/"+ele.id}>Edit</a></td>
                                     </tr>
                                 })
