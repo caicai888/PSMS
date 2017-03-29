@@ -12,8 +12,10 @@ def create_app(config_name):
     databaseurl = 'mysql+pymysql://%s:%s@%s:%s/%s' % (app.config["MYSQL_USER"],app.config["MYSQL_PASS"],app.config["MYSQL_HOST"],app.config["MYSQL_PORT"],app.config["MYSQL_DB"])
     app.config['SQLALCHEMY_DATABASE_URI'] =databaseurl
     app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', True)
+    # test = app.config
     db = SQLAlchemy(app)
     from users import users as users_blueprint
+
     app.register_blueprint(users_blueprint)
     from customers import customers as customers_blueprint
     app.register_blueprint(customers_blueprint)
