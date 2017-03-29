@@ -166,11 +166,12 @@ for j in range(count):
 file_name = "PSMS_Date.xls"
 file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
-mail_body="data"
-mail_from="liyin@newborntown.com"
-mail_to = "liyin@newborntown.com"
+mail_body=u"PSMS平台每日数据报表"
+mail_from="ads_reporting@newborntown.com"
+mail_to = ["liyin@newborntown.com","liliyin163@163.com"]
+mail_cc = ["liumengpan@newborntown.com","zhanggeng@newborntown.com"]
 msg = MIMEMultipart()
-body = MIMEText(mail_body)
+body = MIMEText(mail_body.encode("utf8"))
 msg.attach(body)
 part = MIMEBase('application', 'octet-stream')
 part.set_payload(open(file_name, 'rb').read())
@@ -179,7 +180,8 @@ part.add_header('Content-Disposition', 'attachment; filename="' + file_name.enco
 msg.attach(part)
 
 msg['From'] = mail_from
-msg['To'] = mail_to
+msg['To'] = ';'.join(mail_to)
+msg['Cc'] = ";".join(mail_cc)
 msg['date'] = time.strftime('%Y-%m-%d')
 msg['Subject'] = "pspm_Data"
 smtp = smtplib.SMTP()
@@ -187,7 +189,8 @@ smtp.connect('smtp.exmail.qq.com',25)
 smtp.ehlo()
 smtp.starttls()
 smtp.ehlo()
-smtp.login('liyin@newborntown.com', '920130LiY')
-smtp.sendmail(mail_from, mail_to, msg.as_string())
+smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+mailTo = mail_to+mail_cc
+smtp.sendmail(mail_from, mailTo, msg.as_string())
 smtp.quit()
 print("ok")
