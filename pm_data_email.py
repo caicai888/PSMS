@@ -168,8 +168,8 @@ file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
 mail_body=u"PSMS平台每日数据报表"
 mail_from="ads_reporting@newborntown.com"
-mail_to = ["liyin@newborntown.com","liliyin163@163.com"]
-mail_cc = ["liumengpan@newborntown.com","zhanggeng@newborntown.com"]
+mail_to = ["payment@newborn-town.com","pm@newborn-town.com"]
+mail_cc = ["yubin@newborntown.com","liyin@newborntown.com"]
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
 msg.attach(body)
