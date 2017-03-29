@@ -30,7 +30,7 @@ module.exports = {
       loaders:[
           {test:/\.css/,loader:'style!css'},
           {test:/\.(png|jpg)$/,loader:'url-loader?limit=8192&name=img/[hash:8].[name].[ext]'},
-          {test:/\.js[x]?$/,loader:'babel-loader',exclude:'/node_modules/'}
+          {test:/\.js[x]?$/,loader:'babel-loader',exclude:'/node_modules/',query: {compact: false} }
       ]
     },
     resolve:{
