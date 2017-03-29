@@ -111,15 +111,8 @@ for i in role_result:
         file_dir = "/home/ubuntu/code"
         wbk.save(file_name)
         mail_body = u"今日收益汇总"
-<<<<<<< HEAD
         mail_from = "ads_reporting@newborntown.com"
         mailTo = ";".join(mail_to)
-=======
-        mail_from = "liyin@newborntown.com"
-        mailTo = ";".join(mail_to)
-        print mailTo
-        mailTo = "liyin@newborntown.com"
->>>>>>> psms data profit
         msg = MIMEMultipart()
         body = MIMEText(mail_body.encode("utf8"))
         msg.attach(body)
@@ -137,11 +130,7 @@ for i in role_result:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-<<<<<<< HEAD
         smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
-=======
-        smtp.login('liyin@newborntown.com', '920130LiY')
->>>>>>> psms data profit
         smtp.sendmail(mail_from, mailTo, msg.as_string())
         smtp.quit()
 print("ok")
