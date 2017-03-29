@@ -20,3 +20,5 @@ cursor = db.cursor()
 detail_sql = "select date,account_id,sum(cost) cost from dataDetail where date='%s' and type='facebook' group by date,account_id" % (startTime)
 cursor.execute(detail_sql)
 detail_result = cursor.fetchall()
+for i in detail_result:
+    account_sql = "select "
