@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from datetime import datetime
 from main import db
 
@@ -610,12 +611,15 @@ class Rebate(db.Model):
     platform = db.Column(db.String(100), nullable=True)
     status = db.Column(db.String(100), nullable=True)
     createdTime = db.Column(db.String(100), nullable=True)
-
     def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status,createdTime):
         self.accountId = accountName
         self.scale = scale
         self.keywords = keywords
         self.companyName = companyName
+    def __init__(self,accountName, scale,keywords,address,bank_account,concordat_code,remark,platform,status,createdTime):
+        self.accountId = accountName
+        self.scale = scale
+        self.keywords = keywords
         self.address = address
         self.bank_account = bank_account
         self.concordat_code = concordat_code
