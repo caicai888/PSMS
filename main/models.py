@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+from datetime import datetime,timedelta
 from main import db
 
 # 用户,角色关联表
@@ -612,8 +612,9 @@ class Rebate(db.Model):
     status = db.Column(db.String(100), nullable=True)
     createdTime = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status='default',createdTime=None):
-        createdTime = str(datetime.now())[:-10]
+
+    def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status="default",createdTime=None):
+        createdTime = str(datetime.now()+timedelta(hours=8))[:10]
         self.accountName = accountName
         self.scale = scale
         self.keywords = keywords
