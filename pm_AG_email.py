@@ -40,7 +40,7 @@ for i in detail_result:
 
     all_data += [
         {
-            "Date": startTime,
+            "Date": i[0],
             "AccountName": accountName,
             "AccountId": i[1],
             "Cost": float('%0.2f' % (float(i[2]))),
