@@ -43,14 +43,16 @@ var Header = React.createClass({
             $(this).addClass("active").siblings().removeClass("active");
         });
         var hash = function () {
-            var hash = location.hash;
-            $("#nav_nav>ul.ul_active>li").each(function () {
-                if(hash.indexOf($(this).attr("data-hash"))>-1){
-                    $("#nav_nav>ul>li").removeClass("active");
-                    $(this).addClass("active");
-                    return;
-                }
-            });
+            setTimeout(function () {
+                var hash = location.hash;
+                $("#nav_nav>ul.ul_active>li").each(function () {
+                    if(hash.indexOf($(this).attr("data-hash"))>-1){
+                        $("#nav_nav>ul>li").removeClass("active");
+                        $(this).addClass("active");
+                        return;
+                    }
+                });
+            })
         }
         hash()
         $(document).on("click",function () {

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from flask import Blueprint, request
-from models import Datas, Adwords,Offer, User, DataDetail,UserRole,CampaignRelations
+from models import Datas, Adwords,Offer, User, DataDetail,UserRole,CampaignRelations,Rebate
 import json
 import datetime
 from sqlalchemy import func
@@ -47,10 +47,9 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(i.conversions)
-            print i.rebate
-            try:
+            if i.rebate is not None:
                 rebate_count += float(i.rebate)
-            except Exception:
+            else:
                 rebate_count += 0
 
         adwords = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).all()
@@ -61,10 +60,10 @@ def dashboard():
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(float(i.conversions))
-            if i.rebate == "":
-                rebate_count += 0
-            else:
+            if i.rebate is not None:
                 rebate_count += float(i.rebate)
+            else:
+                rebate_count += 0
 
         if conversions_count != 0:
             cpi_count = float('%0.2f' % (cost_count / float(conversions_count)))
@@ -121,10 +120,10 @@ def dashboard():
                 impressions_date += int(j.impressions)
                 clicks_date += int(j.clicks)
                 conversions_date += int(j.conversions)
-                if j.rebate == '':
-                    rebate_date += 0
-                else:
+                if j.rebate is not None:
                     rebate_date += float(j.rebate)
+                else:
+                    rebate_date += 0
             adwords_list = Adwords.query.filter_by(date=date).all()
             for j in adwords_list:
                 revenue_date += float(j.revenue)
@@ -198,9 +197,10 @@ def dashboard():
                 }
             ]
 
-        adwords_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.date,func.sum(Adwords.revenue),func.sum(Adwords.cost),func.sum(Adwords.profit),func.sum(Adwords.impressions),func.sum(Adwords.clicks),func.sum(Adwords.conversions))
+        adwords_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.date,func.sum(Adwords.revenue),func.sum(Adwords.cost),func.sum(Adwords.profit),func.sum(Adwords.impressions),func.sum(Adwords.clicks),func.sum(Adwords.conversions),func.sum(Adwords.rebate))
         adwords_data_count = adwords_data.group_by(Adwords.date).all()
         for i in adwords_data_count:
+            rebate = 0
             if float(i[6]) != 0:
                 cpi = float('%0.2f' % (float(i[2]) / float(i[6])))
             else:
@@ -215,6 +215,11 @@ def dashboard():
                 ctr = float('%0.2f' % (float(i[5]) / float(i[4]) * 100))
             else:
                 ctr = 0
+            if i[7] is not None:
+                rebate += float(i[7])
+            else:
+                rebate += 0
+
             table_list += [
                 {
                     "Date": i[0],
@@ -225,7 +230,7 @@ def dashboard():
                     "Impressions": int(i[4]),
                     "Clicks": int(i[5]),
                     "Conversions": int(i[6]),
-                    "Rebate": 0,
+                    "Rebate": float('%0.2f'%(rebate)),
                     "CPI": cpi,
                     "CVR": cvr,
                     "CPC": cpc,
@@ -269,9 +274,11 @@ def dbTable():
         adwords_data = []
         all_data = []
         if flag == "PM-Data":
-            fb_ap_data = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date).with_entities(Datas.offer_id,Datas.date,func.sum(Datas.conversions),func.sum(Datas.cost),func.sum(Datas.revenue),func.sum(Datas.profit),func.sum(Datas.rebate))
-            fb_ap_result = fb_ap_data.group_by(Datas.date,Datas.offer_id).all()
-            for i in fb_ap_result:
+            facebook_data = []
+            apple_data = []
+            fb_data = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date, Datas.type=='facebook').with_entities(Datas.offer_id,Datas.date,func.sum(Datas.conversions),func.sum(Datas.cost),func.sum(Datas.revenue),func.sum(Datas.profit),func.sum(Datas.rebate))
+            fb_result = fb_data.group_by(Datas.date,Datas.offer_id).all()
+            for i in fb_result:
                 offer_sql = Offer.query.filter_by(id=i[0]).first()
                 if offer_sql.status == "deleted":
                     pass
@@ -281,20 +288,21 @@ def dbTable():
                         rebate = 0
                     else:
                         rebate = i[6]
-                    facebook_apple_data += [
+                    facebook_data += [
                         {
                             "appName": appName,
+                            "Source": "FB",
                             "Date": i[1],
                             "Conversions": int(i[2]),
                             "Cost": i[3],
                             "Revenue": i[4],
                             "Profit": i[5],
                             "Rebate": rebate,
-                            "CountProfit": i[5]+rebate,
+                            "CountProfit": i[5]+rebate
                         }
                     ]
-            adword_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.offer_id,Adwords.date,func.sum(Adwords.conversions),func.sum(Adwords.cost),func.sum(Adwords.revenue),func.sum(Adwords.profit),func.sum(Adwords.rebate))
-            adword_result = adword_data.group_by(Adwords.date,Adwords.offer_id).all()
+            adword_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.offer_id, Adwords.date,func.sum(Adwords.conversions),func.sum(Adwords.cost),func.sum(Adwords.revenue),func.sum(Adwords.profit),func.sum(Adwords.rebate))
+            adword_result = adword_data.group_by(Adwords.date, Adwords.offer_id).all()
             for i in adword_result:
                 offer_sql = Offer.query.filter_by(id=i[0]).first()
                 if offer_sql.status == "deleted":
@@ -308,6 +316,7 @@ def dbTable():
                     adwords_data += [
                         {
                             "appName": appName,
+                            "Source": "ADW",
                             "Date": i[1],
                             "Conversions": int(i[2]),
                             "Cost": i[3],
@@ -317,29 +326,54 @@ def dbTable():
                             "CountProfit": i[5] + rebate,
                         }
                     ]
+            ap_data = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date, Datas.type=='apple').with_entities(Datas.offer_id,Datas.date,func.sum(Datas.conversions),func.sum(Datas.cost),func.sum(Datas.revenue),func.sum(Datas.profit),func.sum(Datas.rebate))
+            ap_result = ap_data.group_by(Datas.date,Datas.offer_id).all()
+            for i in ap_result:
+                offer_sql = Offer.query.filter_by(id=i[0]).first()
+                if offer_sql.status == "deleted":
+                    pass
+                else:
+                    appName = offer_sql.app_name
+                    if i[6] == None:
+                        rebate = 0
+                    else:
+                        rebate = i[6]
+                    apple_data += [
+                        {
+                            "appName": appName,
+                            "Source": "AP",
+                            "Date": i[1],
+                            "Conversions": int(i[2]),
+                            "Cost": i[3],
+                            "Revenue": i[4],
+                            "Profit": i[5],
+                            "Rebate": rebate,
+                            "CountProfit": i[5] + rebate
+                        }
+                    ]
 
-            all_data = facebook_apple_data + adwords_data
+            all_data = facebook_data + adwords_data + apple_data
             tempList = []
             all_data_list_unique = []
             for ele in all_data:
-                key = ele['Date'] + ele['appName']
+                key = ele['Date'] + ele['appName'] + ele['Source']
                 if key in tempList:
                     for x in all_data_list_unique:
-                        if x['Date'] == ele['Date'] and x['appName'] == ele['appName']:
+                        if x['Date'] == ele['Date'] and x['appName'] == ele['appName'] and x['Source']==ele['Source']:
                             x['Conversions'] += int(ele['Conversions'])
-                            x['Revenue'] += float('%0.2f'%(float(ele['Revenue'])))
-                            x['Cost'] += float('%0.2f'%(float(ele['Cost'])))
-                            x['Profit'] += float('%0.2f'%(float(ele['Profit'])))
-                            x['Rebate'] += float('%0.2f'%(float(ele['Rebate'])))
-                            x['CountProfit'] += float('%0.2f'%(float(ele['CountProfit'])))
+                            x['Revenue'] += float('%0.2f' % (float(ele['Revenue'])))
+                            x['Cost'] += float('%0.2f' % (float(ele['Cost'])))
+                            x['Profit'] += float('%0.2f' % (float(ele['Profit'])))
+                            x['Rebate'] += float('%0.2f' % (float(ele['Rebate'])))
+                            x['CountProfit'] += float('%0.2f' % (float(ele['CountProfit'])))
 
                 else:
                     ele['Conversions'] = int(ele['Conversions'])
                     ele['Revenue'] = float(ele['Revenue'])
-                    ele['Cost'] = float('%0.2f'%(float(ele['Cost'])))
-                    ele['Profit'] = float('%0.2f'%(float(ele['Profit'])))
-                    ele['Rebate'] = float('%0.2f'%(float(ele['Rebate'])))
-                    ele['CountProfit'] = float('%0.2f'%(float(ele['CountProfit'])))
+                    ele['Cost'] = float('%0.2f' % (float(ele['Cost'])))
+                    ele['Profit'] = float('%0.2f' % (float(ele['Profit'])))
+                    ele['Rebate'] = float('%0.2f' % (float(ele['Rebate'])))
+                    ele['CountProfit'] = float('%0.2f' % (float(ele['CountProfit'])))
 
                     tempList.append(key)
                     all_data_list_unique.append(ele)
@@ -348,14 +382,104 @@ def dbTable():
             for l in all_data_list_unique:
                 cpi = float('%0.2f' % (cData(float(l['Cost']), float(l['Conversions']))))
                 l['CPI'] = cpi
-                l['Revenue'] = float('%0.2f'%(l["Revenue"]))
-                l['Cost'] = float('%0.2f'%(l["Cost"]))
-                l["Profit"] = float('%0.2f'%(l['Profit']))
-                l["Rebate"] = float('%0.2f'%(l['Rebate']))
-                l["CountProfit"] = float('%0.2f'%(l['CountProfit']))
-                l["ROI"] = float('%0.2f'%(cData(float(l["Profit"]),float(l["Cost"]))))
+                l['Revenue'] = float('%0.2f' % (l["Revenue"]))
+                l['Cost'] = float('%0.2f' % (l["Cost"]))
+                l["Profit"] = float('%0.2f' % (l['Profit']))
+                l["Rebate"] = float('%0.2f' % (l['Rebate']))
+                l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
+                l["ROI"] = float('%0.2f' % (cData(float(l["Profit"]), float(l["Cost"]))))
+                l["appName"] = l["appName"]+"_"+l["Source"]
                 all_data_list.append(l)
-            dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Profit","Rebate","CountProfit","ROI"]
+            dimission = ["Date", "appName", "Conversions", "CPI", "Cost", "Revenue", "Profit", "Rebate", "CountProfit", "ROI"]
+
+        # if flag == "PM-Data":
+        #     fb_ap_data = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date).with_entities(Datas.offer_id,Datas.date,func.sum(Datas.conversions),func.sum(Datas.cost),func.sum(Datas.revenue),func.sum(Datas.profit),func.sum(Datas.rebate))
+        #     fb_ap_result = fb_ap_data.group_by(Datas.date,Datas.offer_id).all()
+        #     for i in fb_ap_result:
+        #         offer_sql = Offer.query.filter_by(id=i[0]).first()
+        #         if offer_sql.status == "deleted":
+        #             pass
+        #         else:
+        #             appName = offer_sql.app_name
+        #             if i[6] == None:
+        #                 rebate = 0
+        #             else:
+        #                 rebate = i[6]
+        #             facebook_apple_data += [
+        #                 {
+        #                     "appName": appName,
+        #                     "Date": i[1],
+        #                     "Conversions": int(i[2]),
+        #                     "Cost": i[3],
+        #                     "Revenue": i[4],
+        #                     "Profit": i[5],
+        #                     "Rebate": rebate,
+        #                     "CountProfit": i[5]+rebate,
+        #                 }
+        #             ]
+        #     adword_data = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).with_entities(Adwords.offer_id,Adwords.date,func.sum(Adwords.conversions),func.sum(Adwords.cost),func.sum(Adwords.revenue),func.sum(Adwords.profit),func.sum(Adwords.rebate))
+        #     adword_result = adword_data.group_by(Adwords.date,Adwords.offer_id).all()
+        #     for i in adword_result:
+        #         offer_sql = Offer.query.filter_by(id=i[0]).first()
+        #         if offer_sql.status == "deleted":
+        #             pass
+        #         else:
+        #             appName = offer_sql.app_name
+        #             if i[6] == None:
+        #                 rebate = 0
+        #             else:
+        #                 rebate = i[6]
+        #             adwords_data += [
+        #                 {
+        #                     "appName": appName,
+        #                     "Date": i[1],
+        #                     "Conversions": int(i[2]),
+        #                     "Cost": i[3],
+        #                     "Revenue": i[4],
+        #                     "Profit": i[5],
+        #                     "Rebate": rebate,
+        #                     "CountProfit": i[5] + rebate,
+        #                 }
+        #             ]
+        #
+        #     all_data = facebook_apple_data + adwords_data
+        #     tempList = []
+        #     all_data_list_unique = []
+        #     for ele in all_data:
+        #         key = ele['Date'] + ele['appName']
+        #         if key in tempList:
+        #             for x in all_data_list_unique:
+        #                 if x['Date'] == ele['Date'] and x['appName'] == ele['appName']:
+        #                     x['Conversions'] += int(ele['Conversions'])
+        #                     x['Revenue'] += float('%0.2f'%(float(ele['Revenue'])))
+        #                     x['Cost'] += float('%0.2f'%(float(ele['Cost'])))
+        #                     x['Profit'] += float('%0.2f'%(float(ele['Profit'])))
+        #                     x['Rebate'] += float('%0.2f'%(float(ele['Rebate'])))
+        #                     x['CountProfit'] += float('%0.2f'%(float(ele['CountProfit'])))
+        #
+        #         else:
+        #             ele['Conversions'] = int(ele['Conversions'])
+        #             ele['Revenue'] = float(ele['Revenue'])
+        #             ele['Cost'] = float('%0.2f'%(float(ele['Cost'])))
+        #             ele['Profit'] = float('%0.2f'%(float(ele['Profit'])))
+        #             ele['Rebate'] = float('%0.2f'%(float(ele['Rebate'])))
+        #             ele['CountProfit'] = float('%0.2f'%(float(ele['CountProfit'])))
+        #
+        #             tempList.append(key)
+        #             all_data_list_unique.append(ele)
+        #
+        #     all_data_list = []
+        #     for l in all_data_list_unique:
+        #         cpi = float('%0.2f' % (cData(float(l['Cost']), float(l['Conversions']))))
+        #         l['CPI'] = cpi
+        #         l['Revenue'] = float('%0.2f'%(l["Revenue"]))
+        #         l['Cost'] = float('%0.2f'%(l["Cost"]))
+        #         l["Profit"] = float('%0.2f'%(l['Profit']))
+        #         l["Rebate"] = float('%0.2f'%(l['Rebate']))
+        #         l["CountProfit"] = float('%0.2f'%(l['CountProfit']))
+        #         l["ROI"] = float('%0.2f'%(cData(float(l["Profit"]),float(l["Cost"]))))
+        #         all_data_list.append(l)
+        #     dimission = ["Date","appName","Conversions","CPI","Cost","Revenue","Profit","Rebate","CountProfit","ROI"]
 
         elif flag == "PM-BD":
             role = UserRole.query.filter(UserRole.role_id == 4).all()
@@ -430,15 +554,21 @@ def dbTable():
             for i in detail_result:
                 accountName = CampaignRelations.query.filter_by(account_id=i[1]).first()
                 account_name = accountName.account_name
+                rebate_result = Rebate.query.filter_by(accountId=i[1]).first()
+                if rebate_result:
+                    rebate = float(rebate_result.scale)
+                else:
+                    rebate = 0
                 all_data_list += [
                     {
                         "Date": i[0],
                         "AccountName": account_name,
                         "AccountId": i[1],
-                        "Cost": float('%0.2f'%(float(i[2])))
+                        "Cost": float('%0.2f'%(float(i[2]))),
+                        "Rebate": float('%0.2f'%(float(i[2])*rebate/100))
                     }
                 ]
-            dimission = ["Date", "AccountId", "AccountName", "Cost"]
+            dimission = ["Date", "AccountId", "AccountName", "Cost","Rebate"]
 
         elif flag == "Offer":
             fb_ap_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date).with_entities(Datas.date,Datas.offer_id,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
