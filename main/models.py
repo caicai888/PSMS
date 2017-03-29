@@ -602,6 +602,7 @@ class Rebate(db.Model):
     accountName = db.Column(db.String(100), nullable=True)
     scale = db.Column(db.Float, nullable=True)
     keywords = db.Column(db.String(100), nullable=True)
+    companyName = db.Column(db.String(100), nullable=True)
     address = db.Column(db.String(100), nullable=True)
     bank_account = db.Column(db.String(100), nullable=True)
     concordat_code = db.Column(db.String(100), nullable=True)
@@ -610,10 +611,11 @@ class Rebate(db.Model):
     status = db.Column(db.String(100), nullable=True)
     createdTime = db.Column(db.String(100), nullable=True)
 
-    def __init__(self,accountName, scale,keywords,address,bank_account,concordat_code,remark,platform,status,createdTime):
+    def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status,createdTime):
         self.accountId = accountName
         self.scale = scale
         self.keywords = keywords
+        self.companyName = companyName
         self.address = address
         self.bank_account = bank_account
         self.concordat_code = concordat_code

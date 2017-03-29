@@ -187,12 +187,8 @@ for i in results:
                 ele["profit"] = float(ele["profit"])
                 templist.append(key)
                 resultlist.append(ele)
-        print "+++"*10
-        print resultlist
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
         for l in resultlist:
-            print "&&&"*10
-            print l["cost"]
             l_cpc = '%0.2f'%(float(l["cost"]) / float(l["clicks"])) if l["clicks"] != 0 else 0
             l_cvr = '%0.2f' % (float(l["conversions"] / l["clicks"] * 100)) if l["clicks"] != 0 else 0
             l_cpi = '%0.2f'%(float(l["cost"]) / float(l["conversions"])) if l["conversions"] != 0 else 0
@@ -210,22 +206,22 @@ for i in results:
                 cursor.execute(update_sql)
                 db.commit()
 
-# if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "09:00":
-#     mail_body = "apple data finished"
-#     mail_from = "ads_reporting@newborntown.com"
-#     mail_to = "liyin@newborntown.com"
-#     msg = MIMEMultipart()
-#     body = MIMEText(mail_body)
-#     msg.attach(body)
-#     msg['From'] = mail_from
-#     msg['To'] = mail_to
-#     msg['date'] = time.strftime('%Y-%m-%d')
-#     msg['Subject'] = "get apple Data finished"
-#     smtp = smtplib.SMTP()
-#     smtp.connect('smtp.exmail.qq.com', 25)
-#     smtp.ehlo()
-#     smtp.starttls()
-#     smtp.ehlo()
-#     smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
-#     smtp.sendmail(mail_from, mail_to, msg.as_string())
-#     smtp.quit()
+if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "09:00":
+    mail_body = "apple data finished"
+    mail_from = "ads_reporting@newborntown.com"
+    mail_to = "liyin@newborntown.com"
+    msg = MIMEMultipart()
+    body = MIMEText(mail_body)
+    msg.attach(body)
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    msg['date'] = time.strftime('%Y-%m-%d')
+    msg['Subject'] = "get apple Data finished"
+    smtp = smtplib.SMTP()
+    smtp.connect('smtp.exmail.qq.com', 25)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+    smtp.sendmail(mail_from, mail_to, msg.as_string())
+    smtp.quit()
