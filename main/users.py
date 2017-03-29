@@ -20,6 +20,7 @@ users = Blueprint('users', __name__)
 # 获取所有用户
 @users.route('/api/users', methods=['POST', 'GET'])
 def get_users():
+    # print '=========>',request.method
     if request.method == "GET":
         users = User.query.all()
 
