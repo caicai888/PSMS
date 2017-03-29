@@ -554,7 +554,7 @@ def dbTable():
             for i in detail_result:
                 accountName = CampaignRelations.query.filter_by(account_id=i[1]).first()
                 account_name = accountName.account_name
-                rebate_result = Rebate.query.filter_by(accountId=account_name).first()
+                rebate_result = Rebate.query.filter_by(accountName=account_name).first()
                 if rebate_result:
                     rebate = float(rebate_result.scale)
                 else:
