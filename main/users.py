@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from main.has_permission import *
 import base64
+
+import  sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, request, session
@@ -15,12 +20,17 @@ users = Blueprint('users', __name__)
 # 获取所有用户
 @users.route('/api/users', methods=['POST', 'GET'])
 def get_users():
+    # print '=========>',request.method
     if request.method == "GET":
         users = User.query.all()
+
+        print 'Test look datas : %s' %(users)
         result = []
         for user in users:
             role = ''
             role_list = db.session.query(UserRole).filter_by(user_id=user.id).first()
+            print 'Session is : ', db.session.query()
+
             for role_id in role_list.role_id.split(','):
                 role += db.session.query(Role).filter_by(id=int(role_id)).first().name + ','
 
