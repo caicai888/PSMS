@@ -616,7 +616,9 @@ class Rebate(db.Model):
     #     self.scale = scale
     #     self.keywords = keywords
     #     self.companyName = companyName
-    def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status=status,createdTime=createdTime):
+    def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status='default',createdTime=None):
+
+        createdTime = str(datetime.now())[:-10]
         self.accountName = accountName
         self.scale = scale
         self.keywords = keywords
