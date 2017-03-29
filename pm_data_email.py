@@ -45,5 +45,29 @@ for i in fb_result:
         }
     ]
 
-ap_sql = "select offer_id,date,sum(conversions)conversions,sum(cost)cost,sum(revenue)revenue,sum(profit)profit,sum(rebate)rebate from datas where type='facebook' and date='%s' and offer_id in (select id from offer where status != 'deleted')" %(startTime)
+ap_sql = "select offer_id,date,sum(conversions)conversions,sum(cost)cost,sum(revenue)revenue,sum(profit)profit,sum(rebate)rebate from datas where type='apple' and date='%s' and offer_id in (select id from offer where status != 'deleted')" %(startTime)
 cursor.execute(ap_sql)
+ap_result = cursor.fetchall()
+for i in ap_result:
+    offer_sql = "select app_name from offer where id='%d'" % (i[0])
+    cursor.execute(offer_sql)
+    offer_result = cursor.fetchone()
+    appName = offer_result[0]
+    if i[6] == None:
+        rebate = 0
+    else:
+        rebate = i[6]
+    all_data += [
+        {
+            "appName": appName,
+            "Date": i[1],
+            "Conversions": int(i[2]),
+            "Cost": i[3],
+            "Revenue": i[4],
+            "Profit": i[5],
+            "Rebate": rebate,
+            "CountProfit": i[5] + rebate
+        }
+    ]
+
+ad_sql = "select offer_id,date,sum(conversions)conversions,sum(cost)cost,sum(revenue)revenue,sum(profit)profit,sum(rebate)rebate from adwords where date='%s' and offer_id in (select id from offer where status != 'deleted')" %(startTime)
