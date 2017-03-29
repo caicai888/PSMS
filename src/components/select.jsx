@@ -10,6 +10,13 @@ var Select = React.createClass({
             placeholder:this.props.placeholder
         });
     },
+    componentDidMount(){
+        $("."+this.props.className).select2({
+            data: this.props.data,
+            multiple: this.props.multiple=="false"?false:true,
+            placeholder:this.props.placeholder
+        });
+    },
     render(){
         return (
            <select  data-key={this.props.keyword}  className={this.props.className+" form-control"}> </select>
