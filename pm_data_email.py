@@ -132,6 +132,7 @@ for l in all_data_list_unique:
     l["Rebate"] = float('%0.2f' % (l['Rebate']))
     l["CountProfit"] = float('%0.2f' % (l['CountProfit']))
     l["ROI"] = ROI
+    all_data_list.append(l)
 
 newlist = sorted(all_data_list, key=lambda k: k['appName'])
 
@@ -148,7 +149,7 @@ sheet.write(0, 7, "Rebate")
 sheet.write(0, 8, "CountProfit")
 sheet.write(0, 9, "ROI")
 
-count = len(all_data_list)
+count = len(newlist)
 for j in range(count):
     sheet.write(j+1, 0, all_data_list[j].get("Date"))
     sheet.write(j+1, 1, all_data_list[j].get("appName"))
