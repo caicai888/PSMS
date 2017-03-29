@@ -64,7 +64,7 @@ var OfferDetail = React.createClass({
             }else if(id=="#adwords_form") {
                 url= this.state.adwordsIsYes?"/api/bind_update":"/api/offer_bind";
             }else if(id=="#apple_form"){
-                url= this.state.adwordsIsYes?"/api/bind_update":"/api/offer_bind";
+                url= this.state.appleIsYes?"/api/bind_update":"/api/offer_bind";
             }
             ajax("post",url, JSON.stringify(data)).then(function (data) {
                 var data = JSON.parse(data);
