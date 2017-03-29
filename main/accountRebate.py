@@ -9,7 +9,6 @@ accountRebate = Blueprint('accountRebate', __name__)
 
 @accountRebate.route('/api/rebate/create', methods=['POST','GET'])
 def create_rebate():
-    print request.method
     if request.method == "POST":
         data = request.get_json(force=True)
         accountName = data['accountName']
@@ -22,7 +21,7 @@ def create_rebate():
         keywords = data['keywords']
         remark = data['remark']
         rebateId = data['rebateId']
-
+        # 创建前端传过来的数据
         if rebateId == "":
             rebate = Rebate(accountName, float(scale),keywords,companyName,company_address,bank_account,concordat_code,remark,platform)
             db.session.add(rebate)
