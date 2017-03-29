@@ -20,7 +20,6 @@ users = Blueprint('users', __name__)
 # 获取所有用户
 @users.route('/api/users', methods=['POST', 'GET'])
 def get_users():
-    # print '=========>',request.method
     if request.method == "GET":
         users = User.query.all()
 
@@ -164,7 +163,6 @@ def login_out():
 # 给前端用的接口,判断当前用户是否在登录状态
 @users.route('/api/user/verify_session', methods=['POST', 'GET'])
 def verify_session():
-    print '====> Test seesion :', session, User
     if 'user_id' in session:
         user_id = session['user_id']
         user = db.session.query(User).filter_by(id=user_id).first()
