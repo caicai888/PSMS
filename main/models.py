@@ -612,6 +612,7 @@ class Rebate(db.Model):
     status = db.Column(db.String(100), nullable=True)
     createdTime = db.Column(db.String(100), nullable=True)
 
+
     def __init__(self,accountName, scale,keywords,companyName,address,bank_account,concordat_code,remark,platform,status="default",createdTime=None):
         createdTime = str(datetime.now()+timedelta(hours=8))[:10]
         self.accountName = accountName
