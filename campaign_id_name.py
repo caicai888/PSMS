@@ -14,7 +14,7 @@ import re
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 # sql = "select facebook_accountId from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-sql = "select facebook_accountId from advertisers where type='facebook' and offer_id=65"
+sql = "select facebook_accountId from advertisers where type='facebook' and offer_id=75"
 cursor.execute(sql)
 results = cursor.fetchall()
 accountIds = []
@@ -30,9 +30,7 @@ cursor.execute(sql_token)
 token_result = cursor.fetchone()
 accessToken = token_result[0]
 for account in accountIds:
-    print account
-    # url = "https://graph.facebook.com/v2.8/act_"+str(account)+"/campaigns"
-    url = "https://graph.facebook.com/v2.8/act_1258171444280928/campaigns"
+    url = "https://graph.facebook.com/v2.8/act_"+str(account)+"/campaigns"
     params = {
         "access_token": accessToken,
         "level": "account",
