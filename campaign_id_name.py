@@ -44,7 +44,7 @@ for account in accountIds:
         for j in data:
             campaignName = j["name"]
             campaignId = j['id']
-
+            print campaignName
             search_sql = "select id from campaignRelations where campaignId='%s' and account_id='%s'"%(campaignId,account)
             cursor.execute(search_sql)
             exists = cursor.fetchone()
