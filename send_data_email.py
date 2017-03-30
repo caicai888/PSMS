@@ -16,6 +16,7 @@ import base64
 
 time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now=time_now.strftime('%H:%M')
+time_now = "18:00"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 appName_sql = "select app_name from offer where email_time='%s' and status != 'deleted'"%(time_now)
@@ -496,6 +497,7 @@ try:
             wbk.save(file_name)
             mail_body="data"
             mail_from="ads_reporting@newborntown.com"
+            mail_to = ["liyin@newborntown.com"]
             msg = MIMEMultipart()
             body = MIMEText(mail_body)
             msg.attach(body)

@@ -70,7 +70,7 @@ file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
 mail_body = u"一个月内的总代理返点"
 mail_from = "ads_reporting@newborntown.com"
-mail_to = "liyin@newborntown.com"
+mail_to = ["liyin@newborntown.com"]
 mailTo = ";".join(mail_to)
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))

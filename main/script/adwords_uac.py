@@ -259,7 +259,7 @@ def main():
     my_process = MyProcess(account_dict)
     my_process.build_thread_task()
     print 'finished'
-    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "15:00":
+    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "10:00":
         mail_body = "adwords data finished"
         mail_from = "ads_reporting@newborntown.com"
         mail_to = "liyin@newborntown.com"
