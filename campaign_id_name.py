@@ -14,7 +14,7 @@ import re
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 # sql = "select facebook_accountId from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-sql = "select facebook_accountId from advertisers where type='facebook' and offer_id=75"
+sql = "select facebook_accountId from advertisers where type='facebook' and offer_id=124"
 cursor.execute(sql)
 results = cursor.fetchall()
 accountIds = []
