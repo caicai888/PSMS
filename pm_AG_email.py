@@ -70,8 +70,7 @@ file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
 mail_body = "AG Rebate"
 mail_from = "ads_reporting@newborntown.com"
-# mail_to = ["zhangchen@newborntown.com"]
-mail_to = ["liliyin163@163.com"]
+mail_to = ["zhangchen@newborntown.com"]
 mailTo = ";".join(mail_to)
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
