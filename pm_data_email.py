@@ -188,10 +188,8 @@ file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
 mail_body="PSMS Daliy profit"
 mail_from="ads_reporting@newborntown.com"
-# mail_to = ["payment@newborn-town.com","pm@newborn-town.com"]
-# mail_cc = ["yubin@newborntown.com","liyin@newborntown.com"]
-mail_to = ["liyin@newborntown.com"]
-mail_cc = ["liliyin163@163.com"]
+mail_to = ["greater@newborntown.com","yolanda@newborntown.com","alice@newborntown.com","liping@newborntown.com"]
+mail_cc = ["pm@newborn-town.com","victoria@newborntown.com","zhangchen@newborntown.com","kangyingxin@newborntown.com"]
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
 msg.attach(body)

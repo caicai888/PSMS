@@ -19,8 +19,8 @@ time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=240)
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
-start_date = "2017-03-07"
-time_now = "2017-03-17"
+start_date = "2017-03-01"
+time_now = "2017-03-06"
 
 apple_sql = sql = "select offer_id,apple_appname from advertisers where type='apple' and offer_id in (select id from offer where status != 'deleted')"
 cursor.execute(sql)
