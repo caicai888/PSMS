@@ -30,8 +30,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=37"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=37"
         try:
             cursor.execute(query_string)
         finally:
@@ -259,25 +259,25 @@ def main():
     my_process = MyProcess(account_dict)
     my_process.build_thread_task()
     print 'finished'
-    # if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "10:00":
-    #     mail_body = "adwords data finished"
-    #     mail_from = "ads_reporting@newborntown.com"
-    #     mail_to = "liyin@newborntown.com"
-    #     msg = MIMEMultipart()
-    #     body = MIMEText(mail_body)
-    #     msg.attach(body)
-    #     msg['From'] = mail_from
-    #     msg['To'] = mail_to
-    #     msg['date'] = time.strftime('%Y-%m-%d')
-    #     msg['Subject'] = "get adwords Data finished"
-    #     smtp = smtplib.SMTP()
-    #     smtp.connect('smtp.exmail.qq.com', 25)
-    #     smtp.ehlo()
-    #     smtp.starttls()
-    #     smtp.ehlo()
-    #     smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
-    #     smtp.sendmail(mail_from, mail_to, msg.as_string())
-    #     smtp.quit()
+    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "10:00":
+        mail_body = "adwords data finished"
+        mail_from = "ads_reporting@newborntown.com"
+        mail_to = "liyin@newborntown.com"
+        msg = MIMEMultipart()
+        body = MIMEText(mail_body)
+        msg.attach(body)
+        msg['From'] = mail_from
+        msg['To'] = mail_to
+        msg['date'] = time.strftime('%Y-%m-%d')
+        msg['Subject'] = "get adwords Data finished"
+        smtp = smtplib.SMTP()
+        smtp.connect('smtp.exmail.qq.com', 25)
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+        smtp.sendmail(mail_from, mail_to, msg.as_string())
+        smtp.quit()
 
 if __name__ == '__main__':
      main()
