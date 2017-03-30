@@ -31,7 +31,8 @@ token_result = cursor.fetchone()
 accessToken = token_result[0]
 for account in accountIds:
     print account
-    url = "https://graph.facebook.com/v2.8/act_"+str(account)+"/campaigns"
+    # url = "https://graph.facebook.com/v2.8/act_"+str(account)+"/campaigns"
+    url = "https://graph.facebook.com/v2.8/act_1258171444280928/campaigns"
     params = {
         "access_token": accessToken,
         "level": "account",
@@ -39,6 +40,7 @@ for account in accountIds:
         "limit": "500"
     }
     result = requests.get(url=url, params=params)
+    print result.json()
     # try:
     data = result.json()["data"]
     for j in data:
