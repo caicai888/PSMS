@@ -215,22 +215,22 @@ for j in all_result:
         cursor.execute(insert_sql)
         db.commit()
 
-if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "09:20":
-    mail_body = "apple data detail finished"
-    mail_from = "ads_reporting@newborntown.com"
-    mail_to = "liyin@newborntown.com"
-    msg = MIMEMultipart()
-    body = MIMEText(mail_body)
-    msg.attach(body)
-    msg['From'] = mail_from
-    msg['To'] = mail_to
-    msg['date'] = time.strftime('%Y-%m-%d')
-    msg['Subject'] = "get apple Data detail finished"
-    smtp = smtplib.SMTP()
-    smtp.connect('smtp.exmail.qq.com', 25)
-    smtp.ehlo()
-    smtp.starttls()
-    smtp.ehlo()
-    smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
-    smtp.sendmail(mail_from, mail_to, msg.as_string())
-    smtp.quit()
+# if (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%H:%M') >= "09:20":
+#     mail_body = "apple data detail finished"
+#     mail_from = "ads_reporting@newborntown.com"
+#     mail_to = "liyin@newborntown.com"
+#     msg = MIMEMultipart()
+#     body = MIMEText(mail_body)
+#     msg.attach(body)
+#     msg['From'] = mail_from
+#     msg['To'] = mail_to
+#     msg['date'] = time.strftime('%Y-%m-%d')
+#     msg['Subject'] = "get apple Data detail finished"
+#     smtp = smtplib.SMTP()
+#     smtp.connect('smtp.exmail.qq.com', 25)
+#     smtp.ehlo()
+#     smtp.starttls()
+#     smtp.ehlo()
+#     smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
+#     smtp.sendmail(mail_from, mail_to, msg.as_string())
+#     smtp.quit()
