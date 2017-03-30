@@ -68,9 +68,10 @@ for j in range(count):
 file_name = "PSMS_AG_Rebate.xls"
 file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
-mail_body = u"一个月内的总代理返点"
+mail_body = "AG Rebate"
 mail_from = "ads_reporting@newborntown.com"
-mail_to = ["liyin@newborntown.com"]
+# mail_to = ["zhangchen@newborntown.com"]
+mail_to = ["liliyin163@163.com"]
 mailTo = ";".join(mail_to)
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
@@ -83,7 +84,7 @@ msg.attach(part)
 msg['From'] = mail_from
 msg['To'] = ';'.join(mail_to)
 msg['date'] = time.strftime('%Y-%m-%d')
-msg['Subject'] = "PSMS_AG_Rebate"
+msg['Subject'] = u"一个月内的代理预估返点"
 smtp = smtplib.SMTP()
 smtp.connect('smtp.exmail.qq.com', 25)
 smtp.ehlo()
