@@ -39,35 +39,35 @@ for account in accountIds:
         "limit": "500"
     }
     result = requests.get(url=url, params=params)
-    try:
-        data = result.json()["data"]
-        for j in data:
-            campaignName = j["name"]
-            campaignId = j['id']
-            print campaignName
-            search_sql = "select id from campaignRelations where campaignId='%s' and account_id='%s'"%(campaignId,account)
-            cursor.execute(search_sql)
-            exists = cursor.fetchone()
-            if not exists:
-                campaign_name = campaignName.split('_')
-                optName = ""
-                for c in campaign_name:
-                    if "66" in c:
-                        optName = c
-                insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName,account_name) values('%s','%s','%s','%s','%s')" % (campaignId, campaignName, account, optName,'')
-                cursor.execute(insert_sql)
-                db.commit()
-            else:
-                campaign_name = campaignName.split('_')
-                optName = ""
-                for c in campaign_name:
-                    if "66" in c:
-                        optName = c
-                update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (optName, campaignName, campaignId, exists[0])
-                cursor.execute(update_sql)
-                db.commit()
-    except Exception:
-        pass
+    # try:
+    data = result.json()["data"]
+    for j in data:
+        campaignName = j["name"]
+        campaignId = j['id']
+        print campaignName
+        search_sql = "select id from campaignRelations where campaignId='%s' and account_id='%s'"%(campaignId,account)
+        cursor.execute(search_sql)
+        exists = cursor.fetchone()
+        if not exists:
+            campaign_name = campaignName.split('_')
+            optName = ""
+            for c in campaign_name:
+                if "66" in c:
+                    optName = c
+            insert_sql = "insert into campaignRelations(campaignId,campaignName,account_id,optName,account_name) values('%s','%s','%s','%s','%s')" % (campaignId, campaignName, account, optName,'')
+            cursor.execute(insert_sql)
+            db.commit()
+        else:
+            campaign_name = campaignName.split('_')
+            optName = ""
+            for c in campaign_name:
+                if "66" in c:
+                    optName = c
+            update_sql = "update campaignRelations set optName='%s',campaignName='%s',campaignId='%s' where id='%d'" % (optName, campaignName, campaignId, exists[0])
+            cursor.execute(update_sql)
+            db.commit()
+    # except Exception:
+    #     pass
     url_account = "https://graph.facebook.com/v2.8/act_"+str(account)+"/insights"
     params = {
         "access_token": accessToken,
