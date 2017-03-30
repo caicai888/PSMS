@@ -19,8 +19,8 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=76"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=7"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -107,6 +107,8 @@ for i in results:
 
     if time_ranges != []:
         for campaignId in advertise_series:
+            print "+++"*10
+            print campaignId
             url = "https://graph.facebook.com/v2.8/" + str(campaignId) + "/insights"
             params = {
                 "access_token": accessToken,
@@ -252,7 +254,8 @@ for i in results:
                 ele['clicks'] = float(ele['clicks'])
                 tempList.append(key)
                 clicks_list.append(ele)
-
+        print "%%%"*10
+        print conversions_list
         conversions_list_unique = []
         for j in conversions_list:
             if j not in conversions_list_unique:
