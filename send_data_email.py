@@ -496,7 +496,6 @@ try:
             wbk.save(file_name)
             mail_body="data"
             mail_from="ads_reporting@newborntown.com"
-            mail_to = ["liyin@newborntown.com"]
             msg = MIMEMultipart()
             body = MIMEText(mail_body)
             msg.attach(body)
