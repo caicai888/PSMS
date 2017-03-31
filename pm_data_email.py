@@ -188,8 +188,8 @@ file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
 mail_body="PSMS Daliy profit"
 mail_from="ads_reporting@newborntown.com"
-mail_to = ["greater@newborntown.com","yolanda@newborntown.com","alice@newborntown.com","liping@newborntown.com"]
-mail_cc = ["pm@newborn-town.com","victoria@newborntown.com","zhangchen@newborntown.com","kangyingxin@newborntown.com"]
+mail_to = ["greater@newborntown.com","yolanda@newborntown.com","alice@newborntown.com","liping@newborntown.com","salina@newborntown.com"]
+mail_cc = ["pm@newborn-town.com","victoria@newborntown.com","zhangchen@newborntown.com","kangyingxin@newborntown.com","liyin@newborntown.com"]
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
 msg.attach(body)
@@ -203,7 +203,7 @@ msg['From'] = mail_from
 msg['To'] = ';'.join(mail_to)
 msg['Cc'] = ";".join(mail_cc)
 msg['date'] = time.strftime('%Y-%m-%d')
-msg['Subject'] = u"每日数据预算"
+msg['Subject'] = u"每日数据预算"+startTime
 smtp = smtplib.SMTP()
 smtp.connect('smtp.exmail.qq.com',25)
 smtp.ehlo()
