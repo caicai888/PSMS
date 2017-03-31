@@ -139,11 +139,13 @@ class AdwordsUac(AdwordsSQL):
                                 countryName = "BI"
                             else:
                                 countryName = country_result["countryName"]
-                            print countryName
                             country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                             cursor.execute(country_sql_notadwords)
                             country_notadwords_result = cursor.fetchone()
-                            countryId = country_notadwords_result["id"]
+                            if country_notadwords_result is None:
+                                countryId = 24
+                            else:
+                                countryId = country_notadwords_result["id"]
                         else:
                             countryName = self.select_campaign_geo(read["Campaign"])
                             country_sql_notadwords = "select id from country where shorthand='%s'" % (countryName)
