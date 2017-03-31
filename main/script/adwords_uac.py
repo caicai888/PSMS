@@ -139,6 +139,7 @@ class AdwordsUac(AdwordsSQL):
                                 countryName = "BI"
                             else:
                                 countryName = country_result["countryName"]
+                            print countryName
                             country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                             cursor.execute(country_sql_notadwords)
                             country_notadwords_result = cursor.fetchone()
