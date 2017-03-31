@@ -132,12 +132,13 @@ class AdwordsUac(AdwordsSQL):
                     if read['Campaign ID'] != 'Total':
                         if self.is_uac == False:
                             countryNumber = read["Country/Territory"]
-                            print "***"
-                            print countryNumber
                             country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
                             cursor.execute(country_sql)
                             country_result = cursor.fetchone()
-                            countryName = country_result["countryName"]
+                            if country_result is None:
+                                countryName = "BI"
+                            else:
+                                countryName = country_result["countryName"]
                             country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                             cursor.execute(country_sql_notadwords)
                             country_notadwords_result = cursor.fetchone()
