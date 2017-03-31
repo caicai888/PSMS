@@ -654,8 +654,6 @@ def updatePlatformOffer(offer_id,platform,data):
 def updateOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
-
-        print 'Test datas from update : ',data
         offer = Offer.query.filter_by(id=int(data["offer_id"])).first()
         if offer is not None:
             try:
@@ -680,7 +678,6 @@ def updateOffer():
                 platforms = data["platform"].split(',')
                 if 'Facebook' in platforms:
                     fb_data = data['facebook']
-                    print 'Test : ',fb_data
                     fb_offer = updatePlatformOffer(int(data["offer_id"]),'facebook',fb_data)
                 if 'Adwords' in platforms:
                     ad_data = data['adwords']
@@ -983,14 +980,14 @@ def country():
 @offers.route("/api/country_time/create/<platform>", methods=["POST", "GET"])
 def createCountryTime(platform):
     if request.method == "POST":
-        basedir = os.path.abspath(os.path.dirname(__file__))
-        file_dir = os.path.join(basedir, 'upload')
-        if not os.path.exists(file_dir):
-            os.makedirs(file_dir)
+        basedir = sysos.path.abspath(sysos.path.dirname(__file__))
+        file_dir = sysos.path.join(basedir, 'upload')
+        if not sysos.path.exists(file_dir):
+            sysos.makedirs(file_dir)
         unix_time = int(time.time())
         f = request.files['file']
         new_filename = str(unix_time) + '.xlsx'  # 修改了上传的文件名
-        f.save(os.path.join(file_dir, new_filename))  # 保存文件到upload目录
+        f.save(sysos.path.join(file_dir, new_filename))  # 保存文件到upload目录
         try:
             data = xlrd.open_workbook(file_dir + "/" + new_filename)
         except Exception, e:
@@ -1061,14 +1058,14 @@ def createCountryTime(platform):
 @offers.route("/api/country_time/<offerId>", methods=["POST", "GET"])
 def importCountry(offerId):
     if request.method == "POST":
-        basedir = os.path.abspath(os.path.dirname(__file__))
-        file_dir = os.path.join(basedir, 'upload')
-        if not os.path.exists(file_dir):
-            os.makedirs(file_dir)
+        basedir = sysos.path.abspath(sysos.path.dirname(__file__))
+        file_dir = sysos.path.join(basedir, 'upload')
+        if not sysos.path.exists(file_dir):
+            sysos.makedirs(file_dir)
         unix_time = int(time.time())
         f = request.files['file']
         new_filename = str(unix_time) + '.xlsx'  # 修改了上传的文件名
-        f.save(os.path.join(file_dir, new_filename))  # 保存文件到upload目录
+        f.save(sysos.path.join(file_dir, new_filename))  # 保存文件到upload目录
         try:
             data = xlrd.open_workbook(file_dir + "/" + new_filename)
         except Exception, e:
@@ -1382,7 +1379,6 @@ def showContract():
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
 def offerSearch():
-    print request.method
     if request.method == "POST":
         data = request.get_json(force=True)
         key = data["key"]
