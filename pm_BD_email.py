@@ -26,7 +26,10 @@ for i in role_result:
     user_sql = "select email,name from user where id='%d'"%(int(i[0]))
     cursor.execute(user_sql)
     user_result = cursor.fetchone()
-    mail_to.append(user_result[0])
+    if user_result[0] == "Solo@newborntown.com":
+        mail_to.append("pm@newborn-town.com")
+    else:
+        mail_to.append(user_result[0])
     BD = user_result[1]
 
     offer_sql = "select app_name,id from offer where user_id= '%d' and status !='deleted'" %(int(i[0]))
@@ -93,7 +96,7 @@ for i in role_result:
         pass
     else:
         wbk = xlwt.Workbook()
-        sheet = wbk.add_sheet("PM_Data")
+        sheet = wbk.add_sheet("PM_BD_Data")
         sheet.write(0, 0, "Date")
         sheet.write(0, 1, "BD")
         sheet.write(0, 2, "appName")
@@ -111,10 +114,8 @@ for i in role_result:
         file_dir = "/home/ubuntu/code"
         wbk.save(file_name)
         mail_body = u"今日收益汇总"
-        mail_from = "liyin@newborntown.com"
+        mail_from = "ads_reporting@newborntown.com"
         mailTo = ";".join(mail_to)
-        print mailTo
-        mailTo = "liyin@newborntown.com"
         msg = MIMEMultipart()
         body = MIMEText(mail_body.encode("utf8"))
         msg.attach(body)
@@ -132,7 +133,7 @@ for i in role_result:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-        smtp.login('liyin@newborntown.com', '920130LiY')
+        smtp.login('ads_reporting@newborntown.com', '5igmKD3F0cLScrS5')
         smtp.sendmail(mail_from, mailTo, msg.as_string())
         smtp.quit()
 print("ok")

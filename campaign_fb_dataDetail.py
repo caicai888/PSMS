@@ -277,12 +277,12 @@ for i in results:
             cpi_fb = float('%0.2f'%(cost_fb/float(conversions_fb)) if float(conversions_fb) !=0 else 0)
             campaignId = impressions_list[l].get("campaignId")
 
-            account_sql = "select account_id,optName from campaignRelations where campaignId='%s'" % campaignId
+            account_sql = "select account_id,optName,account_name from campaignRelations where campaignId='%s'" % campaignId
             cursor.execute(account_sql)
             account_result = cursor.fetchone()
             accountId = account_result[0]
             optName = account_result[1]
-            rebate_sql = "select scale from rebate where accountId='%s'" % (accountId)
+            rebate_sql = "select scale from rebate where accountName='%s'" % (account_result[2])
             cursor.execute(rebate_sql)
             rebate_result = cursor.fetchone()
             if rebate_result:

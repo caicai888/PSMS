@@ -22,7 +22,6 @@ users = Blueprint('users', __name__)
 def get_users():
     if request.method == "GET":
         users = User.query.all()
-
         result = []
         for user in users:
             role = ''
