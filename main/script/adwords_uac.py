@@ -30,8 +30,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=37"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=126"
         try:
             cursor.execute(query_string)
         finally:
@@ -132,6 +132,8 @@ class AdwordsUac(AdwordsSQL):
                     if read['Campaign ID'] != 'Total':
                         if self.is_uac == False:
                             countryNumber = read["Country/Territory"]
+                            print "***"
+                            print countryNumber
                             country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
                             cursor.execute(country_sql)
                             country_result = cursor.fetchone()
