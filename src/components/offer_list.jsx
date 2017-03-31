@@ -140,7 +140,16 @@ var OfferList = React.createClass({
         return (
             <div id="offer_list">
                 <div className="row">
-                    <div className="col-md-8">&nbsp;</div>
+                    <div className="col-md-8">
+                        <div className="input-group">
+                            <div onClick={_this.export_table} className="input-group-addon"></div>
+                            <select className="form-control">
+                                <option value={'facebook'}>Facebook</option>
+                                <option value={'adwords'}>Adwords</option>
+                                <option value={'apple'}>Apple</option>
+                            </select>
+                        </div>
+                    </div>
                     <div className="form-group col-md-4 text-right">
                         <div className="input-group">
                             <div onClick={_this.export_table} className="input-group-addon">Export</div>
