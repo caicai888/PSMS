@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from main.has_permission import *
-from flask import Blueprint, request
-from main import db
-from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role,CampaignRelations,PlatformOffer,CooperationPer
+import datetime
 import json
-import os
-import datetime, time
+import time
+import traceback
 import xlrd
+from flask import Blueprint, request, jsonify,send_from_directory,abort, send_file,make_response
 from sqlalchemy import desc
+import config
+from main import db
+import os as sysos
+import sys
+from main.common import csvHandler
+from main.has_permission import *
+from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role, CampaignRelations, \
+    PlatformOffer, CooperationPer
 
 offers = Blueprint('offers', __name__)
 
@@ -16,6 +22,7 @@ offers = Blueprint('offers', __name__)
 def customerSelect():
     if request.method == "POST":
         data = request.get_json(force=True)
+
         result = []
         customers = Customers.query.filter(Customers.company_name.ilike('%' + data["name"] + '%'),Customers.status=="Created").all()
         for i in customers:
@@ -113,6 +120,7 @@ def createOffer():
         data = request.get_json(force=True)
         createdTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
         updateTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+
         if data["offer_id"]:
             offer_id = int(data["offer_id"])
             oldOffer = Offer.query.filter_by(id=offer_id).first()
@@ -141,9 +149,8 @@ def createOffer():
 
         else:
             user_id= data["user_id"].split("(")[1].split(')')[0]
-            customer_id = data["customer_id"].split("(")[1].split(')')[0]
-
-            offer = Offer(int(user_id), int(customer_id), data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"], createdTime, updateTime)
+            customer_id = data["customer_id"].split("(")[1].split(')')[0]    #??? chinese BeiJing space
+            offer = Offer(int(user_id), customer_id, data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"], createdTime, updateTime)
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -192,7 +199,7 @@ def offerShow():
         data = request.get_json(force=True)
         page = data["page"]
         limit = int(data["limit"])
-        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
         count = Offer.query.filter(Offer.status != "deleted").count()
         if (count % limit) == 0:
             totalPages = count/limit
@@ -201,11 +208,11 @@ def offerShow():
         result = []
         for i in offers.items:
             customerId = i.customer_id
-            customer = Customers.query.filter_by(id=customerId).first()
+            customer = Customers.query.filter_by(id=customerId).first() #customer
             customerName = customer.company_name  # 客户名称
             status = i.status
-            sales = User.query.filter_by(id=int(i.user_id)).first()
-            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all()
+            sales = User.query.filter_by(id=int(i.user_id)).first() #user
+            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all() #platform
             contract_type = "cpa"
             startTime = "2017-01-01"
             endTime = "2017-12-31"
@@ -250,6 +257,70 @@ def offerShow():
         }
         return json.dumps(response)
 
+@offers.route('/api/offer_export', methods=["POST", "GET"])
+def offerExport():
+    if request.method == "GET":
+        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.id.desc()).all()
+        count = Offer.query.filter(Offer.status != "deleted").count()
+        result = []
+        for i in offers:
+            customerId = i.customer_id
+            customer = Customers.query.filter_by(id=customerId).first() #customer
+            customerName = customer.company_name  # 客户名称
+            status = i.status
+            sales = User.query.filter_by(id=int(i.user_id)).first() #user
+            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all() #platform
+            contract_type = "cpa"
+            startTime = "2017-01-01"
+            endTime = "2017-12-31"
+            country = "CN"
+            price = 0
+            for j in fb_offer:
+                contract_type = j.contract_type
+                if contract_type == "1":
+                    contract_type = u"服务费"
+                elif contract_type == "2":
+                    contract_type = "cpa"
+                if j.endTime >= (datetime.datetime.now() + datetime.timedelta(days=10950)).strftime("%Y-%m-%d %H:%M:%S"):
+                    endTime = "TBD"
+                else:
+                    endTime = j.endTime
+                startTime = j.startTime
+                country = j.country
+                price = j.price
+            os = i.os
+            app_name = i.app_name
+
+            data = {
+                "Offer ID": i.id,
+                "Status": status,
+                u'合作模式': contract_type,
+                u'系统': os,
+                u'客户名称': customerName,
+                u'应用名称': app_name,
+                u'投放起始': startTime,
+                u'投放截止': endTime,
+                u'投放地区': country,
+                u'单价': price,
+                u'最后修改': i.updateTime,
+                u'销售名称': sales.name
+            }
+            result += [data]
+            response = {
+                'count': count, "code": 200,
+                "message": "success",
+            }
+
+        #目录检测，无则创建
+        abs_file = sysos.path.join(config.template_cvs_config['csv_store_path'], config.template_cvs_config['filename'])
+        csv_obj = csvHandler(abs_file, result, config.template_cvs_config['headers'])
+        csv_obj.writeCsv()
+
+        if sysos.path.isfile(abs_file):
+            response = make_response(send_file(abs_file))
+            response.headers["Content-Disposition"] = "attachment; filename=%s" % (config.template_cvs_config['filename'])
+            return response
+        return sys.exit('File is not exist ...')
 
 @offers.route('/api/offer_detail/<id>', methods=["GET"])
 def offerDetail(id):
@@ -515,62 +586,67 @@ def updatePlatformOffer(offer_id,platform,data):
         total_budget = float(data["total_budget"])
     else:
         total_budget = 0
+    try:
+        if platform_offer is not None:
+            platform_offer.contract_type = data['contract_type']
+            platform_offer.contract_scale = float(data['contract_scale'])
+            platform_offer.material = data['material']
+            platform_offer.startTime = data['startTime']
+            platform_offer.endTime = data['endTime']
+            platform_offer.country = data['country']
+            platform_offer.price = price
+            platform_offer.daily_budget = daily_budget
+            platform_offer.daily_type = data['daily_type']
+            platform_offer.total_budget = total_budget
+            platform_offer.total_type = data['total_type']
+            platform_offer.distribution = data['distribution']
+            platform_offer.authorized = data['authorized']
+            platform_offer.named_rule = data['named_rule']
+            platform_offer.KPI = data['KPI']
+            platform_offer.settlement = data['settlement']
+            platform_offer.period = data['period']
+            platform_offer.remark = data['remark']
+            platform_offer.updateTime = time_now
+            db.session.add(platform_offer)
+            db.session.commit()
 
-    if platform_offer is not None:
-        platform_offer.contract_type = data['contract_type']
-        platform_offer.contract_scale = float(data['contract_scale'])
-        platform_offer.material = data['material']
-        platform_offer.startTime = data['startTime']
-        platform_offer.endTime = data['endTime']
-        platform_offer.country = data['country']
-        platform_offer.price = price
-        platform_offer.daily_budget = daily_budget
-        platform_offer.daily_type = data['daily_type']
-        platform_offer.total_budget = total_budget
-        platform_offer.total_type = data['total_type']
-        platform_offer.distribution = data['distribution']
-        platform_offer.authorized = data['authorized']
-        platform_offer.named_rule = data['named_rule']
-        platform_offer.KPI = data['KPI']
-        platform_offer.settlement = data['settlement']
-        platform_offer.period = data['period']
-        platform_offer.remark = data['remark']
-        platform_offer.updateTime = time_now
-        db.session.add(platform_offer)
-        db.session.commit()
-
-    else:
-        platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],price,daily_budget,data['daily_type'],total_budget,data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
-        db.session.add(platform_offer)
-        db.session.commit()
-        db.create_all()
-    if data["country_detail"] != []:
-        for i in data['country_detail']:
-            history = History(offer_id, user_id,platform_offer.id,platform, "update",
-                              time_now,offer.status, country=i["country"], country_price=float(i["price"]),
+        else:
+            # 如果contract_scale为空，会报错字符串无法转换为float！
+            if not data['contract_scale']:
+                data['contract_scale'] = 0
+            platform_offer = PlatformOffer(int(offer_id),platform,data['contract_type'],float(data['contract_scale']),data['material'],data['startTime'],data['endTime'],data['country'],price,daily_budget,data['daily_type'],total_budget,data['total_type'],data['distribution'],data['authorized'],data['named_rule'],data['KPI'],data['settlement'],data['period'],data['remark'],time_now,time_now)
+            db.session.add(platform_offer)
+            db.session.commit()
+            db.create_all()
+        if data["country_detail"] != []:
+            for i in data['country_detail']:
+                history = History(offer_id, user_id,platform_offer.id,platform, "update",
+                                  time_now,offer.status, country=i["country"], country_price=float(i["price"]),
+                                  price=float(data["price"]) if data["price"] != "" else 0,
+                                  daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
+                                  daily_type=data["daily_type"],
+                                  total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
+                                  total_type=data["total_type"], KPI=data["KPI"],
+                                  contract_type=data["contract_type"],
+                                  contract_scale=float(data["contract_scale"] if data["contract_scale"] != "" else 0))
+                db.session.add(history)
+                db.session.commit()
+                db.create_all()
+        else:
+            history = History(offer_id, user_id,platform_offer.id, "update",time_now,offer.status,
                               price=float(data["price"]) if data["price"] != "" else 0,
                               daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
                               daily_type=data["daily_type"],
                               total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
                               total_type=data["total_type"], KPI=data["KPI"],
                               contract_type=data["contract_type"],
-                              contract_scale=float(data["contract_scale"] if data["contract_scale"] != "" else 0))
+                              contract_scale=float(data["contract_scale"]) if data["contract_scale"] != "" else 0)
             db.session.add(history)
             db.session.commit()
             db.create_all()
-    else:
-        history = History(offer_id, user_id,platform_offer.id, "update",time_now,offer.status,
-                          price=float(data["price"]) if data["price"] != "" else 0,
-                          daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
-                          daily_type=data["daily_type"],
-                          total_budget=float(data["total_budget"]) if data['total_budget'] != "" else 0,
-                          total_type=data["total_type"], KPI=data["KPI"],
-                          contract_type=data["contract_type"],
-                          contract_scale=float(data["contract_scale"]) if data["contract_scale"] != "" else 0)
-        db.session.add(history)
-        db.session.commit()
-        db.create_all()
-    return platform_offer
+        return platform_offer
+    except Exception,ex:
+        print traceback.format_exc()
 
 #编辑offer
 @offers.route('/api/update_offer', methods=["POST", "GET"])
@@ -578,6 +654,8 @@ def updatePlatformOffer(offer_id,platform,data):
 def updateOffer():
     if request.method == "POST":
         data = request.get_json(force=True)
+
+        print 'Test datas from update : ',data
         offer = Offer.query.filter_by(id=int(data["offer_id"])).first()
         if offer is not None:
             try:
@@ -602,6 +680,7 @@ def updateOffer():
                 platforms = data["platform"].split(',')
                 if 'Facebook' in platforms:
                     fb_data = data['facebook']
+                    print 'Test : ',fb_data
                     fb_offer = updatePlatformOffer(int(data["offer_id"]),'facebook',fb_data)
                 if 'Adwords' in platforms:
                     ad_data = data['adwords']
@@ -1303,30 +1382,36 @@ def showContract():
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
 def offerSearch():
+    print request.method
     if request.method == "POST":
         data = request.get_json(force=True)
         key = data["key"]
+        limit = data["limit"]
+        page = data["page"]
         offer_result_list = []
-        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc()).all()  #应用名称
-        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc()).all()   #投放的系统
+
+        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"), Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).all()  #应用名称
+        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).all()   #投放的系统
         customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).all()   #客户名称
         sales = User.query.filter(User.name.like("%"+key+"%")).all()    #销售名称
+
         result_appname = offer_search_detail(appnames)
         result_system = offer_search_detail(systems)
         offer_result_list.extend(result_appname)
         offer_result_list.extend(result_system)
+
         customer_ids = []
         sales_ids = []
         for i in customers:
             customer_ids.append(i.id)
         for i in customer_ids:
-            customers_offer = Offer.query.filter(Offer.customer_id==i,Offer.status != "deleted").order_by(Offer.id.desc()).all()
+            customers_offer = Offer.query.filter(Offer.customer_id==i, Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).all()
             result_customer = offer_search_detail(customers_offer)
             offer_result_list.extend(result_customer)
         for i in sales:
             sales_ids.append(i.id)
         for i in sales_ids:
-            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc()).all()
+            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).all()
             result_sales = offer_search_detail(sales_offer)
             offer_result_list.extend(result_sales)
         offer_result_list_unique = []
@@ -1335,7 +1420,16 @@ def offerSearch():
                 offer_result_list_unique.append(j)
             else:
                 pass
+
+        # add by wxz
+        offer_counts = len(offer_result_list_unique)
+        if (offer_counts % limit) == 0:
+            totalPageNum = offer_counts / limit
+        else:
+            totalPageNum = offer_counts / limit + 1
+
         return json.dumps({
+            "totalPages": int(totalPageNum),
             "code": 200,
             "result": offer_result_list_unique
         })
@@ -1344,7 +1438,7 @@ def offer_search_detail(offers):
     offer_result_list = []
     for i in offers:
         sales = User.query.filter_by(id=int(i.user_id)).first()
-        platform_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").first()
+        platform_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform="facebook").first()
         if platform_offer:
             contract_type = platform_offer.contract_type
             if contract_type == "1":

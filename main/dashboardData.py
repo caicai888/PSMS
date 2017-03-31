@@ -11,11 +11,10 @@ dashboardData = Blueprint('dashboardData', __name__)
 
 @dashboardData.route('/api/dashboard', methods=['POST','GET'])
 def dashboard():
-    print 'Test vistie method : ', request.method
     print 'Test vistie request : ', request
-    print 'Test vistie request.datas : ', request.data
     if request.method == "POST":
         data = request.get_json(force=True)
+        print 'Test datas :', data
         start_date = data["start_date"]
         end_date = data["end_date"]
         revenue_count = 0
@@ -41,15 +40,16 @@ def dashboard():
             all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
             date_timelta += datetime.timedelta(days=1)
         all_date.append(end_date)
-
         datas = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date).all()
         for i in datas:
+            print i.revenue
             revenue_count += float(i.revenue)
             profit_count += float(i.profit)
             cost_count += float(i.cost)
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(i.conversions)
+            print i.rebate
             if i.rebate is not None:
                 rebate_count += float(i.rebate)
             else:
