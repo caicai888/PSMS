@@ -202,7 +202,7 @@ for i in results:
                 cursor.execute(insert_sql)
                 db.commit()
             else:
-                update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s',rebate='%f' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], str(l_ctr), str(l_cvr),str(l_cpc), str(l_cpi),float(0), result_apple[0])
+                update_sql = "update datas set revenue='%f',profit='%f',cost='%f',impressions='%d',clicks='%d',conversions='%d',ctr='%s',cvr='%s',cpc='%s',cpi='%s',rebate='%f',updateTime='%s' where id='%d'" % (float(l["revenue"]), float(l["profit"]), float(l["cost"]), l["impressions"], l["clicks"],l["conversions"], str(l_ctr), str(l_cvr),str(l_cpc), str(l_cpi),float(0),str(updateTime), result_apple[0])
                 cursor.execute(update_sql)
                 db.commit()
 
