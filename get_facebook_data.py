@@ -42,6 +42,7 @@ for i in results:
     revenue_list = []
     profit_list = []
     offerId = i[0]
+    print offerId
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
