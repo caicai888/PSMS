@@ -1,9 +1,9 @@
 import React from "react";
 import {ajax} from "../lib/ajax";
 import {Page} from "./page";
-require("../js/FileSaver");
-var tableExport = require("../js/tableExport");
-var time = null;
+//require("../js/FileSaver");
+//var tableExport = require("../js/tableExport");
+//var time = null;
 
 var OfferList = React.createClass({
     getInitialState() {
@@ -14,7 +14,8 @@ var OfferList = React.createClass({
         };
     },
     export_table(){
-        tableExport("export_table",'ReportTable', 'csv');
+        //tableExport("export_table",'ReportTable', 'csv');
+        window.location.href = location.host + "/api/offer_export";
     },
     status(e){
         let offer_id = e.target.dataset.offer_id;
@@ -32,40 +33,6 @@ var OfferList = React.createClass({
                 }
             });
         }
-    },
-    search_table(e){
-        clearTimeout(time);
-        var _this = this;
-        var val = $(e.target).val();
-        time = setTimeout(function () {
-            ajax("post","/api/offer_search",JSON.stringify({key:val})).then(function (data) {
-                var data = JSON.parse(data);
-                if(data.code=="200"){
-                    _this.setState({
-                        result:data.result,
-                        totalPages:data.totalPages || 1,
-                        page:1
-                    })
-                }else {
-                    $(".ajax_error").html(data.message);
-                    $("#modal").modal("toggle");
-                }
-            });
-            /* 前端搜索
-            if(val){
-                var newResult = [];
-                for (let elem of _this.state.result_search){
-                    if(Object.values(elem).join('').includes(val)){
-                        newResult.push(elem)
-                    }
-                }
-                console.log(newResult)
-                _this.setState({result:newResult});
-            }else{
-                _this.setState({result:_this.state.result_search});
-            }
-            */
-        },500);
     },
     copy(e){
         let offer_id = e.target.dataset.offer_id;
@@ -107,10 +74,18 @@ var OfferList = React.createClass({
         }
     },
     offerList(page,limit){
-        let _this = this ;
-        ajax("post","/api/offer_show",JSON.stringify({
+        let _this = this,url='';
+        let key = $("#search").val();
+        if(key){
+            url = "/api/offer_search"
+        }else {
+            url = "/api/offer_show"
+        }
+        ajax("post",url,JSON.stringify({
             page:page || sessionStorage.getItem("offer_list_page") || 1,
-            limit:limit || 15
+            limit:limit || 2,
+            platform:$("#platform").val(),
+            key:key
         })).then(function (data) {
             var data = JSON.parse(data);
             //存储page为当前第几页
@@ -140,21 +115,22 @@ var OfferList = React.createClass({
         return (
             <div id="offer_list">
                 <div className="row">
-                    <div className="col-md-8">
+                    <div className="col-md-4">
                         <div className="input-group">
-                            <div onClick={_this.export_table} className="input-group-addon"></div>
-                            <select className="form-control">
+                            <div onClick={_this.export_table}  className="input-group-addon">投放平台</div>
+                            <select className="form-control" onChange={_this.offerList.bind(this,1,15)} id="platform">
                                 <option value={'facebook'}>Facebook</option>
                                 <option value={'adwords'}>Adwords</option>
                                 <option value={'apple'}>Apple</option>
                             </select>
                         </div>
                     </div>
+                    <div className="col-md-4"></div>
                     <div className="form-group col-md-4 text-right">
                         <div className="input-group">
                             <div onClick={_this.export_table} className="input-group-addon">Export</div>
-                            <input onKeyUp={_this.search_table} className="form-control" type="text" placeholder="Search..." />
-                            <div onClick={_this.search_table} className="input-group-addon">Search</div>
+                            <input id="search" className="form-control" type="text" placeholder="Search..." />
+                            <div onClick={_this.offerList.bind(this,1,2)} className="input-group-addon">Search</div>
                         </div>
                     </div>
                 </div>
@@ -208,7 +184,7 @@ var OfferList = React.createClass({
                         </tbody>
                     </table>
                 </div>
-                <Page id="offerListPage" limit="15" totalPages={_this.state.totalPages} onClick={_this.offerList} page={_this.state.page}/>
+                <Page id="offerListPage" limit="2" totalPages={_this.state.totalPages} onClick={_this.offerList} page={_this.state.page}/>
             </div>
         )
     }
