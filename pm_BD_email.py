@@ -15,7 +15,7 @@ import datetime,time
 
 startTime = (datetime.datetime.now()+datetime.timedelta(hours=8)-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
 startTime = "2017-02-10"
-db = MySQLdb.connect("localhost","root","123456","psms",charset='utf8')
+db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
 role_sql = "select user_id from user_role where role_id=4"
