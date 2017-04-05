@@ -26,9 +26,7 @@ def dashboard():
         cpc_count = 0
         cpi_count = 0
         rebate_count = 0
-
         table_list = []
-
         all_date = []
         all_date.append(start_date)
         date_timelta = datetime.timedelta(days=1)
