@@ -253,12 +253,6 @@ for i in results:
                 ele['clicks'] = float(ele['clicks'])
                 tempList.append(key)
                 clicks_list.append(ele)
-        # conversions_list_unique = []
-        # for j in conversions_list:
-        #     if j not in conversions_list_unique:
-        #         conversions_list_unique.append(j)
-        #     else:
-        #         pass
         conversions_list_unique = conversions_list
         tempList = []
         conversions_list = []
@@ -359,9 +353,7 @@ for i in results:
                         price = offer_price
                     else:
                         price = history_result[0]
-                print price
-                print conversion
-                print "++++"*10
+
                 revenue_list += [
                     {
                         "country": country,
