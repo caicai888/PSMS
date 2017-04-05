@@ -40,5 +40,27 @@ class csvHandler(object):
             os.makedirs(csv_dir)
 
 
+class Pager(object):
+    def __init__(self, g_list, current_page, total, limit):
+        self.current_page = int(current_page)
+        self.total = int(total)
+        self.limit = int(limit)
+        self.g_list = g_list
+
+    # 把方法伪造成属性(1)
+    @property
+    def start(self):
+        return (self.current_page - 1) * self.limit
+
+    @property
+    def end(self):
+        return self.current_page * self.limit
+
+    @property
+    def totalpage(self):
+        all_page, div = divmod(self.total, self.limit)
+        if div > 0:
+            all_page += 1
+        return all_page
 
 
