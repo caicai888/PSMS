@@ -86,14 +86,14 @@ for i in results:
             time_ranges = []
 
     for key in keywords:
-        account_sql = "select campaignId,account_id from campaignRelations where campaignName like '%s'"%(key+"%")
+        account_sql = "select campaignId,account_id,account_name from campaignRelations where campaignName like '%s'"%(key+"%")
         cursor.execute(account_sql)
         account_result = cursor.fetchall()
         if time_ranges != []:
             for j in account_result:
                 accountId = j[1]
                 campaignId = j[0]
-                rebate_sql = "select scale from rebate where accountId='%s'" %(accountId)
+                rebate_sql = "select scale from rebate where accountName='%s'" %(j[2])
                 cursor.execute(rebate_sql)
                 rebate_result = cursor.fetchone()
                 if rebate_result:

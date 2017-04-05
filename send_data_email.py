@@ -483,7 +483,8 @@ try:
                 temlen = len(email_templates)
                 for t in range(len(email_templates)):
                     sheet.write(0, t, email_templates[t])
-                for data in all_data:
+                all_data_list = sorted(all_data, key=lambda k: k['Date'])
+                for data in all_data_list:
                     count += 1
                     for n in range(len(email_templates)):
                         sheet.write(count,n,data[email_templates[n]])

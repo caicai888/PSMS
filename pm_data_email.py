@@ -23,10 +23,15 @@ fb_sql = "select offer_id,date,sum(conversions)conversions,sum(cost)cost,sum(rev
 cursor.execute(fb_sql)
 fb_result = cursor.fetchall()
 for i in fb_result:
-    offer_sql = "select app_name from offer where id='%d'" % (i[0])
+    offer_sql = "select app_name,customer_id from offer where id='%d'" % (i[0])
     cursor.execute(offer_sql)
     offer_result = cursor.fetchone()
     appName = offer_result[0]
+    customerId = offer_result[1]
+    customer_sql = "select company_name from customers where id='%d'" %(customerId)
+    cursor.execute(customer_sql)
+    customer_result = cursor.fetchone()
+    Company = customer_result[0]
     if i[6] == None:
         rebate = 0
     else:
@@ -40,7 +45,8 @@ for i in fb_result:
             "Revenue": i[4],
             "Profit": i[5],
             "Rebate": rebate,
-            "CountProfit": i[5]+rebate
+            "CountProfit": i[5]+rebate,
+            "Company": Company
         }
     ]
 
@@ -48,10 +54,15 @@ ap_sql = "select offer_id,date,sum(conversions)conversions,sum(cost)cost,sum(rev
 cursor.execute(ap_sql)
 ap_result = cursor.fetchall()
 for i in ap_result:
-    offer_sql = "select app_name from offer where id='%d'" % (i[0])
+    offer_sql = "select app_name,customer_id from offer where id='%d'" % (i[0])
     cursor.execute(offer_sql)
     offer_result = cursor.fetchone()
     appName = offer_result[0]
+    customerId = offer_result[1]
+    customer_sql = "select company_name from customers where id='%d'" % (customerId)
+    cursor.execute(customer_sql)
+    customer_result = cursor.fetchone()
+    company = customer_result[0]
     if i[6] == None:
         rebate = 0
     else:
@@ -65,7 +76,8 @@ for i in ap_result:
             "Revenue": i[4],
             "Profit": i[5],
             "Rebate": rebate,
-            "CountProfit": i[5] + rebate
+            "CountProfit": i[5] + rebate,
+            "Company": company
         }
     ]
 
@@ -73,10 +85,15 @@ ad_sql = "select offer_id,date,sum(conversions)conversions,sum(cost)cost,sum(rev
 cursor.execute(ad_sql)
 ad_result = cursor.fetchall()
 for i in ad_result:
-    offer_sql = "select app_name from offer where id='%d'" % (i[0])
+    offer_sql = "select app_name,customer_id from offer where id='%d'" % (i[0])
     cursor.execute(offer_sql)
     offer_result = cursor.fetchone()
     appName = offer_result[0]
+    customerId = offer_result[1]
+    customer_sql = "select company_name from customers where id='%d'" % (customerId)
+    cursor.execute(customer_sql)
+    customer_result = cursor.fetchone()
+    company = customer_result[0]
     if i[6] == None:
         rebate = 0
     else:
@@ -90,7 +107,8 @@ for i in ad_result:
             "Revenue": i[4],
             "Profit": i[5],
             "Rebate": rebate,
-            "CountProfit": i[5] + rebate
+            "CountProfit": i[5] + rebate,
+            "Company": company
         }
     ]
 
@@ -123,7 +141,7 @@ for l in all_data_list_unique:
     if float(l['Conversions']) != 0:
         cpi = float('%0.2f' % (float(l['Cost'])/float(l['Conversions'])))
     if float(l["Cost"]) != 0:
-        ROI = float('%0.2f' % (float(l["Profit"])/float(l["Cost"])))
+        ROI = float('%0.4f' % (float(l["Profit"])/float(l["Cost"])))
 
     l['CPI'] = cpi
     l['Revenue'] = float('%0.2f' % (l["Revenue"]))
@@ -140,36 +158,38 @@ wbk = xlwt.Workbook()
 sheet = wbk.add_sheet("PM_Data")
 sheet.write(0, 0, "Date")
 sheet.write(0, 1, "appName")
-sheet.write(0, 2, "Conversions")
-sheet.write(0, 3, "CPI")
-sheet.write(0, 4, "Cost")
-sheet.write(0, 5, "Revenue")
-sheet.write(0, 6, "Profit")
-sheet.write(0, 7, "Rebate")
-sheet.write(0, 8, "CountProfit")
-sheet.write(0, 9, "ROI")
+sheet.write(0, 2, "Company")
+sheet.write(0, 3, "Conversions")
+sheet.write(0, 4, "CPI")
+sheet.write(0, 5, "Cost")
+sheet.write(0, 6, "Revenue")
+sheet.write(0, 7, "Profit")
+sheet.write(0, 8, "Rebate")
+sheet.write(0, 9, "CountProfit")
+sheet.write(0, 10, "ROI")
 
 count = len(newlist)
 for j in range(count):
     sheet.write(j+1, 0, newlist[j].get("Date"))
     sheet.write(j+1, 1, newlist[j].get("appName"))
-    sheet.write(j+1, 2, newlist[j].get("Conversions"))
-    sheet.write(j+1, 3, newlist[j].get("CPI"))
-    sheet.write(j+1, 4, newlist[j].get("Cost"))
-    sheet.write(j+1, 5, newlist[j].get("Revenue"))
-    sheet.write(j+1, 6, newlist[j].get("Profit"))
-    sheet.write(j+1, 7, newlist[j].get("Rebate"))
-    sheet.write(j+1, 8, newlist[j].get("CountProfit"))
-    sheet.write(j+1, 9, newlist[j].get("ROI"))
+    sheet.write(j+1, 2, newlist[j].get("Company"))
+    sheet.write(j+1, 3, newlist[j].get("Conversions"))
+    sheet.write(j+1, 4, newlist[j].get("CPI"))
+    sheet.write(j+1, 5, newlist[j].get("Cost"))
+    sheet.write(j+1, 6, newlist[j].get("Revenue"))
+    sheet.write(j+1, 7, newlist[j].get("Profit"))
+    sheet.write(j+1, 8, newlist[j].get("Rebate"))
+    sheet.write(j+1, 9, newlist[j].get("CountProfit"))
+    sheet.write(j+1, 10, newlist[j].get("ROI"))
     continue
 
 file_name = "PSMS_Date.xls"
 file_dir = "/home/ubuntu/code"
 wbk.save(file_name)
-mail_body=u"PSMS平台每日数据报表"
+mail_body="PSMS Daliy profit"
 mail_from="ads_reporting@newborntown.com"
-mail_to = ["liyin@newborntown.com","liliyin163@163.com"]
-mail_cc = ["liumengpan@newborntown.com","zhanggeng@newborntown.com"]
+mail_to = ["greater@newborntown.com","yolanda@newborntown.com","alice@newborntown.com","liping@newborntown.com","salina@newborntown.com"]
+mail_cc = ["pm@newborn-town.com","victoria@newborntown.com","zhangchen@newborntown.com","kangyingxin@newborntown.com","liyin@newborntown.com"]
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
 msg.attach(body)
@@ -183,7 +203,7 @@ msg['From'] = mail_from
 msg['To'] = ';'.join(mail_to)
 msg['Cc'] = ";".join(mail_cc)
 msg['date'] = time.strftime('%Y-%m-%d')
-msg['Subject'] = "pspm_Data"
+msg['Subject'] = u"每日数据预算"+startTime
 smtp = smtplib.SMTP()
 smtp.connect('smtp.exmail.qq.com',25)
 smtp.ehlo()

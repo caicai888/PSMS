@@ -20,7 +20,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=76"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=2"
 cursor.execute(sql)
 results = cursor.fetchall()
 
@@ -42,6 +42,7 @@ for i in results:
     revenue_list = []
     profit_list = []
     offerId = i[0]
+    print offerId
     advertise_names = i[1].split(",")
     advertise_series = []
     for name in advertise_names:
@@ -252,13 +253,13 @@ for i in results:
                 ele['clicks'] = float(ele['clicks'])
                 tempList.append(key)
                 clicks_list.append(ele)
-
-        conversions_list_unique = []
-        for j in conversions_list:
-            if j not in conversions_list_unique:
-                conversions_list_unique.append(j)
-            else:
-                pass
+        # conversions_list_unique = []
+        # for j in conversions_list:
+        #     if j not in conversions_list_unique:
+        #         conversions_list_unique.append(j)
+        #     else:
+        #         pass
+        conversions_list_unique = conversions_list
         tempList = []
         conversions_list = []
         for ele in conversions_list_unique:

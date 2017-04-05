@@ -31,7 +31,7 @@ class PSMSOffer(object):
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
         query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=38"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=126"
         try:
             cursor.execute(query_string)
         finally:
@@ -135,11 +135,14 @@ class AdwordsUac(AdwordsSQL):
                             country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
                             cursor.execute(country_sql)
                             country_result = cursor.fetchone()
-                            countryName = country_result["countryName"]
-                            country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
-                            cursor.execute(country_sql_notadwords)
-                            country_notadwords_result = cursor.fetchone()
-                            countryId = country_notadwords_result["id"]
+                            if country_result is None:
+                                pass
+                            else:
+                                countryName = country_result["countryName"]
+                                country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
+                                cursor.execute(country_sql_notadwords)
+                                country_notadwords_result = cursor.fetchone()
+                                countryId = country_notadwords_result["id"]
                         else:
                             countryName = self.select_campaign_geo(read["Campaign"])
                             country_sql_notadwords = "select id from country where shorthand='%s'" % (countryName)
@@ -259,7 +262,7 @@ def main():
     my_process = MyProcess(account_dict)
     my_process.build_thread_task()
     print 'finished'
-    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "15:00":
+    if (datetime.now()+ timedelta(hours=8)).strftime('%H:%M') >= "10:00":
         mail_body = "adwords data finished"
         mail_from = "ads_reporting@newborntown.com"
         mail_to = "liyin@newborntown.com"
