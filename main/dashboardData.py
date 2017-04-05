@@ -38,29 +38,37 @@ def dashboard():
         all_date.append(end_date)
         datas = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date).all()
         for i in datas:
-            revenue_count += float(i.revenue)
-            profit_count += float(i.profit)
-            cost_count += float(i.cost)
-            impressions_count += int(i.impressions)
-            clicks_count += int(i.clicks)
-            conversions_count += int(i.conversions)
-            if i.rebate is not None:
-                rebate_count += float(i.rebate)
+            offer_sql = Offer.query.filter_by(id=i.offer_id).first()
+            if offer_sql.status == "deleted":
+                pass
             else:
-                rebate_count += 0
+                revenue_count += float(i.revenue)
+                profit_count += float(i.profit)
+                cost_count += float(i.cost)
+                impressions_count += int(i.impressions)
+                clicks_count += int(i.clicks)
+                conversions_count += int(i.conversions)
+                if i.rebate is not None:
+                    rebate_count += float(i.rebate)
+                else:
+                    rebate_count += 0
 
         adwords = Adwords.query.filter(Adwords.date >= start_date, Adwords.date <= end_date).all()
         for i in adwords:
-            revenue_count += float(i.revenue)
-            profit_count += float(i.profit)
-            cost_count += float(i.cost)
-            impressions_count += int(i.impressions)
-            clicks_count += int(i.clicks)
-            conversions_count += int(float(i.conversions))
-            if i.rebate is not None:
-                rebate_count += float(i.rebate)
+            offer_sql = Offer.query.filter_by(id=i.offer_id).first()
+            if offer_sql.status == "deleted":
+                pass
             else:
-                rebate_count += 0
+                revenue_count += float(i.revenue)
+                profit_count += float(i.profit)
+                cost_count += float(i.cost)
+                impressions_count += int(i.impressions)
+                clicks_count += int(i.clicks)
+                conversions_count += int(float(i.conversions))
+                if i.rebate is not None:
+                    rebate_count += float(i.rebate)
+                else:
+                    rebate_count += 0
 
         if conversions_count != 0:
             cpi_count = float('%0.2f' % (cost_count / float(conversions_count)))
