@@ -38,7 +38,6 @@ def dashboard():
             all_date.append((date1 + date_timelta).strftime("%Y-%m-%d"))
             date_timelta += datetime.timedelta(days=1)
         all_date.append(end_date)
-
         datas = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date).all()
         for i in datas:
             revenue_count += float(i.revenue)
