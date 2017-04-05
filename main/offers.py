@@ -331,7 +331,7 @@ def offerShow():
 @offers.route('/api/offer_export', methods=["POST", "GET"])
 def offerExport():
     if request.method == "GET":
-        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.id.desc()).all()
+        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.status,Offer.id.desc()).all()
         count = Offer.query.filter(Offer.status != "deleted").count()
         result = []
         for i in offers:
@@ -340,7 +340,7 @@ def offerExport():
             customerName = customer.company_name  # 客户名称
             status = i.status
             sales = User.query.filter_by(id=int(i.user_id)).first() #user
-            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all() #platform
+            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id).all() #platform
             contract_type = "cpa"
             startTime = "2017-01-01"
             endTime = "2017-12-31"
@@ -385,6 +385,8 @@ def offerExport():
 
         #目录检测，无则创建
         abs_file = sysos.path.join(config.template_cvs_config['csv_store_path'], config.template_cvs_config['filename'])
+        if not sysos.path.exists(config.template_cvs_config['csv_store_path']):
+            sysos.makedirs(config.template_cvs_config['csv_store_path'])
         csv_obj = csvHandler(abs_file, result, config.template_cvs_config['headers'])
         csv_obj.writeCsv()
 
