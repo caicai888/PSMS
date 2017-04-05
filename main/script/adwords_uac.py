@@ -30,8 +30,8 @@ class PSMSOffer(object):
 
     def get_campaigns(self):
         cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted')"
-        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=37"
+        query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id in (select id from offer where status != 'deleted') and offer_id != 126"
+        # query_string = "select offer_id, adwords_notuac, adwords_uac from advertisers where type = 'adwords' and offer_id=126"
         try:
             cursor.execute(query_string)
         finally:
@@ -135,10 +135,16 @@ class AdwordsUac(AdwordsSQL):
                             country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
                             cursor.execute(country_sql)
                             country_result = cursor.fetchone()
+                            # if country_result is None:
+                            #     countryName = "BI"
+                            # else:
                             countryName = country_result["countryName"]
                             country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                             cursor.execute(country_sql_notadwords)
                             country_notadwords_result = cursor.fetchone()
+                            # if country_notadwords_result is None:
+                            #     countryId = 24
+                            # else:
                             countryId = country_notadwords_result["id"]
                         else:
                             countryName = self.select_campaign_geo(read["Campaign"])
