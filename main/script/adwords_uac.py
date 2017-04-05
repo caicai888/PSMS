@@ -135,12 +135,12 @@ class AdwordsUac(AdwordsSQL):
                             countryNumber = read["Country/Territory"]
                             print countryNumber
                             print "&&&&&"
-                            if countryNumber == " --":
+                            country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
+                            cursor.execute(country_sql)
+                            country_result = cursor.fetchone()
+                            if country_result is None:
                                 pass
                             else:
-                                country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
-                                cursor.execute(country_sql)
-                                country_result = cursor.fetchone()
                                 countryName = country_result["countryName"]
                                 country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
                                 cursor.execute(country_sql_notadwords)
