@@ -16,13 +16,11 @@ time_now = datetime.datetime.now()+datetime.timedelta(hours=8)
 start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.timedelta(hours=720)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
-time_now = "2017-04-04"
-start_date = "2017-04-04"
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+# sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
 cursor.execute(sql)
 results = cursor.fetchall()
 
