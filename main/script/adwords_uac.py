@@ -137,20 +137,15 @@ class AdwordsUac(AdwordsSQL):
                             print "&&&&&"
                             if countryNumber == " --":
                                 pass
-                            country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
-                            cursor.execute(country_sql)
-                            country_result = cursor.fetchone()
-                            # if country_result is None:
-                            #     countryName = "BI"
-                            # else:
-                            countryName = country_result["countryName"]
-                            country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
-                            cursor.execute(country_sql_notadwords)
-                            country_notadwords_result = cursor.fetchone()
-                            # if country_notadwords_result is None:
-                            #     countryId = 24
-                            # else:
-                            countryId = country_notadwords_result["id"]
+                            else:
+                                country_sql = "select countryName from adwordsGeo where countryNumber='%s'"%(countryNumber)
+                                cursor.execute(country_sql)
+                                country_result = cursor.fetchone()
+                                countryName = country_result["countryName"]
+                                country_sql_notadwords = "select id from country where shorthand='%s'"%(countryName)
+                                cursor.execute(country_sql_notadwords)
+                                country_notadwords_result = cursor.fetchone()
+                                countryId = country_notadwords_result["id"]
                         else:
                             countryName = self.select_campaign_geo(read["Campaign"])
                             country_sql_notadwords = "select id from country where shorthand='%s'" % (countryName)
