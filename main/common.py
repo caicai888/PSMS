@@ -1,12 +1,20 @@
 #!/usr/bin/env python
 # *_ coding:utf-8 _*_
 
-
 import csv
 import sys
 import os
 import config
 import traceback
+from collections import namedtuple
+import shutil
+import socket, struct
+import getopt
+import logging
+import time, datetime
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 class csvHandler(object):
     def __init__(self, filename, contents, headers):

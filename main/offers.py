@@ -15,6 +15,10 @@ from main.common import csvHandler
 from main.has_permission import *
 from models import Offer, History, User, Customers, Country, TimePrice, Advertisers, UserRole, Role, CampaignRelations, \
     PlatformOffer, CooperationPer
+#此处注释掉了EmailAccounts
+
+from est.send_mail import Send_Email
+
 
 offers = Blueprint('offers', __name__)
 
@@ -40,7 +44,6 @@ def customerSelect():
             "result": result
         }
         return json.dumps(response)
-
 
 @offers.route('/api/country_select', methods=["POST", "GET"])
 def countrySelect():
@@ -79,7 +82,6 @@ def countrySelect():
     else:
         return json.dumps({"code": 500, "message": "The request type wrong!"})
 
-
 @offers.route('/api/user_select', methods=["POST", "GET"])
 def userSelect():
     try:
@@ -112,7 +114,6 @@ def userSelect():
         }
     return json.dumps(response)
 
-
 @offers.route('/api/create_offer', methods=['POST', 'GET'])
 @Permission.check(models=["offer_create"])
 def createOffer():
@@ -144,7 +145,7 @@ def createOffer():
                         db.create_all()
                 return json.dumps({"code":200,"message":"success","offerId":offer.id})
             except Exception as e:
-                print e
+                print (traceback.format_exc())
                 return json.dumps({"code":500,"message":"fail"})
 
         else:
@@ -167,6 +168,9 @@ def createOffer():
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
+                else:
+                    del data['facebook']
+
                 if "Adwords" in platforms:
                     ad = data["adwords"]
                     platformOffer = PlatformOffer(offer.id, "adwords", ad["contract_type"],float(ad["contract_scale"] if ad["contract_scale"] else 0), ad["material"], ad["startTime"],ad["endTime"], str(ad["country"]), float(ad["price"] if ad["price"] else 0),float(ad["daily_budget"] if ad["daily_budget"] else 0), ad["daily_type"],float(ad["total_budget"] if ad["total_budget"] else 0), ad["total_type"], ad["distribution"],ad["authorized"], ad["named_rule"], ad["KPI"].encode('utf-8'), ad["settlement"].encode('utf-8'),ad["period"].encode('utf-8'), ad["remark"].encode('utf-8'), createdTime, updateTime)
@@ -178,6 +182,9 @@ def createOffer():
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
+                else:
+                    del data['adwords']
+
                 if "Apple" in platforms:
                     ap = data["apple"]
                     platformOffer = PlatformOffer(offer.id, "apple", ap["contract_type"],float(ap["contract_scale"] if ap["contract_scale"] else 0), ap["material"], ap["startTime"],ap["endTime"], str(ap["country"]), float(ap["price"] if ap["price"] else 0),float(ap["daily_budget"] if ap["daily_budget"] else 0), ap["daily_type"],float(ap["total_budget"] if ap["total_budget"] else 0), ap["total_type"], ap["distribution"],ap["authorized"], ap["named_rule"], ap["KPI"].encode('utf-8'), ap["settlement"].encode('utf-8'),ap["period"].encode('utf-8'), ap["remark"].encode('utf-8'), createdTime, updateTime)
@@ -189,18 +196,81 @@ def createOffer():
                         db.session.add(history)
                         db.session.commit()
                         db.create_all()
-                return json.dumps({"code": 200, "message": "success", "offerId":offer.id})
+                else:
+                    del data['apple']
+
+                try:
+                    email_msg = emailSend(session, data)
+                except Exception as ex:
+                    print (traceback.format_exc())
+                    return json.dumps({'status': 400, 'email_msg': ex})
+                else:
+                    return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
             except Exception as e:
                 return json.dumps({"code": 500, "message": e})
+
+def emailSend(session, data):
+    #获取user_id 在邮件sub处添加由谁创建
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = db.session.query(User).filter_by(id=user_id).first()
+        # emailaccounts = EmailAccounts.query.filter().all()
+        # 默认抄送的人员，写死在了数据库中，最好是做在界面处，可添加、删除
+        # 如果让操作人员自己填写所有的邮箱时，可注释上边查询默认账户的代码，
+        # 直接使用data['recipient'].split(';')
+        # accounts_list = []
+        # for account in emailaccounts:
+        #     accounts_list.append(account.accountName)
+        # accounts_list.extend(data['recipient'].split(';'))
+        # contents = json.dumps(eval(data['contents']), indent=20)
+
+        accounts_list = data['recipient'].split(';')
+
+        try:
+            obj = Send_Email(accounts_list, user)
+            if obj.send_mail(data):
+                return {'email_msg': 'email send success.'}
+            return {'email_msg': 'email send failed.'}
+        except Exception as ex:
+            print (traceback.format_exc())
+            return {'email_msg': 'email send failed.'}
+
+#扩展接口,添加默认账户
+@offers.route('/api/email_account_add')
+def email_add():
+    pass
+
+#接口测试 -->send email.
+
+'''参数传递内容：
+{
+    "recipient": "test@newborntown.com"
+}
+
+
+@offers.route('/api/email_send', methods=["POST", "GET"])
+def send_mail():
+    if request.method == 'POST':
+        data = request.get_json(force=True)
+        try:
+            email_msg = emailSend(session, data)
+        except Exception as ex:
+            print (traceback.format_exc())
+            return json.dumps({'status': 404, 'email_msg': ex})
+        else:
+            return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
+'''
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
 def offerShow():
     if request.method == "POST":
         data = request.get_json(force=True)
+        platform = data["platform"]
         page = data["page"]
         limit = int(data["limit"])
         offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
         count = Offer.query.filter(Offer.status != "deleted").count()
+        #  修改搜索无关键字时，显示为一页，统计总的页数返回给前端，显示分页
         if (count % limit) == 0:
             totalPages = count/limit
         else:
@@ -212,7 +282,7 @@ def offerShow():
             customerName = customer.company_name  # 客户名称
             status = i.status
             sales = User.query.filter_by(id=int(i.user_id)).first() #user
-            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id,platform="facebook").all() #platform
+            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).all() #platform
             contract_type = "cpa"
             startTime = "2017-01-01"
             endTime = "2017-12-31"
@@ -257,6 +327,7 @@ def offerShow():
         }
         return json.dumps(response)
 
+# 报表导出接口
 @offers.route('/api/offer_export', methods=["POST", "GET"])
 def offerExport():
     if request.method == "GET":
@@ -307,7 +378,8 @@ def offerExport():
             }
             result += [data]
             response = {
-                'count': count, "code": 200,
+                'count': count,
+                "status": 200,
                 "message": "success",
             }
 
@@ -645,8 +717,8 @@ def updatePlatformOffer(offer_id,platform,data):
             db.session.commit()
             db.create_all()
         return platform_offer
-    except Exception,ex:
-        print traceback.format_exc()
+    except Exception as ex:
+        print (traceback.format_exc())
 
 #编辑offer
 @offers.route('/api/update_offer', methods=["POST", "GET"])
@@ -1381,6 +1453,7 @@ def showContract():
 def offerSearch():
     if request.method == "POST":
         data = request.get_json(force=True)
+        platform = data["platform"]
         key = data["key"]
         limit = data["limit"]
         page = data["page"]
@@ -1391,8 +1464,8 @@ def offerSearch():
         customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).all()   #客户名称
         sales = User.query.filter(User.name.like("%"+key+"%")).all()    #销售名称
 
-        result_appname = offer_search_detail(appnames)
-        result_system = offer_search_detail(systems)
+        result_appname = offer_search_detail(appnames, platform)
+        result_system = offer_search_detail(systems, platform)
         offer_result_list.extend(result_appname)
         offer_result_list.extend(result_system)
 
@@ -1430,11 +1503,11 @@ def offerSearch():
             "result": offer_result_list_unique
         })
 
-def offer_search_detail(offers):
+def offer_search_detail(offers, platform):
     offer_result_list = []
     for i in offers:
         sales = User.query.filter_by(id=int(i.user_id)).first()
-        platform_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform="facebook").first()
+        platform_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).first()
         if platform_offer:
             contract_type = platform_offer.contract_type
             if contract_type == "1":
@@ -1465,3 +1538,20 @@ def offer_search_detail(offers):
                 }
             ]
     return offer_result_list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -14,7 +14,7 @@ from email import Encoders
 import datetime,time
 
 startTime = (datetime.datetime.now()+datetime.timedelta(hours=8)-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
-db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
+db = MySQLdb.connect("localhost","root","wangxuezhi","psms",charset='utf8')
 cursor = db.cursor()
 
 all_data = []
@@ -184,12 +184,12 @@ for j in range(count):
     continue
 
 file_name = "PSMS_Date.xls"
-file_dir = "/home/ubuntu/code"
+file_dir = "./"
 wbk.save(file_name)
 mail_body="PSMS Daliy profit"
 mail_from="ads_reporting@newborntown.com"
-mail_to = ["greater@newborntown.com","yolanda@newborntown.com","alice@newborntown.com","liping@newborntown.com"]
-mail_cc = ["pm@newborn-town.com","victoria@newborntown.com","zhangchen@newborntown.com","kangyingxin@newborntown.com"]
+mail_to = ["wangxuezhi@newborntown.com"]
+mail_cc = ["zhizhi1908@yeah.net"]
 msg = MIMEMultipart()
 body = MIMEText(mail_body.encode("utf8"))
 msg.attach(body)

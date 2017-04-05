@@ -630,3 +630,18 @@ class Rebate(db.Model):
 
     def __repr__(self):
         return '<Rebate {}>'.format(self.id)
+
+
+# 邮箱默认存储空间，注释的话，不需要添加到数据库，让web把默认抄送的账户也添加到邮件账户输入框中
+# class EmailAccounts(db.Model):
+#     __tablename__ = "emailaccounts"
+#     id = db.Column(db.Integer, primary_key=True)
+#     accountName = db.Column(db.String(100), nullable=True)
+#
+#     def __init__(self, emailAcounts, createdTime=None):
+#         createdTime = str(datetime.now() + timedelta(hours=8))[:10]
+#         self.accountName = emailAcounts
+#         self.createdTime = createdTime
+#
+#     def __repr__(self):
+#         return '<Rebate {}>'.format(self.id)
