@@ -1542,16 +1542,3 @@ def offer_search_detail(offers, platform):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-

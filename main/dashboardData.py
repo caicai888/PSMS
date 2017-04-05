@@ -11,10 +11,8 @@ dashboardData = Blueprint('dashboardData', __name__)
 
 @dashboardData.route('/api/dashboard', methods=['POST','GET'])
 def dashboard():
-    print 'Test vistie request : ', request
     if request.method == "POST":
         data = request.get_json(force=True)
-        print 'Test datas :', data
         start_date = data["start_date"]
         end_date = data["end_date"]
         revenue_count = 0
