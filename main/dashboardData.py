@@ -40,14 +40,12 @@ def dashboard():
         all_date.append(end_date)
         datas = Datas.query.filter(Datas.date >= start_date,Datas.date <= end_date).all()
         for i in datas:
-            print i.revenue
             revenue_count += float(i.revenue)
             profit_count += float(i.profit)
             cost_count += float(i.cost)
             impressions_count += int(i.impressions)
             clicks_count += int(i.clicks)
             conversions_count += int(i.conversions)
-            print i.rebate
             if i.rebate is not None:
                 rebate_count += float(i.rebate)
             else:
