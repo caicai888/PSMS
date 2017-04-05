@@ -143,7 +143,14 @@ def createOffer():
                         db.session.add(historty)
                         db.session.commit()
                         db.create_all()
-                return json.dumps({"code":200,"message":"success","offerId":offer.id})
+                try:
+                    # flag =True 表示修改 ,flag = None 表示创建
+                    email_msg = emailSend(session, data, flag=True)
+                except Exception as ex:
+                    print (traceback.format_exc())
+                    return json.dumps({'status': 500, 'email_msg': ex})
+                else:
+                    return json.dumps({"code":200,"message":"success","offerId":offer.id, 'email_msg': email_msg.get('email_msg')})
             except Exception as e:
                 print (traceback.format_exc())
                 return json.dumps({"code":500,"message":"fail"})
@@ -200,16 +207,17 @@ def createOffer():
                     del data['apple']
 
                 try:
-                    email_msg = emailSend(session, data)
+                    # flag =True 表示修改 ,flag = None 表示创建
+                    email_msg = emailSend(session, data,flag=None)
                 except Exception as ex:
                     print (traceback.format_exc())
-                    return json.dumps({'status': 400, 'email_msg': ex})
+                    return json.dumps({'status': 500, 'email_msg': ex})
                 else:
                     return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
             except Exception as e:
                 return json.dumps({"code": 500, "message": e})
 
-def emailSend(session, data):
+def emailSend(session, data, flag=None):
     #获取user_id 在邮件sub处添加由谁创建
     if 'user_id' in session:
         user_id = session['user_id']
@@ -224,10 +232,11 @@ def emailSend(session, data):
         # accounts_list.extend(data['recipient'].split(';'))
         # contents = json.dumps(eval(data['contents']), indent=20)
 
-        accounts_list = data['recipient'].split(';')
+        # 和定时邮箱统一为","
+        accounts_list = data['recipient'].split(',')
 
         try:
-            obj = Send_Email(accounts_list, user)
+            obj = Send_Email(accounts_list, user, flag)
             if obj.send_mail(data):
                 return {'email_msg': 'email send success.'}
             return {'email_msg': 'email send failed.'}
@@ -1455,6 +1464,13 @@ def showContract():
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
 def offerSearch():
+    def count_page(counts, limit):
+        if (counts % limit) == 0:
+            totalPages = counts/limit
+        else:
+            totalPages = counts/limit + 1
+        return totalPages
+
     if request.method == "POST":
         data = request.get_json(force=True)
         platform = data["platform"]
@@ -1463,10 +1479,25 @@ def offerSearch():
         page = data["page"]
         offer_result_list = []
 
-        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"), Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).all()  #应用名称
-        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).all()   #投放的系统
-        customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).all()   #客户名称
-        sales = User.query.filter(User.name.like("%"+key+"%")).all()    #销售名称
+        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"), Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).paginate(int(page), per_page=limit, error_out=False)  #应用名称
+        if appnames:
+            counts = Offer.query.filter(Offer.app_name.like("%" + key + "%"), Offer.status != "deleted").count()
+            totalPage = count_page(counts, limit)
+
+        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).paginate(int(page), per_page=limit, error_out=False)   #投放的系统
+        if systems:
+            counts = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").count()
+            totalPage = count_page(counts, limit)
+
+        customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).paginate(int(page), per_page=limit, error_out=False)   #客户名称
+        if customers:
+            counts = Customers.query.filter(Customers.company_name.like("%"+key+"%")).count()
+            totalPage = count_page(counts, limit)
+
+        sales = User.query.filter(User.name.like("%"+key+"%")).paginate(int(page), per_page=limit, error_out=False)    #销售名称
+        if sales:
+            counts = User.query.filter(User.name.like("%"+key+"%")).count()
+            totalPage = count_page(counts, limit)
 
         result_appname = offer_search_detail(appnames, platform)
         result_system = offer_search_detail(systems, platform)
@@ -1475,18 +1506,19 @@ def offerSearch():
 
         customer_ids = []
         sales_ids = []
-        for i in customers:
+        for i in customers.items:
             customer_ids.append(i.id)
         for i in customer_ids:
-            customers_offer = Offer.query.filter(Offer.customer_id==i, Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).all()
-            result_customer = offer_search_detail(customers_offer)
+            customers_offer = Offer.query.filter(Offer.customer_id==i, Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).paginate(int(page), per_page=limit, error_out=False)
+            result_customer = offer_search_detail(customers_offer, platform)
             offer_result_list.extend(result_customer)
-        for i in sales:
+        for i in sales.items:
             sales_ids.append(i.id)
         for i in sales_ids:
-            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).all()
-            result_sales = offer_search_detail(sales_offer)
+            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).paginate(int(page), per_page=limit, error_out=False)
+            result_sales = offer_search_detail(sales_offer, platform)
             offer_result_list.extend(result_sales)
+
         offer_result_list_unique = []
         for j in offer_result_list:
             if j not in offer_result_list_unique:
@@ -1494,22 +1526,15 @@ def offerSearch():
             else:
                 pass
 
-        # add by wxz
-        offer_counts = len(offer_result_list_unique)
-        if (offer_counts % limit) == 0:
-            totalPageNum = offer_counts / limit
-        else:
-            totalPageNum = offer_counts / limit + 1
-
         return json.dumps({
-            "totalPages": int(totalPageNum),
+            "totalPages": int(totalPage),
             "code": 200,
             "result": offer_result_list_unique
         })
 
 def offer_search_detail(offers, platform):
     offer_result_list = []
-    for i in offers:
+    for i in offers.items:
         sales = User.query.filter_by(id=int(i.user_id)).first()
         platform_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).first()
         if platform_offer:
