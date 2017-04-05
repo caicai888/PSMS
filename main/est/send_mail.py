@@ -15,13 +15,16 @@ import handler
 '''
 
 class Send_Email(object):
-    def __init__(self, accounts, current_users):
+    def __init__(self, accounts, current_users, flag=None):
         self.mail_host = 'smtp.exmail.qq.com'
         self.mail_user = 'ads_reporting@newborntown.com'
         self.mail_pass = '5igmKD3F0cLScrS5'
         self.mailto_list = accounts
         # self.sub = "Offer 创建任务" % current_users
-        self.sub = "Offer 创建任务 by %s" % current_users
+        if flag:
+            self.sub = "Offer 任务修改 by %s" % current_users
+        else:
+            self.sub = "Offer 任务创建 by %s" % current_users
 
     def send_mail(self,contents):
         me = self.mail_user
