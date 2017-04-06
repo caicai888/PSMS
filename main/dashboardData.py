@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from flask import Blueprint, request
-from models import Datas, Adwords,Offer, User, DataDetail,UserRole,CampaignRelations,Rebate,Customers
+from models import Datas, Adwords,Offer, User, DataDetail,UserRole,CampaignRelations,Rebate,Customers,AccountRebate
 import json
 import datetime
 from sqlalchemy import func
@@ -477,23 +477,15 @@ def dbTable():
 
         elif flag == "PM-AG":
             all_data_list = []
-            data_detail = DataDetail.query.filter(DataDetail.date >= start_date,DataDetail.date <= end_date, DataDetail.type=='facebook').with_entities(DataDetail.date,DataDetail.account_id,func.sum(DataDetail.cost))
-            detail_result = data_detail.group_by(DataDetail.date,DataDetail.account_id).all()
-            for i in detail_result:
-                accountName = CampaignRelations.query.filter_by(account_id=i[1]).first()
-                account_name = accountName.account_name
-                rebate_result = Rebate.query.filter_by(accountName=account_name).first()
-                if rebate_result:
-                    rebate = float(rebate_result.scale)
-                else:
-                    rebate = 0
+            account_rebate = AccountRebate.query.filter(AccountRebate.date >= start_date,AccountRebate <= end_date).all()
+            for i in account_rebate:
                 all_data_list += [
                     {
-                        "Date": i[0],
-                        "AccountName": account_name,
-                        "AccountId": i[1],
-                        "Cost": float('%0.2f'%(float(i[2]))),
-                        "Rebate": float('%0.2f'%(float(i[2])*rebate/100))
+                        "Date": i.date,
+                        "AccountName": i.accountName,
+                        "AccountId": i.accountId,
+                        "Cost": i.cost,
+                        "Rebate": i.rebate
                     }
                 ]
             dimission = ["Date", "AccountId", "AccountName", "Cost","Rebate"]
@@ -714,8 +706,7 @@ def dbTable():
                             "AppName": appName
                         }
                     ]
-            ap_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date, Datas.type == "apple").with_entities(Datas.date,
- Datas.offer_id,Datas.country,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
+            ap_data = Datas.query.filter(Datas.date >= start_date, Datas.date <= end_date, Datas.type == "apple").with_entities(Datas.date,Datas.offer_id,Datas.country,func.sum(Datas.revenue),func.sum(Datas.cost),func.sum(Datas.profit),func.sum(Datas.conversions),func.sum(Datas.impressions),func.sum(Datas.clicks))
             ap_result = ap_data.group_by(Datas.date, Datas.offer_id,Datas.country).all()
             for i in ap_result:
                 offer_sql = Offer.query.filter_by(id=i[1]).first()
