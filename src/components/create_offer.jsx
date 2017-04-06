@@ -96,7 +96,7 @@ var CreateOffer = React.createClass({
                 $(".ajax_error").html(data.message);
                 $("#modal").modal("toggle");
                 if(data.code=="200"){
-                    $(".modal-footer").on("click",function () {
+                    $(".modal-footer .modal-close").on("click",function () {
                         location.hash = "offer_list";
                     });
                 }

@@ -23,7 +23,7 @@ var Fixed = React.createClass({
                                 <p className="ajax_error"> </p>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-default modal-close" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
