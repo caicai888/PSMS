@@ -1252,7 +1252,7 @@ var CreateOffer = React.createClass({
                             收件人
                         </div>
                         <div className="col-sm-9">
-                            <input type="text" data-key="recipient" className="form-control" placeholder="xx@xx.com,xx@xx.com"/>
+                            <input type="text" data-required="true" data-key="recipient" className="form-control" placeholder="xx@xx.com,xx@xx.com"/>
                         </div>
                     </div>
                     <div className="col-sm-10">
