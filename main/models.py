@@ -158,8 +158,7 @@ class Offer(db.Model):
         self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
-        if emailaccount:
-            self.emailaccount = emailaccount
+        self.emailaccount = emailaccount
 
     def __repr__(self):
         return '<Offer {}>'.format(self.id)
