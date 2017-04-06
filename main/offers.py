@@ -149,7 +149,7 @@ def createOffer():
                     email_msg = emailSend(session, data, flag=True)
                 except Exception as ex:
                     print (traceback.format_exc())
-                    return json.dumps({'status': 500, 'email_msg': ex})
+                    return json.dumps({'code': 500, 'email_msg': ex})
                 else:
                     return json.dumps({"code":200,"message":"success","offerId":offer.id, 'email_msg': email_msg.get('email_msg')})
             except Exception as e:
@@ -212,9 +212,9 @@ def createOffer():
                     email_msg = emailSend(session, data,flag=None)
                 except Exception as ex:
                     print (traceback.format_exc())
-                    return json.dumps({'status': 500, 'email_msg': ex})
+                    return json.dumps({'code': 500, 'email_msg': ex})
                 else:
-                    return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
+                    return json.dumps({'code': 200, 'email_msg': email_msg.get('email_msg')})
             except Exception as e:
                 return json.dumps({"code": 500, "message": e})
 
