@@ -9,6 +9,7 @@ from flask import Blueprint, request, jsonify,send_from_directory,abort, send_fi
 from sqlalchemy import desc
 import config
 from main import db
+from common import Pager
 import os as sysos
 import sys
 from main.common import csvHandler
@@ -1464,14 +1465,6 @@ def showContract():
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
 def offerSearch():
-    def count_page(counts, page, limit):
-
-        if (counts % limit) == 0:
-            totalPages = counts/limit
-        else:
-            totalPages = counts/limit + 1
-        return totalPages
-
     if request.method == "POST":
         data = request.get_json(force=True)
         platform = data["platform"]
@@ -1479,7 +1472,9 @@ def offerSearch():
         limit = data["limit"]
         page = data["page"]
         offer_result_list = []
+        offer_result_list_unique = []
 
+        # 优化不需要每次调用接口都查询数据库，设置属性值
         appnames = Offer.query.filter(Offer.app_name.like("%" + key + "%"), Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status) # 应用名称
         systems = Offer.query.filter(Offer.os.like("%" + key + "%"), Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status)# 投放的系统
         customers = Customers.query.filter(Customers.company_name.like("%" + key + "%")) # 客户名称
@@ -1506,20 +1501,22 @@ def offerSearch():
             result_sales = offer_search_detail(sales_offer, platform)
             offer_result_list.extend(result_sales)
 
-        offer_result_list_unique = []
         for j in offer_result_list:
             if j not in offer_result_list_unique:
                 offer_result_list_unique.append(j)
             else:
                 pass
+        #分页
         counts = len(offer_result_list_unique)
+        page_obj = Pager(offer_result_list_unique, page, counts, limit)
+        total_pages = page_obj.totalpage
 
-        totalPage = count_page(counts, page, limit)
+        results =  offer_result_list_unique[page_obj.start: page_obj.end]
 
         return json.dumps({
-            "totalPages": int(totalPage),
+            "totalPages": int(total_pages),
             "code": 200,
-            "result": offer_result_list_unique
+            "result": results
         })
 
 def offer_search_detail(offers, platform):
