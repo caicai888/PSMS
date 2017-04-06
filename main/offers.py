@@ -126,10 +126,11 @@ def createOffer():
         if data["offer_id"]:
             offer_id = int(data["offer_id"])
             oldOffer = Offer.query.filter_by(id=offer_id).first()
+
             offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,
                           oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,
                           oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,
-                          createdTime,updateTime,data['recipient'])
+                          createdTime,updateTime, emailaccount=None) #此处为前端对offer的拷贝的功能，默认没有只传offer_id,不发送邮件
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -147,15 +148,7 @@ def createOffer():
                         db.session.add(historty)
                         db.session.commit()
                         db.create_all()
-                try:
-                    # flag =True 表示修改 ,flag = None 表示创建
-                    if data['recipient']:
-                        emailSend(session, data, flag=None)
-                except Exception as ex:
-                    print (traceback.format_exc())
-                    return json.dumps({'code': 500, 'message': ex})
-                else:
-                    return json.dumps({"code":200,"message":"offer create and send mail success .","offerId":offer.id })
+                return json.dumps({"code":200,"message":"offer copy success .","offerId":offer.id })
             except Exception as e:
                 print (traceback.format_exc())
                 return json.dumps({"code":500,"message":"fail"})
@@ -266,16 +259,12 @@ def offerShow():
         platform = data["platform"]
         page = data["page"]
         limit = int(data["limit"])
-        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
-        count = Offer.query.filter(Offer.status != "deleted").count()
-        #  修改搜索无关键字时，显示为一页，统计总的页数返回给前端，显示分页
-        if (count % limit) == 0:
-            totalPages = count/limit
-        else:
-            totalPages = count/limit + 1
+
+        offers = Offer.query.filter(Offer.status != "deleted", Offer.platform == platform).order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        platform_counts = Offer.query.filter(Offer.status != "deleted", Offer.platform == platform).count()
 
         result = []
-        for i in offers.items:
+        for item in offers.items:
             contract_type = "cpa"
             startTime = "2017-01-01"
             endTime = "2017-12-31"
@@ -283,12 +272,12 @@ def offerShow():
             price = 0
             platform_v = ''
 
-            customerId = i.customer_id
+            customerId = item.customer_id
             customer = Customers.query.filter_by(id=customerId).first() #customer
             customerName = customer.company_name  # 客户名称
-            status = i.status
-            sales = User.query.filter_by(id=int(i.user_id)).first() #user
-            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).all() #platform
+            status = item.status
+            sales = User.query.filter_by(id=int(item.user_id)).first() #user
+            fb_offer = PlatformOffer.query.filter_by(offer_id=item.id, platform=platform).all() #platform
             for j in fb_offer:
                 contract_type = j.contract_type
                 platform_v = j.platform
@@ -303,11 +292,12 @@ def offerShow():
                 startTime = j.startTime
                 country = j.country
                 price = j.price
-            os = i.os
-            app_name = i.app_name
+            os = item.os
+            app_name = item.app_name
+            emailaccount = item.emailaccount
 
             data = {
-                "offer_id": i.id,
+                "offer_id": item.id,
                 "status": status,
                 "platform": platform_v,
                 "contract_type": contract_type,
@@ -318,16 +308,18 @@ def offerShow():
                 "endTime": endTime,
                 "country": country,
                 "price": price,
-                "updateTime": i.updateTime,
+                "updateTime": item.updateTime,
                 "sale_name":sales.name,
+                "recipient": emailaccount,
             }
-            # 每次都返回results 全局数据包括facebook，adwords，apple，
-            # 在此判断，每次返回各自平台的数据，故此做出判断.??
-            if data['platform'] == platform:
-                result += [data]
+            result += [data]
 
+        #分页处理
+        page_obj = Pager(result, page, platform_counts, limit)
+        total_pages = page_obj.totalpage
+        # results = result[page_obj.start: page_obj.end]
         response = {
-            "totalPages": int(totalPages),
+            "totalPages": int(total_pages),
             "code": 200,
             "result": result,
             "message": "success"
