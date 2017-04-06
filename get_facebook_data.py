@@ -19,7 +19,7 @@ start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
-sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted')"
+sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id in (select id from offer where status != 'deleted') order by offer_id desc"
 # sql = "select offer_id,facebook_keywords from advertisers where type='facebook' and offer_id=19"
 cursor.execute(sql)
 results = cursor.fetchall()
@@ -197,12 +197,7 @@ for i in results:
                 }
                 cpc_list += [data_cpc]
 
-        impressions_list_unique = []
-        for j in impressions_list:
-            if j not in impressions_list_unique:
-                impressions_list_unique.append(j)
-            else:
-                pass
+        impressions_list_unique = impressions_list
         tempList = []
         impressions_list = []
         for ele in impressions_list_unique:
@@ -216,12 +211,7 @@ for i in results:
                 tempList.append(key)
                 impressions_list.append(ele)
 
-        cost_list_unique = []
-        for j in cost_list:
-            if j not in cost_list_unique:
-                cost_list_unique.append(j)
-            else:
-                pass
+        cost_list_unique = cost_list
         tempList = []
         cost_list = []
         for ele in cost_list_unique:
@@ -235,12 +225,7 @@ for i in results:
                 tempList.append(key)
                 cost_list.append(ele)
 
-        clicks_list_unique = []
-        for j in clicks_list:
-            if j not in clicks_list_unique:
-                clicks_list_unique.append(j)
-            else:
-                pass
+        clicks_list_unique = clicks_list
         tempList = []
         clicks_list = []
         for ele in clicks_list_unique:
@@ -267,12 +252,7 @@ for i in results:
                 tempList.append(key)
                 conversions_list.append(ele)
 
-        ctr_list_unique = []
-        for j in ctr_list:
-            if j not in ctr_list_unique:
-                ctr_list_unique.append(j)
-            else:
-                pass
+        ctr_list_unique = ctr_list
         tempList = []
         ctr_list = []
         for ele in ctr_list_unique:
@@ -286,12 +266,7 @@ for i in results:
                 tempList.append(key)
                 ctr_list.append(ele)
 
-        cpc_list_unique = []
-        for j in cpc_list:
-            if j not in cpc_list_unique:
-                cpc_list_unique.append(j)
-            else:
-                pass
+        cpc_list_unique = cpc_list
         tempList = []
         cpc_list = []
         for ele in cpc_list_unique:
