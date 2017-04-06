@@ -126,7 +126,10 @@ def createOffer():
         if data["offer_id"]:
             offer_id = int(data["offer_id"])
             oldOffer = Offer.query.filter_by(id=offer_id).first()
-            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
+            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,
+                          oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,
+                          oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,
+                          createdTime,updateTime,data['recipient'])
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -160,7 +163,10 @@ def createOffer():
         else:
             user_id= data["user_id"].split("(")[1].split(')')[0]
             customer_id = data["customer_id"].split("(")[1].split(')')[0]    #??? chinese BeiJing space
-            offer = Offer(int(user_id), customer_id, data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"], createdTime, updateTime)
+            offer = Offer(int(user_id), customer_id, data["status"], data["contract_num"], data["os"], data["package_name"],
+                          data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
+                          str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"],
+                          createdTime, updateTime, data['recipient'])
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -253,27 +259,6 @@ def emailSend(session, data, flag=None):
 def email_add():
     pass
 
-#接口测试 -->send email.
-
-'''参数传递内容：
-{
-    "recipient": "test@newborntown.com"
-}
-
-
-@offers.route('/api/email_send', methods=["POST", "GET"])
-def send_mail():
-    if request.method == 'POST':
-        data = request.get_json(force=True)
-        try:
-            email_msg = emailSend(session, data)
-        except Exception as ex:
-            print (traceback.format_exc())
-            return json.dumps({'status': 404, 'email_msg': ex})
-        else:
-            return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
-'''
-
 @offers.route('/api/offer_show', methods=["POST", "GET"])
 def offerShow():
     if request.method == "POST":
@@ -288,21 +273,25 @@ def offerShow():
             totalPages = count/limit
         else:
             totalPages = count/limit + 1
+
         result = []
         for i in offers.items:
+            contract_type = "cpa"
+            startTime = "2017-01-01"
+            endTime = "2017-12-31"
+            country = "CN"
+            price = 0
+            platform_v = ''
+
             customerId = i.customer_id
             customer = Customers.query.filter_by(id=customerId).first() #customer
             customerName = customer.company_name  # 客户名称
             status = i.status
             sales = User.query.filter_by(id=int(i.user_id)).first() #user
             fb_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).all() #platform
-            contract_type = "cpa"
-            startTime = "2017-01-01"
-            endTime = "2017-12-31"
-            country = "CN"
-            price = 0
             for j in fb_offer:
                 contract_type = j.contract_type
+                platform_v = j.platform
                 if contract_type == "1":
                     contract_type = u"服务费"
                 elif contract_type == "2":
@@ -320,6 +309,7 @@ def offerShow():
             data = {
                 "offer_id": i.id,
                 "status": status,
+                "platform": platform_v,
                 "contract_type": contract_type,
                 "os": os,
                 "customer_id": customerName,
@@ -329,9 +319,13 @@ def offerShow():
                 "country": country,
                 "price": price,
                 "updateTime": i.updateTime,
-                "sale_name":sales.name
+                "sale_name":sales.name,
             }
-            result += [data]
+            # 每次都返回results 全局数据包括facebook，adwords，apple，
+            # 在此判断，每次返回各自平台的数据，故此做出判断.??
+            if data['platform'] == platform:
+                result += [data]
+
         response = {
             "totalPages": int(totalPages),
             "code": 200,
@@ -417,6 +411,7 @@ def offerDetail(id):
     userId = offer.user_id
     user = User.query.filter_by(id=userId).first()
     plate = offer.platform
+    emailaccount = offer.emailaccount
 
     fb_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="facebook").first()
     if fb_offer is not None:
@@ -576,7 +571,8 @@ def offerDetail(id):
         "email_tempalte": offer.email_template,
         "facebook": facebook,
         "adwords": adwords,
-        "apple": apple
+        "apple": apple,
+        "recipient": emailaccount
     }
     response = {
         "code": 200,
@@ -761,8 +757,7 @@ def updateOffer():
                 offer.email_time = data["email_time"]
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
                 offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
-                # status 不填加回报错 u"Column 'status' cannot be null"
-
+                offer.emailaccount = data["recipient"] if data["recipient"] != "" else offer.emailaccount
                 platforms = data["platform"].split(',')
                 if 'Facebook' in platforms:
                     fb_data = data['facebook']
@@ -782,7 +777,6 @@ def updateOffer():
 
                 db.session.add(offer)
                 db.session.commit()
-
                 try:
                     # flag =True 表示修改 ,flag = None 表示创建
                     if data['recipient']:
@@ -792,7 +786,6 @@ def updateOffer():
                     return json.dumps({'code': 500, 'message': ex})
                 else:
                     return json.dumps({"code": 200, "message": "offer create and send mail success ."})
-
             except Exception as e:
                 print e
                 return json.dumps({"code": 500, "message": "fail"})
