@@ -135,9 +135,11 @@ class Offer(db.Model):
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
+    emailaccount = db.Column(db.String(100), nullable=False)
 
     def __init__(self, user_id, customer_id, status="active", contract_num=None,os=None, package_name=None, app_name=None, app_type=None,
-                 preview_link=None, track_link=None,platform=None,email_time=None, email_users=None,email_template=None, createdTime=None, updateTime=None):
+                 preview_link=None, track_link=None,platform=None,email_time=None, email_users=None,email_template=None, createdTime=None,
+                 updateTime=None,emailaccount=None):
 
         self.user_id = user_id
         self.customer_id = customer_id
@@ -155,6 +157,7 @@ class Offer(db.Model):
         self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
+        self.emailaccount = emailaccount
 
     def __repr__(self):
         return '<Offer {}>'.format(self.id)
