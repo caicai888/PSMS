@@ -135,8 +135,9 @@ class Offer(db.Model):
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
-    emailaccount = db.Column(db.String(100), nullable=False)
+    emailaccount = db.Column(db.String(100), nullable=True)  #True
 
+    #邮件账户判断,在offer copy修改的时候不发送邮件，此时为空;创建offer时会包含邮件账户
     def __init__(self, user_id, customer_id, status="active", contract_num=None,os=None, package_name=None, app_name=None, app_type=None,
                  preview_link=None, track_link=None,platform=None,email_time=None, email_users=None,email_template=None, createdTime=None,
                  updateTime=None,emailaccount=None):
@@ -157,7 +158,8 @@ class Offer(db.Model):
         self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
-        self.emailaccount = emailaccount
+        if emailaccount:
+            self.emailaccount = emailaccount
 
     def __repr__(self):
         return '<Offer {}>'.format(self.id)
