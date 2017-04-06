@@ -93,12 +93,12 @@ var CreateOffer = React.createClass({
             var url = this.props.params.id?"/api/update_offer":"/api/create_offer";
             ajax("post",url,JSON.stringify(data)).then(function (data) {
                 var data = JSON.parse(data);
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
                 if(data.code=="200"){
-                    debugger
-                    location.hash = "offer_list";
-                }else {
-                    $(".ajax_error").html(data.message);
-                    $("#modal").modal("toggle");
+                    $(".modal-footer").on("click",function () {
+                        location.hash = "offer_list";
+                    });
                 }
             });
         }else {
