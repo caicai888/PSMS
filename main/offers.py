@@ -9,6 +9,7 @@ from flask import Blueprint, request, jsonify,send_from_directory,abort, send_fi
 from sqlalchemy import desc
 import config
 from main import db
+from common import Pager
 import os as sysos
 import sys
 from main.common import csvHandler
@@ -145,12 +146,13 @@ def createOffer():
                         db.create_all()
                 try:
                     # flag =True 表示修改 ,flag = None 表示创建
-                    email_msg = emailSend(session, data, flag=True)
+                    if data['recipient']:
+                        emailSend(session, data, flag=None)
                 except Exception as ex:
                     print (traceback.format_exc())
-                    return json.dumps({'status': 500, 'email_msg': ex})
+                    return json.dumps({'code': 500, 'message': ex})
                 else:
-                    return json.dumps({"code":200,"message":"success","offerId":offer.id, 'email_msg': email_msg.get('email_msg')})
+                    return json.dumps({"code":200,"message":"offer create and send mail success .","offerId":offer.id })
             except Exception as e:
                 print (traceback.format_exc())
                 return json.dumps({"code":500,"message":"fail"})
@@ -164,6 +166,7 @@ def createOffer():
                 db.session.commit()
                 db.create_all()
                 platforms = data["platform"].split(",")
+
                 if "Facebook" in platforms:
                     fb = data["facebook"]
                     platformOffer = PlatformOffer(offer.id, "facebook",fb["contract_type"],float(fb["contract_scale"] if fb["contract_scale"] else 0),fb["material"], fb["startTime"], fb["endTime"],str(fb["country"]),float(fb["price"] if fb["price"] else 0), float(fb["daily_budget"] if fb["daily_budget"] else 0), fb["daily_type"],float(fb["total_budget"] if fb["total_budget"] else 0), fb["total_type"], fb["distribution"], fb["authorized"],fb["named_rule"], fb["KPI"].encode('utf-8'), fb["settlement"].encode('utf-8'),fb["period"].encode('utf-8'), fb["remark"].encode('utf-8'),createdTime,updateTime)
@@ -208,12 +211,13 @@ def createOffer():
 
                 try:
                     # flag =True 表示修改 ,flag = None 表示创建
-                    email_msg = emailSend(session, data,flag=None)
+                    if data['recipient']:
+                        email_msg = emailSend(session, data,flag=None)
                 except Exception as ex:
                     print (traceback.format_exc())
-                    return json.dumps({'status': 500, 'email_msg': ex})
+                    return json.dumps({'code': 500, 'message': ex})
                 else:
-                    return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
+                    return json.dumps({"code": 200, "message": "offer create and send mail success ."})
             except Exception as e:
                 return json.dumps({"code": 500, "message": e})
 
@@ -238,11 +242,11 @@ def emailSend(session, data, flag=None):
         try:
             obj = Send_Email(accounts_list, user, flag)
             if obj.send_mail(data):
-                return {'email_msg': 'email send success.'}
-            return {'email_msg': 'email send failed.'}
+                return {'message': 'email send success.'}
+            return {'message': 'email send failed.'}
         except Exception as ex:
             print (traceback.format_exc())
-            return {'email_msg': 'email send failed.'}
+            return {'message': 'email send failed.'}
 
 #扩展接口,添加默认账户
 @offers.route('/api/email_account_add')
@@ -610,7 +614,7 @@ def statusHistory(offer_id,platform_id,platform,status):
     offer = Offer.query.filter_by(id=offer_id).first()
     time_now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
     platform_offer = PlatformOffer.query.filter_by(id=platform_id).first()
-    historty = History(offer_id,offer.user_id,platform_id,platform,"update",time_now,status,price=platform_offer.price,daily_budget=platform_offer.daily_budget,daily_type=platform_offer.daily_type,total_budget=platform_offer.total_budget,total_type=platform_offer.total_type,KPI=platform_offer.KPI,contract_type=platform_offer.contract_type,contract_scale=platform_offer.contract_scale)
+    historty = History(offer_id=offer_id,user_id=offer.user_id,platformOffer_id=platform_id,platform=platform,type="update",createdTime=time_now,status=status,price=platform_offer.price,daily_budget=platform_offer.daily_budget,daily_type=platform_offer.daily_type,total_budget=platform_offer.total_budget,total_type=platform_offer.total_type,KPI=platform_offer.KPI,contract_type=platform_offer.contract_type,contract_scale=platform_offer.contract_scale)
     db.session.add(historty)
     db.session.commit()
     db.create_all()
@@ -703,8 +707,8 @@ def updatePlatformOffer(offer_id,platform,data):
             db.create_all()
         if data["country_detail"] != []:
             for i in data['country_detail']:
-                history = History(offer_id, user_id,platform_offer.id,platform, "update",
-                                  time_now,offer.status, country=i["country"], country_price=float(i["price"]),
+                history = History(offer_id=offer_id, user_id=user_id,platformOffer_id=platform_offer.id,platform=platform, type="update",
+                                  createdTime=time_now,status=offer.status, country=i["country"], country_price=float(i["price"]),
                                   price=float(data["price"]) if data["price"] != "" else 0,
                                   daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
                                   daily_type=data["daily_type"],
@@ -716,7 +720,7 @@ def updatePlatformOffer(offer_id,platform,data):
                 db.session.commit()
                 db.create_all()
         else:
-            history = History(offer_id, user_id,platform_offer.id, "update",time_now,offer.status,
+            history = History(offer_id=offer_id, user_id=user_id, platformOffer_id=platform_offer.id, type="update",createdTime=time_now,status=offer.status,
                               price=float(data["price"]) if data["price"] != "" else 0,
                               daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
                               daily_type=data["daily_type"],
@@ -757,22 +761,38 @@ def updateOffer():
                 offer.email_time = data["email_time"]
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
                 offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
+                # status 不填加回报错 u"Column 'status' cannot be null"
 
                 platforms = data["platform"].split(',')
                 if 'Facebook' in platforms:
                     fb_data = data['facebook']
                     fb_offer = updatePlatformOffer(int(data["offer_id"]),'facebook',fb_data)
+                else:
+                    del data['facebook']
                 if 'Adwords' in platforms:
                     ad_data = data['adwords']
                     ad_offer = updatePlatformOffer(int(data['offer_id']),'adwords',ad_data)
+                else:
+                    del data['adwords']
                 if 'Apple' in platforms:
                     ap_data = data['apple']
                     ap_offer = updatePlatformOffer(int(data['offer_id']),'apple',ap_data)
+                else:
+                    del data['apple']
 
                 db.session.add(offer)
                 db.session.commit()
 
-                return json.dumps({"code": 200, "message": "success"})
+                try:
+                    # flag =True 表示修改 ,flag = None 表示创建
+                    if data['recipient']:
+                        emailSend(session, data, flag=True)
+                except Exception as ex:
+                    print (traceback.format_exc())
+                    return json.dumps({'code': 500, 'message': ex})
+                else:
+                    return json.dumps({"code": 200, "message": "offer create and send mail success ."})
+
             except Exception as e:
                 print e
                 return json.dumps({"code": 500, "message": "fail"})
@@ -1464,14 +1484,6 @@ def showContract():
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
 def offerSearch():
-    def count_page(counts, page, limit):
-
-        if (counts % limit) == 0:
-            totalPages = counts/limit
-        else:
-            totalPages = counts/limit + 1
-        return totalPages
-
     if request.method == "POST":
         data = request.get_json(force=True)
         platform = data["platform"]
@@ -1479,7 +1491,9 @@ def offerSearch():
         limit = data["limit"]
         page = data["page"]
         offer_result_list = []
+        offer_result_list_unique = []
 
+        # 优化不需要每次调用接口都查询数据库，设置属性值
         appnames = Offer.query.filter(Offer.app_name.like("%" + key + "%"), Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status) # 应用名称
         systems = Offer.query.filter(Offer.os.like("%" + key + "%"), Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status)# 投放的系统
         customers = Customers.query.filter(Customers.company_name.like("%" + key + "%")) # 客户名称
@@ -1506,20 +1520,22 @@ def offerSearch():
             result_sales = offer_search_detail(sales_offer, platform)
             offer_result_list.extend(result_sales)
 
-        offer_result_list_unique = []
         for j in offer_result_list:
             if j not in offer_result_list_unique:
                 offer_result_list_unique.append(j)
             else:
                 pass
+        #分页
         counts = len(offer_result_list_unique)
+        page_obj = Pager(offer_result_list_unique, page, counts, limit)
+        total_pages = page_obj.totalpage
 
-        totalPage = count_page(counts, page, limit)
+        results =  offer_result_list_unique[page_obj.start: page_obj.end]
 
         return json.dumps({
-            "totalPages": int(totalPage),
+            "totalPages": int(total_pages),
             "code": 200,
-            "result": offer_result_list_unique
+            "result": results
         })
 
 def offer_search_detail(offers, platform):

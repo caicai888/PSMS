@@ -93,12 +93,12 @@ var CreateOffer = React.createClass({
             var url = this.props.params.id?"/api/update_offer":"/api/create_offer";
             ajax("post",url,JSON.stringify(data)).then(function (data) {
                 var data = JSON.parse(data);
+                $(".ajax_error").html(data.message);
+                $("#modal").modal("toggle");
                 if(data.code=="200"){
-                    debugger
-                    location.hash = "offer_list";
-                }else {
-                    $(".ajax_error").html(data.message);
-                    $("#modal").modal("toggle");
+                    $(".modal-footer .modal-close").on("click",function () {
+                        location.hash = "offer_list";
+                    });
                 }
             });
         }else {
@@ -1252,7 +1252,7 @@ var CreateOffer = React.createClass({
                             收件人
                         </div>
                         <div className="col-sm-9">
-                            <input type="text" data-key="recipient" className="form-control" placeholder="xx@xx.com,xx@xx.com"/>
+                            <input type="text" data-required="true" data-key="recipient" className="form-control" placeholder="xx@xx.com,xx@xx.com"/>
                         </div>
                     </div>
                     <div className="col-sm-10">

@@ -15,7 +15,7 @@ var OfferList = React.createClass({
     },
     export_table(){
         //tableExport("export_table",'ReportTable', 'csv');
-        window.location.href = location.host + "/api/offer_export";
+        window.location.href ="/api/offer_export";
     },
     status(e){
         let offer_id = e.target.dataset.offer_id;
@@ -83,7 +83,7 @@ var OfferList = React.createClass({
         }
         ajax("post",url,JSON.stringify({
             page:page || sessionStorage.getItem("offer_list_page") || 1,
-            limit:limit || 2,
+            limit:limit || 15,
             platform:$("#platform").val(),
             key:key
         })).then(function (data) {
@@ -117,7 +117,7 @@ var OfferList = React.createClass({
                 <div className="row">
                     <div className="col-md-4">
                         <div className="input-group">
-                            <div onClick={_this.export_table}  className="input-group-addon">投放平台</div>
+                            <div  className="input-group-addon">投放平台</div>
                             <select className="form-control" onChange={_this.offerList.bind(this,1,15)} id="platform">
                                 <option value={'facebook'}>Facebook</option>
                                 <option value={'adwords'}>Adwords</option>
@@ -130,7 +130,7 @@ var OfferList = React.createClass({
                         <div className="input-group">
                             <div onClick={_this.export_table} className="input-group-addon">Export</div>
                             <input id="search" className="form-control" type="text" placeholder="Search..." />
-                            <div onClick={_this.offerList.bind(this,1,2)} className="input-group-addon">Search</div>
+                            <div onClick={_this.offerList.bind(this,1,15)} className="input-group-addon">Search</div>
                         </div>
                     </div>
                 </div>
@@ -184,7 +184,7 @@ var OfferList = React.createClass({
                         </tbody>
                     </table>
                 </div>
-                <Page id="offerListPage" limit="2" totalPages={_this.state.totalPages} onClick={_this.offerList} page={_this.state.page}/>
+                <Page id="offerListPage" limit="15" totalPages={_this.state.totalPages} onClick={_this.offerList} page={_this.state.page}/>
             </div>
         )
     }
