@@ -15,7 +15,7 @@ var OfferList = React.createClass({
     },
     export_table(){
         //tableExport("export_table",'ReportTable', 'csv');
-        window.location.href = location.host + "/api/offer_export";
+        window.location.href ="/api/offer_export";
     },
     status(e){
         let offer_id = e.target.dataset.offer_id;
@@ -117,7 +117,7 @@ var OfferList = React.createClass({
                 <div className="row">
                     <div className="col-md-4">
                         <div className="input-group">
-                            <div onClick={_this.export_table}  className="input-group-addon">投放平台</div>
+                            <div  className="input-group-addon">投放平台</div>
                             <select className="form-control" onChange={_this.offerList.bind(this,1,15)} id="platform">
                                 <option value={'facebook'}>Facebook</option>
                                 <option value={'adwords'}>Adwords</option>
