@@ -168,8 +168,81 @@ sheet.write(0, 8, "Rebate")
 sheet.write(0, 9, "CountProfit")
 sheet.write(0, 10, "ROI")
 
+total_conversions = 0
+total_cpi = 0
+total_cost = 0
+total_revenue = 0
+total_profit = 0
+total_rebate = 0
+total_countProfit = 0
+total_roi = 0
+
+solo_conversions = 0
+solo_cpi = 0
+solo_cost = 0
+solo_revenue = 0
+solo_profit = 0
+solo_rebate = 0
+solo_countProfit = 0
+solo_roi = 0
+
+mico_conversions = 0
+mico_cpi = 0
+mico_cost = 0
+mico_revenue = 0
+mico_profit = 0
+mico_rebate = 0
+mico_countProfit = 0
+mico_roi = 0
+
+kitty_conversions = 0
+kitty_cpi = 0
+kitty_cost = 0
+kitty_revenue = 0
+kitty_profit = 0
+kitty_rebate = 0
+kitty_countProfit = 0
+kitty_roi = 0
+
 count = len(newlist)
 for j in range(count):
+    total_conversions += int(newlist[j].get("Conversions"))
+    total_cost += float(newlist[j].get("Cost"))
+    total_revenue += float(newlist[j].get("Revenue"))
+    total_profit += float(newlist[j].get("Profit"))
+    total_rebate += float(newlist[j].get("Rebate"))
+    total_countProfit += float(newlist[j].get("CountProfit"))
+
+    if 'Mico' in newlist[j].get("appName"):
+        solo_conversions += int(newlist[j].get("Conversions"))
+        solo_cost += float(newlist[j].get("Cost"))
+        solo_revenue += float(newlist[j].get("Revenue"))
+        solo_profit += float(newlist[j].get("Profit"))
+        solo_rebate += float(newlist[j].get("Rebate"))
+        solo_countProfit += float(newlist[j].get("CountProfit"))
+
+        mico_conversions += int(newlist[j].get("Conversions"))
+        mico_cost += float(newlist[j].get("Cost"))
+        mico_revenue += float(newlist[j].get("Revenue"))
+        mico_profit += float(newlist[j].get("Profit"))
+        mico_rebate += float(newlist[j].get("Rebate"))
+        mico_countProfit += float(newlist[j].get("CountProfit"))
+
+    if 'Kitty' in newlist[j].get("appName"):
+        solo_conversions += int(newlist[j].get("Conversions"))
+        solo_cost += float(newlist[j].get("Cost"))
+        solo_revenue += float(newlist[j].get("Revenue"))
+        solo_profit += float(newlist[j].get("Profit"))
+        solo_rebate += float(newlist[j].get("Rebate"))
+        solo_countProfit += float(newlist[j].get("CountProfit"))
+
+        kitty_conversions += int(newlist[j].get("Conversions"))
+        kitty_cost += float(newlist[j].get("Cost"))
+        kitty_revenue += float(newlist[j].get("Revenue"))
+        kitty_profit += float(newlist[j].get("Profit"))
+        kitty_rebate += float(newlist[j].get("Rebate"))
+        kitty_countProfit += float(newlist[j].get("CountProfit"))
+
     sheet.write(j+1, 0, newlist[j].get("Date"))
     sheet.write(j+1, 1, newlist[j].get("appName"))
     sheet.write(j+1, 2, newlist[j].get("Company"))
@@ -182,6 +255,65 @@ for j in range(count):
     sheet.write(j+1, 9, newlist[j].get("CountProfit"))
     sheet.write(j+1, 10, newlist[j].get("ROI"))
     continue
+if float(total_conversions) != 0:
+    total_cpi = float('%0.2f' % (float(total_cost)/float(total_conversions)))
+if float(total_cost) != 0:
+    total_roi = float('%0.4f' % (float(total_profit)/float(total_cost)))
+
+if float(solo_conversions) != 0:
+    solo_cpi = float('%0.2f' % (float(solo_cost)/float(solo_conversions)))
+if float(solo_cost) != 0:
+    solo_roi = float('%0.4f' % (float(solo_profit)/float(solo_cost)))
+
+if float(mico_conversions) != 0:
+    mico_cpi = float('%0.2f' % (float(mico_cost)/float(mico_conversions)))
+if float(mico_cost) != 0:
+    mico_roi = float('%0.4f' % (float(mico_profit)/float(mico_cost)))
+
+if float(kitty_conversions) != 0:
+    kitty_cpi = float('%0.2f' % (float(kitty_cost)/float(kitty_conversions)))
+if float(kitty_cost) != 0:
+    kitty_roi = float('%0.4f' % (float(kitty_profit)/float(kitty_cost)))
+
+sheet.write(count+1, 0, "Total")
+sheet.write(count+1, 3, total_conversions)
+sheet.write(count+1, 4, total_cpi)
+sheet.write(count+1, 5, float('%0.2f'%(total_cost)))
+sheet.write(count+1, 6, float('%0.2f'%(total_revenue)))
+sheet.write(count+1, 7, float('%0.2f'%(total_profit)))
+sheet.write(count+1, 8, float('%0.2f'%(total_rebate)))
+sheet.write(count+1, 9, float('%0.2f'%(total_countProfit)))
+sheet.write(count+1, 10, total_roi)
+
+sheet.write(count+2, 0, "SoloTotal")
+sheet.write(count+2, 3, solo_conversions)
+sheet.write(count+2, 4, solo_cpi)
+sheet.write(count+2, 5, float('%0.2f'%(solo_cost)))
+sheet.write(count+2, 6, float('%0.2f'%(solo_revenue)))
+sheet.write(count+2, 7, float('%0.2f'%(solo_profit)))
+sheet.write(count+2, 8, float('%0.2f'%(solo_rebate)))
+sheet.write(count+2, 9, float('%0.2f'%(solo_countProfit)))
+sheet.write(count+2, 10, solo_roi)
+
+sheet.write(count+3, 0, "MicoTotal")
+sheet.write(count+3, 3, mico_conversions)
+sheet.write(count+3, 4, mico_cpi)
+sheet.write(count+3, 5, float('%0.2f'%(mico_cost)))
+sheet.write(count+3, 6, float('%0.2f'%(mico_revenue)))
+sheet.write(count+3, 7, float('%0.2f'%(mico_profit)))
+sheet.write(count+3, 8, float('%0.2f'%(mico_rebate)))
+sheet.write(count+3, 9, float('%0.2f'%(mico_countProfit)))
+sheet.write(count+3, 10, mico_roi)
+
+sheet.write(count+4, 0, "KittyTotal")
+sheet.write(count+4, 3, kitty_conversions)
+sheet.write(count+4, 4, kitty_cpi)
+sheet.write(count+4, 5, float('%0.2f'%(kitty_cost)))
+sheet.write(count+4, 6, float('%0.2f'%(kitty_revenue)))
+sheet.write(count+4, 7, float('%0.2f'%(kitty_profit)))
+sheet.write(count+4, 8, float('%0.2f'%(kitty_rebate)))
+sheet.write(count+4, 9, float('%0.2f'%(kitty_countProfit)))
+sheet.write(count+4, 10, kitty_roi)
 
 file_name = "PSMS_Date.xls"
 file_dir = "/home/ubuntu/code"

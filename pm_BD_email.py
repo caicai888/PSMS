@@ -14,6 +14,7 @@ from email import Encoders
 import datetime,time
 
 startTime = (datetime.datetime.now()+datetime.timedelta(hours=8)-datetime.timedelta(hours=24)).strftime("%Y-%m-%d")
+startTime = "2017-02-10"
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()
 
@@ -101,15 +102,17 @@ for i in role_result:
         sheet.write(0, 1, "BD")
         sheet.write(0, 2, "appName")
         sheet.write(0, 3, "CountProfit")
-
+        totalProfit = 0
         count = len(all_data_list)
         for j in range(count):
+            totalProfit += float(all_data_list[j].get("CountProfit"))
             sheet.write(j + 1, 0, all_data_list[j].get("Date"))
             sheet.write(j + 1, 1, all_data_list[j].get("BD"))
             sheet.write(j + 1, 2, all_data_list[j].get("appName"))
             sheet.write(j + 1, 3, all_data_list[j].get("CountProfit"))
             continue
-
+        sheet.write(count+1, 0, 'Total')
+        sheet.write(count+1, 3, totalProfit)
         file_name = "PSMS_BD_Profit.xls"
         file_dir = "/home/ubuntu/code"
         wbk.save(file_name)

@@ -9,6 +9,7 @@ from flask import Blueprint, request, jsonify,send_from_directory,abort, send_fi
 from sqlalchemy import desc
 import config
 from main import db
+from common import Pager
 import os as sysos
 import sys
 from main.common import csvHandler
@@ -1464,13 +1465,6 @@ def showContract():
 #offer list search
 @offers.route('/api/offer_search', methods=["POST","GET"])
 def offerSearch():
-    def count_page(counts, limit):
-        if (counts % limit) == 0:
-            totalPages = counts/limit
-        else:
-            totalPages = counts/limit + 1
-        return totalPages
-
     if request.method == "POST":
         data = request.get_json(force=True)
         platform = data["platform"]
@@ -1478,26 +1472,13 @@ def offerSearch():
         limit = data["limit"]
         page = data["page"]
         offer_result_list = []
+        offer_result_list_unique = []
 
-        appnames = Offer.query.filter(Offer.app_name.like("%"+key+"%"), Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).paginate(int(page), per_page=limit, error_out=False)  #应用名称
-        if appnames:
-            counts = Offer.query.filter(Offer.app_name.like("%" + key + "%"), Offer.status != "deleted").count()
-            totalPage = count_page(counts, limit)
-
-        systems = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").order_by(Offer.id.desc(),Offer.status).paginate(int(page), per_page=limit, error_out=False)   #投放的系统
-        if systems:
-            counts = Offer.query.filter(Offer.os.like("%"+key+"%"),Offer.status != "deleted").count()
-            totalPage = count_page(counts, limit)
-
-        customers = Customers.query.filter(Customers.company_name.like("%"+key+"%")).paginate(int(page), per_page=limit, error_out=False)   #客户名称
-        if customers:
-            counts = Customers.query.filter(Customers.company_name.like("%"+key+"%")).count()
-            totalPage = count_page(counts, limit)
-
-        sales = User.query.filter(User.name.like("%"+key+"%")).paginate(int(page), per_page=limit, error_out=False)    #销售名称
-        if sales:
-            counts = User.query.filter(User.name.like("%"+key+"%")).count()
-            totalPage = count_page(counts, limit)
+        # 优化不需要每次调用接口都查询数据库，设置属性值
+        appnames = Offer.query.filter(Offer.app_name.like("%" + key + "%"), Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status) # 应用名称
+        systems = Offer.query.filter(Offer.os.like("%" + key + "%"), Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status)# 投放的系统
+        customers = Customers.query.filter(Customers.company_name.like("%" + key + "%")) # 客户名称
+        sales = User.query.filter(User.name.like("%" + key + "%")) # 销售名称
 
         result_appname = offer_search_detail(appnames, platform)
         result_system = offer_search_detail(systems, platform)
@@ -1506,35 +1487,41 @@ def offerSearch():
 
         customer_ids = []
         sales_ids = []
-        for i in customers.items:
+        for i in customers:
             customer_ids.append(i.id)
         for i in customer_ids:
-            customers_offer = Offer.query.filter(Offer.customer_id==i, Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).paginate(int(page), per_page=limit, error_out=False)
+            customers_offer = Offer.query.filter(Offer.customer_id==i, Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status)
             result_customer = offer_search_detail(customers_offer, platform)
             offer_result_list.extend(result_customer)
-        for i in sales.items:
+
+        for i in sales:
             sales_ids.append(i.id)
         for i in sales_ids:
-            sales_offer = Offer.query.filter(Offer.user_id==i,Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status).paginate(int(page), per_page=limit, error_out=False)
+            sales_offer = Offer.query.filter(Offer.user_id==i, Offer.status != "deleted").order_by(Offer.id.desc(), Offer.status)
             result_sales = offer_search_detail(sales_offer, platform)
             offer_result_list.extend(result_sales)
 
-        offer_result_list_unique = []
         for j in offer_result_list:
             if j not in offer_result_list_unique:
                 offer_result_list_unique.append(j)
             else:
                 pass
+        #分页
+        counts = len(offer_result_list_unique)
+        page_obj = Pager(offer_result_list_unique, page, counts, limit)
+        total_pages = page_obj.totalpage
+
+        results =  offer_result_list_unique[page_obj.start: page_obj.end]
 
         return json.dumps({
-            "totalPages": int(totalPage),
+            "totalPages": int(total_pages),
             "code": 200,
-            "result": offer_result_list_unique
+            "result": results
         })
 
 def offer_search_detail(offers, platform):
     offer_result_list = []
-    for i in offers.items:
+    for i in offers:
         sales = User.query.filter_by(id=int(i.user_id)).first()
         platform_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).first()
         if platform_offer:
@@ -1567,7 +1554,3 @@ def offer_search_detail(offers, platform):
                 }
             ]
     return offer_result_list
-
-
-
-
