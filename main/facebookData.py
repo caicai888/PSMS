@@ -720,10 +720,9 @@ def faceReport():
                         if key in tempList:
                             for x in cost_list_unique:
                                 if x['date_start'] == ele['date_start'] and x['country'] == ele['country']:
-                                    # x['spend'] += float(ele['spend'])
-                                    x['spend'] += float("{:.2f}".format(float(ele['spend'])))
+                                    x['spend'] += float(ele['spend'])
                         else:
-                            ele['spend'] = float("{:.2f}".format(float(ele['spend'])))
+                            ele['spend'] = float(ele['spend'])
                             tempList.append(key)
                             cost_list_unique.append(ele)
 
