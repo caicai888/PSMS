@@ -15,6 +15,8 @@ start_date = (datetime.datetime.now()+datetime.timedelta(hours=8))-datetime.time
 # start_date = datetime.datetime.now()-datetime.timedelta(hours=240)
 time_now = datetime.datetime.strftime(time_now, '%Y-%m-%d')
 start_date = datetime.datetime.strftime(start_date, '%Y-%m-%d')
+time_now = "2017-03-29"
+start_date = "2017-03-01"
 
 db = MySQLdb.connect("localhost","root","chizicheng521","psms",charset='utf8')
 cursor = db.cursor()

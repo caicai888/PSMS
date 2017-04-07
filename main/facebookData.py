@@ -43,16 +43,16 @@ def data_count(impressions_list,cost_list,clicks_list,conversions_list,revenue_l
         count_cpi = '%0.2f' % (count_cost / float(count_conversions))
 
     data_geo = {
-        "count_impressions": str(count_impressions),
-        "count_cost": '%0.2f' % (count_cost),
-        "count_clicks": str(count_clicks),
-        "count_conversions": str(count_conversions),
+        "count_impressions": format(count_impressions,','),
+        "count_cost": format(float('%0.2f' % (count_cost)),','),
+        "count_clicks": format(count_clicks,','),
+        "count_conversions": format(count_conversions,','),
         "count_ctr": count_ctr,
         "count_cvr": count_cvr,
         "count_cpc": count_cpc,
         "count_cpi": count_cpi,
-        "revenue": '%0.2f' % (count_revenue),
-        "profit": '%0.2f' % (count_profit)
+        "revenue": format(float('%0.2f' % (count_revenue)),','),
+        "profit": format(float('%0.2f' % (count_profit)),',')
     }
     return data_geo
 #折线图的数据显示
