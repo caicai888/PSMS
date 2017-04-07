@@ -723,7 +723,7 @@ def faceReport():
                                     # x['spend'] += float(ele['spend'])
                                     x['spend'] += float("{:.2f}".format(float(ele['spend'])))
                         else:
-                            ele['spend'] = "{:.2f}".format(float(ele['spend']))
+                            ele['spend'] = float("{:.2f}".format(float(ele['spend'])))
                             tempList.append(key)
                             cost_list_unique.append(ele)
 
