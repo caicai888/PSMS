@@ -79,17 +79,17 @@ def dashboard():
             ctr_count = float('%0.2f' % (clicks_count / impressions_count * 100))
 
         result_count = {
-            "Renvenue": float('%0.2f'%(revenue_count)),
-            "Profit": float('%0.2f'%(profit_count)),
-            "Cost": float('%0.2f'%(cost_count)),
-            "Impressions": impressions_count,
-            "Clicks": clicks_count,
-            "Conversions": conversions_count,
+            "Renvenue": format(float('%0.2f'%(revenue_count)),','),
+            "Profit": format(float('%0.2f'%(profit_count)),','),
+            "Cost": format(float('%0.2f'%(cost_count)),','),
+            "Impressions": format(impressions_count,','),
+            "Clicks": format(clicks_count,','),
+            "Conversions": format(conversions_count,','),
             "CTR": ctr_count,
             "CVR": cvr_count,
             "CPC": cpc_count,
             "CPI": cpi_count,
-            "Rebate": float('%0.2f'%(rebate_count))
+            "Rebate": format(float('%0.2f'%(rebate_count)),',')
         }
 
         #折线图
@@ -477,7 +477,7 @@ def dbTable():
 
         elif flag == "PM-AG":
             all_data_list = []
-            account_rebate = AccountRebate.query.filter(AccountRebate.date >= start_date,AccountRebate <= end_date).all()
+            account_rebate = AccountRebate.query.filter(AccountRebate.date >= start_date,AccountRebate.date <= end_date).all()
             for i in account_rebate:
                 all_data_list += [
                     {
