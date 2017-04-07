@@ -130,7 +130,7 @@ def createOffer():
             offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,
                           oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,
                           oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,
-                          createdTime,updateTime, emailaccount=None) #此处为前端对offer的拷贝的功能，默认没有只传offer_id,不发送邮件
+                          createdTime,updateTime) #此处为前端对offer的拷贝的功能，默认没有只传offer_id,不发送邮件
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -260,8 +260,8 @@ def offerShow():
         page = data["page"]
         limit = int(data["limit"])
 
-        offers = Offer.query.filter(Offer.status != "deleted", Offer.platform == platform).order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
-        platform_counts = Offer.query.filter(Offer.status != "deleted", Offer.platform == platform).count()
+        offers = Offer.query.filter(Offer.status != "deleted", Offer.platform.like("%" + platform + "%")).order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        platform_counts = Offer.query.filter(Offer.status != "deleted", Offer.platform.like("%" + platform + "%")).count()
 
         result = []
         for item in offers.items:
