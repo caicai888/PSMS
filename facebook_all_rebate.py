@@ -45,7 +45,6 @@ for i in BM_ids:
     result = requests.get(url=url, params=params)
     data = result.json()["data"]
     for j in data:
-        print j
         accounts += [
             {
                 "name": j["name"],
@@ -58,9 +57,9 @@ for a in accounts:
         pass
     else:
         accounts_unique.append(a)
-
+print accounts_unique
 for i in accounts_unique:
-    url = "https://graph.facebook.com/v2.8/act_" + str(i['account_id']) + "/insights"
+    url = "https://graph.facebook.com/v2.8/act_" + str(i['accountId']) + "/insights"
     params = {
         "access_token": "EAAHgEYXO0BABABt1QAdnb4kDVpgDv0RcA873EqcNbHFeN8IZANMyXZAU736VKOj1JjSdOPk2WuZC7KwJZBBD76CUbA09tyWETQpOd5OCRSctIo6fuj7cMthZCH6pZA6PZAFmrMgGZChehXreDa3caIZBkBwkyakDAGA4exqgy2sI7JwZDZD",
         "level": "account",
@@ -69,7 +68,6 @@ for i in accounts_unique:
     }
     result = requests.get(url=url, params=params)
     data = result.json()["data"]
-    print data
     if data is None:
         pass
     else:
@@ -101,7 +99,7 @@ for i in accounts_unique:
                 scale = 0
             rebate =  float('%0.2f'%(cost*float(scale)/100))
 
-            account_sql = "select id from accountRebate where accountId='%s' and name='%s' and date='%s'"%(i['account_id'],i['name'],j['date_start'])
+            account_sql = "select id from accountRebate where accountId='%s' and name='%s' and date='%s'"%(i['accountId'],i['name'],j['date_start'])
             cursor.execute(account_sql)
             account_result = cursor.fetchone()
             if account_result:
@@ -109,6 +107,6 @@ for i in accounts_unique:
                 cursor.execute(account_update)
                 db.commit()
             else:
-                account_insert = "insert into accountRebate(accountId,name,accountName,cost,rebate,date,updateTime) values('%s','%s','%s','%f','%f','%s','%s')" %(i['account_id'],i['name'],accountName,float('%0.2f'%(cost)),rebate,j['date_start'],time_now)
+                account_insert = "insert into accountRebate(accountId,name,accountName,cost,rebate,date,updateTime) values('%s','%s','%s','%f','%f','%s','%s')" %(i['accountId'],i['name'],accountName,float('%0.2f'%(cost)),rebate,j['date_start'],time_now)
                 cursor.execute(account_insert)
                 db.commit()
