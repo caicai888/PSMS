@@ -126,7 +126,11 @@ def createOffer():
         if data["offer_id"]:
             offer_id = int(data["offer_id"])
             oldOffer = Offer.query.filter_by(id=offer_id).first()
-            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,createdTime,updateTime)
+
+            offer = Offer(oldOffer.user_id,oldOffer.customer_id,oldOffer.status,oldOffer.contract_num,oldOffer.os,
+                          oldOffer.package_name,oldOffer.app_name,oldOffer.app_type,oldOffer.preview_link,oldOffer.track_link,
+                          oldOffer.platform,oldOffer.email_time,oldOffer.email_users,oldOffer.email_template,
+                          createdTime,updateTime) #此处为前端对offer的拷贝的功能，默认没有只传offer_id,不发送邮件
             try:
                 db.session.add(offer)
                 db.session.commit()
@@ -144,14 +148,7 @@ def createOffer():
                         db.session.add(historty)
                         db.session.commit()
                         db.create_all()
-                try:
-                    # flag =True 表示修改 ,flag = None 表示创建
-                    email_msg = emailSend(session, data, flag=True)
-                except Exception as ex:
-                    print (traceback.format_exc())
-                    return json.dumps({'code': 500, 'email_msg': ex})
-                else:
-                    return json.dumps({"code":200,"message":"success","offerId":offer.id, 'email_msg': email_msg.get('email_msg')})
+                return json.dumps({"code":200,"message":"offer copy success .","offerId":offer.id })
             except Exception as e:
                 print (traceback.format_exc())
                 return json.dumps({"code":500,"message":"fail"})
@@ -159,12 +156,16 @@ def createOffer():
         else:
             user_id= data["user_id"].split("(")[1].split(')')[0]
             customer_id = data["customer_id"].split("(")[1].split(')')[0]    #??? chinese BeiJing space
-            offer = Offer(int(user_id), customer_id, data["status"], data["contract_num"], data["os"], data["package_name"],data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"], createdTime, updateTime)
+            offer = Offer(int(user_id), customer_id, data["status"], data["contract_num"], data["os"], data["package_name"],
+                          data["app_name"], data["app_type"].encode('utf-8'), data["preview_link"], data["track_link"],
+                          str(data["platform"]),data["email_time"],str(data["email_users"]), data["email_tempalte"],
+                          createdTime, updateTime, data['recipient'])
             try:
                 db.session.add(offer)
                 db.session.commit()
                 db.create_all()
                 platforms = data["platform"].split(",")
+
                 if "Facebook" in platforms:
                     fb = data["facebook"]
                     platformOffer = PlatformOffer(offer.id, "facebook",fb["contract_type"],float(fb["contract_scale"] if fb["contract_scale"] else 0),fb["material"], fb["startTime"], fb["endTime"],str(fb["country"]),float(fb["price"] if fb["price"] else 0), float(fb["daily_budget"] if fb["daily_budget"] else 0), fb["daily_type"],float(fb["total_budget"] if fb["total_budget"] else 0), fb["total_type"], fb["distribution"], fb["authorized"],fb["named_rule"], fb["KPI"].encode('utf-8'), fb["settlement"].encode('utf-8'),fb["period"].encode('utf-8'), fb["remark"].encode('utf-8'),createdTime,updateTime)
@@ -209,12 +210,13 @@ def createOffer():
 
                 try:
                     # flag =True 表示修改 ,flag = None 表示创建
-                    email_msg = emailSend(session, data,flag=None)
+                    if data['recipient']:
+                        email_msg = emailSend(session, data,flag=None)
                 except Exception as ex:
                     print (traceback.format_exc())
-                    return json.dumps({'code': 500, 'email_msg': ex})
+                    return json.dumps({'code': 500, 'message': ex})
                 else:
-                    return json.dumps({'code': 200, 'email_msg': email_msg.get('email_msg')})
+                    return json.dumps({"code": 200, "message": "offer create and send mail success ."})
             except Exception as e:
                 return json.dumps({"code": 500, "message": e})
 
@@ -239,37 +241,16 @@ def emailSend(session, data, flag=None):
         try:
             obj = Send_Email(accounts_list, user, flag)
             if obj.send_mail(data):
-                return {'email_msg': 'email send success.'}
-            return {'email_msg': 'email send failed.'}
+                return {'message': 'email send success.'}
+            return {'message': 'email send failed.'}
         except Exception as ex:
             print (traceback.format_exc())
-            return {'email_msg': 'email send failed.'}
+            return {'message': 'email send failed.'}
 
 #扩展接口,添加默认账户
 @offers.route('/api/email_account_add')
 def email_add():
     pass
-
-#接口测试 -->send email.
-
-'''参数传递内容：
-{
-    "recipient": "test@newborntown.com"
-}
-
-
-@offers.route('/api/email_send', methods=["POST", "GET"])
-def send_mail():
-    if request.method == 'POST':
-        data = request.get_json(force=True)
-        try:
-            email_msg = emailSend(session, data)
-        except Exception as ex:
-            print (traceback.format_exc())
-            return json.dumps({'status': 404, 'email_msg': ex})
-        else:
-            return json.dumps({'status': 200, 'email_msg': email_msg.get('email_msg')})
-'''
 
 @offers.route('/api/offer_show', methods=["POST", "GET"])
 def offerShow():
@@ -278,28 +259,28 @@ def offerShow():
         platform = data["platform"]
         page = data["page"]
         limit = int(data["limit"])
-        offers = Offer.query.filter(Offer.status != "deleted").order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
-        count = Offer.query.filter(Offer.status != "deleted").count()
-        #  修改搜索无关键字时，显示为一页，统计总的页数返回给前端，显示分页
-        if (count % limit) == 0:
-            totalPages = count/limit
-        else:
-            totalPages = count/limit + 1
+
+        offers = Offer.query.filter(Offer.status != "deleted", Offer.platform.like("%" + platform + "%")).order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        platform_counts = Offer.query.filter(Offer.status != "deleted", Offer.platform.like("%" + platform + "%")).count()
+
         result = []
-        for i in offers.items:
-            customerId = i.customer_id
-            customer = Customers.query.filter_by(id=customerId).first() #customer
-            customerName = customer.company_name  # 客户名称
-            status = i.status
-            sales = User.query.filter_by(id=int(i.user_id)).first() #user
-            fb_offer = PlatformOffer.query.filter_by(offer_id=i.id, platform=platform).all() #platform
+        for item in offers.items:
             contract_type = "cpa"
             startTime = "2017-01-01"
             endTime = "2017-12-31"
             country = "CN"
             price = 0
+            platform_v = ''
+
+            customerId = item.customer_id
+            customer = Customers.query.filter_by(id=customerId).first() #customer
+            customerName = customer.company_name  # 客户名称
+            status = item.status
+            sales = User.query.filter_by(id=int(item.user_id)).first() #user
+            fb_offer = PlatformOffer.query.filter_by(offer_id=item.id, platform=platform).all() #platform
             for j in fb_offer:
                 contract_type = j.contract_type
+                platform_v = j.platform
                 if contract_type == "1":
                     contract_type = u"服务费"
                 elif contract_type == "2":
@@ -311,12 +292,14 @@ def offerShow():
                 startTime = j.startTime
                 country = j.country
                 price = j.price
-            os = i.os
-            app_name = i.app_name
+            os = item.os
+            app_name = item.app_name
+            emailaccount = item.emailaccount
 
             data = {
-                "offer_id": i.id,
+                "offer_id": item.id,
                 "status": status,
+                "platform": platform_v,
                 "contract_type": contract_type,
                 "os": os,
                 "customer_id": customerName,
@@ -325,12 +308,18 @@ def offerShow():
                 "endTime": endTime,
                 "country": country,
                 "price": price,
-                "updateTime": i.updateTime,
-                "sale_name":sales.name
+                "updateTime": item.updateTime,
+                "sale_name":sales.name,
+                "recipient": emailaccount,
             }
             result += [data]
+
+        #分页处理
+        page_obj = Pager(result, page, platform_counts, limit)
+        total_pages = page_obj.totalpage
+        # results = result[page_obj.start: page_obj.end]
         response = {
-            "totalPages": int(totalPages),
+            "totalPages": int(total_pages),
             "code": 200,
             "result": result,
             "message": "success"
@@ -414,6 +403,7 @@ def offerDetail(id):
     userId = offer.user_id
     user = User.query.filter_by(id=userId).first()
     plate = offer.platform
+    emailaccount = offer.emailaccount
 
     fb_offer = PlatformOffer.query.filter_by(offer_id=int(id),platform="facebook").first()
     if fb_offer is not None:
@@ -573,7 +563,8 @@ def offerDetail(id):
         "email_tempalte": offer.email_template,
         "facebook": facebook,
         "adwords": adwords,
-        "apple": apple
+        "apple": apple,
+        "recipient": emailaccount
     }
     response = {
         "code": 200,
@@ -611,7 +602,7 @@ def statusHistory(offer_id,platform_id,platform,status):
     offer = Offer.query.filter_by(id=offer_id).first()
     time_now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
     platform_offer = PlatformOffer.query.filter_by(id=platform_id).first()
-    historty = History(offer_id,offer.user_id,platform_id,platform,"update",time_now,status,price=platform_offer.price,daily_budget=platform_offer.daily_budget,daily_type=platform_offer.daily_type,total_budget=platform_offer.total_budget,total_type=platform_offer.total_type,KPI=platform_offer.KPI,contract_type=platform_offer.contract_type,contract_scale=platform_offer.contract_scale)
+    historty = History(offer_id=offer_id,user_id=offer.user_id,platformOffer_id=platform_id,platform=platform,type="update",createdTime=time_now,status=status,price=platform_offer.price,daily_budget=platform_offer.daily_budget,daily_type=platform_offer.daily_type,total_budget=platform_offer.total_budget,total_type=platform_offer.total_type,KPI=platform_offer.KPI,contract_type=platform_offer.contract_type,contract_scale=platform_offer.contract_scale)
     db.session.add(historty)
     db.session.commit()
     db.create_all()
@@ -704,8 +695,8 @@ def updatePlatformOffer(offer_id,platform,data):
             db.create_all()
         if data["country_detail"] != []:
             for i in data['country_detail']:
-                history = History(offer_id, user_id,platform_offer.id,platform, "update",
-                                  time_now,offer.status, country=i["country"], country_price=float(i["price"]),
+                history = History(offer_id=offer_id, user_id=user_id,platformOffer_id=platform_offer.id,platform=platform, type="update",
+                                  createdTime=time_now,status=offer.status, country=i["country"], country_price=float(i["price"]),
                                   price=float(data["price"]) if data["price"] != "" else 0,
                                   daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
                                   daily_type=data["daily_type"],
@@ -717,7 +708,7 @@ def updatePlatformOffer(offer_id,platform,data):
                 db.session.commit()
                 db.create_all()
         else:
-            history = History(offer_id, user_id,platform_offer.id, "update",time_now,offer.status,
+            history = History(offer_id=offer_id, user_id=user_id, platformOffer_id=platform_offer.id, type="update",createdTime=time_now,status=offer.status,
                               price=float(data["price"]) if data["price"] != "" else 0,
                               daily_budget=float(data["daily_budget"]) if data["daily_budget"] != "" else 0,
                               daily_type=data["daily_type"],
@@ -758,22 +749,35 @@ def updateOffer():
                 offer.email_time = data["email_time"]
                 offer.email_users = str(data["email_users"]) if str(data["email_users"]) != "" else offer.email_users
                 offer.email_template = data["email_tempalte"] if data["email_tempalte"] != "" else offer.email_template
-
+                offer.emailaccount = data["recipient"] if data["recipient"] != "" else offer.emailaccount
                 platforms = data["platform"].split(',')
                 if 'Facebook' in platforms:
                     fb_data = data['facebook']
                     fb_offer = updatePlatformOffer(int(data["offer_id"]),'facebook',fb_data)
+                else:
+                    del data['facebook']
                 if 'Adwords' in platforms:
                     ad_data = data['adwords']
                     ad_offer = updatePlatformOffer(int(data['offer_id']),'adwords',ad_data)
+                else:
+                    del data['adwords']
                 if 'Apple' in platforms:
                     ap_data = data['apple']
                     ap_offer = updatePlatformOffer(int(data['offer_id']),'apple',ap_data)
+                else:
+                    del data['apple']
 
                 db.session.add(offer)
                 db.session.commit()
-
-                return json.dumps({"code": 200, "message": "success"})
+                try:
+                    # flag =True 表示修改 ,flag = None 表示创建
+                    if data['recipient']:
+                        emailSend(session, data, flag=True)
+                except Exception as ex:
+                    print (traceback.format_exc())
+                    return json.dumps({'code': 500, 'message': ex})
+                else:
+                    return json.dumps({"code": 200, "message": "offer create and send mail success ."})
             except Exception as e:
                 print e
                 return json.dumps({"code": 500, "message": "fail"})

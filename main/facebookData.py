@@ -43,16 +43,16 @@ def data_count(impressions_list,cost_list,clicks_list,conversions_list,revenue_l
         count_cpi = '%0.2f' % (count_cost / float(count_conversions))
 
     data_geo = {
-        "count_impressions": str(count_impressions),
-        "count_cost": '%0.2f' % (count_cost),
-        "count_clicks": str(count_clicks),
-        "count_conversions": str(count_conversions),
+        "count_impressions": format(count_impressions,','),
+        "count_cost": format(float('%0.2f' % (count_cost)),','),
+        "count_clicks": format(count_clicks,','),
+        "count_conversions": format(count_conversions,','),
         "count_ctr": count_ctr,
         "count_cvr": count_cvr,
         "count_cpc": count_cpc,
         "count_cpi": count_cpi,
-        "revenue": '%0.2f' % (count_revenue),
-        "profit": '%0.2f' % (count_profit)
+        "revenue": format(float('%0.2f' % (count_revenue)),','),
+        "profit": format(float('%0.2f' % (count_profit)),',')
     }
     return data_geo
 #折线图的数据显示
@@ -373,7 +373,7 @@ def faceReport():
                         ]
                         cost_list_ad += [
                             {
-                                "spend": '%0.2f' % (float(i.cost)),
+                                "spend": float('%0.2f' % (float(i.cost))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "adwords"
@@ -397,7 +397,7 @@ def faceReport():
                         ]
                         revenue_list_ad += [
                             {
-                                "revenue": '%0.2f' % (float(i.revenue)),
+                                "revenue": float('%0.2f' % (float(i.revenue))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "adwords"
@@ -405,7 +405,7 @@ def faceReport():
                         ]
                         profit_list_ad += [
                             {
-                                "profit": '%0.2f' % (float(i.profit)),
+                                "profit": float('%0.2f' % (float(i.profit))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "adwords"
@@ -448,7 +448,7 @@ def faceReport():
                         ]
                         cost_list_fb += [
                             {
-                                "spend": '%0.2f' % (float(i.cost)),
+                                "spend": float('%0.2f' % (float(i.cost))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "facebook"
@@ -472,7 +472,7 @@ def faceReport():
                         ]
                         revenue_list_fb += [
                             {
-                                "revenue": '%0.2f' % (float(i.revenue)),
+                                "revenue": float('%0.2f' % (float(i.revenue))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "facebook"
@@ -480,7 +480,7 @@ def faceReport():
                         ]
                         profit_list_fb += [
                             {
-                                "profit": '%0.2f' % (float(i.profit)),
+                                "profit": float('%0.2f' % (float(i.profit))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "facebook"
@@ -523,7 +523,7 @@ def faceReport():
                         ]
                         cost_list_ap += [
                             {
-                                "spend": '%0.2f' % (float(i.cost)),
+                                "spend": float('%0.2f' % (float(i.cost))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "apple"
@@ -547,7 +547,7 @@ def faceReport():
                         ]
                         revenue_list_ap += [
                             {
-                                "revenue": '%0.2f' % (float(i.revenue)),
+                                "revenue": float('%0.2f' % (float(i.revenue))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "apple"
@@ -555,7 +555,7 @@ def faceReport():
                         ]
                         profit_list_ap += [
                             {
-                                "profit": '%0.2f' % (float(i.profit)),
+                                "profit": float('%0.2f' % (float(i.profit))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "apple"
@@ -882,7 +882,7 @@ def faceReport():
                        ]
                        cost_list_all_adwords += [
                            {
-                               "spend": '%0.2f' % (float(i.cost)),
+                               "spend": float('%0.2f' % (float(i.cost))),
                                "date_start": date,
                                "source": "adwords"
                            }
@@ -903,42 +903,42 @@ def faceReport():
                        ]
                        ctr_list_all_adwords += [
                            {
-                               "ctr": '%0.2f' % (float(i.ctr)),
+                               "ctr": float('%0.2f' % (float(i.ctr))),
                                "date_start": date,
                                "source": "adwords"
                            }
                        ]
                        cvr_list_all_adwords += [
                            {
-                               "cvr": '%0.2f' % (float(i.cvr)),
+                               "cvr": float('%0.2f' % (float(i.cvr))),
                                "date_start": date,
                                "source": "adwords"
                            }
                        ]
                        cpc_list_all_adwords += [
                            {
-                               "cpc": '%0.2f' % (float(i.cpc)),
+                               "cpc": float('%0.2f' % (float(i.cpc))),
                                "date_start": date,
                                "source": "adwords"
                            }
                        ]
                        cpi_list_all_adwords += [
                            {
-                               "cpi": '%0.2f' % (float(i.cpi)),
+                               "cpi": float('%0.2f' % (float(i.cpi))),
                                "date_start": date,
                                "source": "adwords"
                            }
                        ]
                        revenue_list_all_adwords += [
                            {
-                               "revenue": '%0.2f' % (float(i.revenue)),
+                               "revenue": float('%0.2f' % (float(i.revenue))),
                                "date_start": date,
                                "source": "adwords"
                            }
                        ]
                        profit_list_all_adwords += [
                            {
-                               "profit": '%0.2f' % (float(i.profit)),
+                               "profit": float('%0.2f' % (float(i.profit))),
                                "date_start": date,
                                "source": "adwords"
                            }
@@ -962,7 +962,7 @@ def faceReport():
                        ]
                        cost_list += [
                            {
-                               "spend": '%0.2f' % (float(cost_list_new[i])),
+                               "spend": float('%0.2f' % (float(cost_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
@@ -983,42 +983,42 @@ def faceReport():
                        ]
                        ctr_list += [
                            {
-                               "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if float(impressions_list_new[i]) != 0 else 0,
+                               "ctr": float('%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100)) if float(impressions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
                        ]
                        cvr_list += [
                            {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) != 0 else 0,
+                               "cvr": float('%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100)) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
                        ]
                        cpc_list += [
                            {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
+                               "cpc": float('%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i]))) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
                        ]
                        cpi_list += [
                            {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
+                               "cpi": float('%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i]))) if float(conversions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
                        ]
                        revenue_list += [
                            {
-                               "revenue": '%0.2f' % (float(revenue_list_new[i])),
+                               "revenue": float('%0.2f' % (float(revenue_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
                        ]
                        profit_list += [
                            {
-                               "profit": '%0.2f' % (float(profit_list_new[i])),
+                               "profit": float('%0.2f' % (float(profit_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "adwords"
                            }
@@ -1046,7 +1046,7 @@ def faceReport():
                        ]
                        cost_list_all_fb += [
                            {
-                               "spend": '%0.2f' % (float(i.cost)),
+                               "spend": float('%0.2f' % (float(i.cost))),
                                "date_start": date,
                                "source": "facebook"
                            }
@@ -1067,42 +1067,42 @@ def faceReport():
                        ]
                        ctr_list_all_fb += [
                            {
-                               "ctr": '%0.2f' % (float(i.ctr)),
+                               "ctr": float('%0.2f' % (float(i.ctr))),
                                "date_start": date,
                                "source": "facebook"
                            }
                        ]
                        cvr_list_all_fb += [
                            {
-                               "cvr": '%0.2f' % (float(i.cvr)),
+                               "cvr": float('%0.2f' % (float(i.cvr))),
                                "date_start": date,
                                "source": "facebook"
                            }
                        ]
                        cpc_list_all_fb += [
                            {
-                               "cpc": '%0.2f' % (float(i.cpc)),
+                               "cpc": float('%0.2f' % (float(i.cpc))),
                                "date_start": date,
                                "source": "facebook"
                            }
                        ]
                        cpi_list_all_fb += [
                            {
-                               "cpi": '%0.2f' % (float(i.cpi)),
+                               "cpi": float('%0.2f' % (float(i.cpi))),
                                "date_start": date,
                                "source": "facebook"
                            }
                        ]
                        revenue_list_all_fb += [
                            {
-                               "revenue": '%0.2f' % (float(i.revenue)),
+                               "revenue": float('%0.2f' % (float(i.revenue))),
                                "date_start": date,
                                "source": "facebook"
                            }
                        ]
                        profit_list_all_fb += [
                            {
-                               "profit": '%0.2f' % (float(i.profit)),
+                               "profit": float('%0.2f' % (float(i.profit))),
                                "date_start": date,
                                "source": "facebook"
                            }
@@ -1128,7 +1128,7 @@ def faceReport():
                        ]
                        cost_list += [
                            {
-                               "spend": '%0.2f' % (float(cost_list_new[i])),
+                               "spend": float('%0.2f' % (float(cost_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
@@ -1149,42 +1149,42 @@ def faceReport():
                        ]
                        ctr_list += [
                            {
-                               "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if float(impressions_list_new[i]) != 0 else 0,
+                               "ctr": float('%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100)) if float(impressions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
                        ]
                        cvr_list += [
                            {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) != 0 else 0,
+                               "cvr": float('%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100)) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
                        ]
                        cpc_list += [
                            {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
+                               "cpc": float('%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i]))) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
                        ]
                        cpi_list += [
                            {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
+                               "cpi": float('%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i]))) if float(conversions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
                        ]
                        revenue_list += [
                            {
-                               "revenue": '%0.2f' % (float(revenue_list_new[i])),
+                               "revenue": float('%0.2f' % (float(revenue_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
                        ]
                        profit_list += [
                            {
-                               "profit": '%0.2f' % (float(profit_list_new[i])),
+                               "profit": float('%0.2f' % (float(profit_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "facebook"
                            }
@@ -1212,7 +1212,7 @@ def faceReport():
                        ]
                        cost_list_all_ap += [
                            {
-                               "spend": '%0.2f' % (float(i.cost)),
+                               "spend": float('%0.2f' % (float(i.cost))),
                                "date_start": date,
                                "source": "apple"
                            }
@@ -1233,42 +1233,42 @@ def faceReport():
                        ]
                        ctr_list_all_ap += [
                            {
-                               "ctr": '%0.2f' % (float(i.ctr)),
+                               "ctr": float('%0.2f' % (float(i.ctr))),
                                "date_start": date,
                                "source": "apple"
                            }
                        ]
                        cvr_list_all_ap += [
                            {
-                               "cvr": '%0.2f' % (float(i.cvr)),
+                               "cvr": float('%0.2f' % (float(i.cvr))),
                                "date_start": date,
                                "source": "apple"
                            }
                        ]
                        cpc_list_all_ap += [
                            {
-                               "cpc": '%0.2f' % (float(i.cpc)),
+                               "cpc": float('%0.2f' % (float(i.cpc))),
                                "date_start": date,
                                "source": "apple"
                            }
                        ]
                        cpi_list_all_ap += [
                            {
-                               "cpi": '%0.2f' % (float(i.cpi)),
+                               "cpi": float('%0.2f' % (float(i.cpi))),
                                "date_start": date,
                                "source": "apple"
                            }
                        ]
                        revenue_list_all_ap += [
                            {
-                               "revenue": '%0.2f' % (float(i.revenue)),
+                               "revenue": float('%0.2f' % (float(i.revenue))),
                                "date_start": date,
                                "source": "apple"
                            }
                        ]
                        profit_list_all_ap += [
                            {
-                               "profit": '%0.2f' % (float(i.profit)),
+                               "profit": float('%0.2f' % (float(i.profit))),
                                "date_start": date,
                                "source": "apple"
                            }
@@ -1294,7 +1294,7 @@ def faceReport():
                        ]
                        cost_list += [
                            {
-                               "spend": '%0.2f' % (float(cost_list_new[i])),
+                               "spend": float('%0.2f' % (float(cost_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "apple"
                            }
@@ -1315,42 +1315,42 @@ def faceReport():
                        ]
                        ctr_list += [
                            {
-                               "ctr": '%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100) if float(impressions_list_new[i]) != 0 else 0,
+                               "ctr": float('%0.2f' % (float(clicks_list_new[i]) / float(impressions_list_new[i]) * 100)) if float(impressions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "apple"
                            }
                        ]
                        cvr_list += [
                            {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) != 0 else 0,
+                               "cvr": float('%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100)) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "apple"
                            }
                        ]
                        cpc_list += [
                            {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
+                               "cpc": float('%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i]))) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "apple"
                            }
                        ]
                        cpi_list += [
                            {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
+                               "cpi": float('%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i]))) if float(conversions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "source": "apple"
                            }
                        ]
                        revenue_list += [
                            {
-                               "revenue": '%0.2f' % (float(revenue_list_new[i])),
+                               "revenue": float('%0.2f' % (float(revenue_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "apple"
                            }
                        ]
                        profit_list += [
                            {
-                               "profit": '%0.2f' % (float(profit_list_new[i])),
+                               "profit": float('%0.2f' % (float(profit_list_new[i]))),
                                "date_start": date_new[i],
                                "source": "apple"
                            }
@@ -1403,7 +1403,7 @@ def faceReport():
                        ]
                        cost_list_all += [
                            {
-                               "spend": '%0.2f' % (float(i.cost)),
+                               "spend": float('%0.2f' % (float(i.cost))),
                                "date_start": date,
                                "date_stop": date
                            }
@@ -1424,42 +1424,42 @@ def faceReport():
                        ]
                        ctr_list_all += [
                            {
-                               "ctr": '%0.2f' % (float(i.ctr)),
+                               "ctr": float('%0.2f' % (float(i.ctr))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        cvr_list_all += [
                            {
-                               "cvr": '%0.2f' % (float(i.cvr)),
+                               "cvr": float('%0.2f' % (float(i.cvr))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        cpc_list_all += [
                            {
-                               "cpc": '%0.2f' % (float(i.cpc)),
+                               "cpc": float('%0.2f' % (float(i.cpc))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        cpi_list_all += [
                            {
-                               "cpi": '%0.2f' % (float(i.cpi)),
+                               "cpi": float('%0.2f' % (float(i.cpi))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        revenue_list_all += [
                            {
-                               "revenue": '%0.2f' % (float(i.revenue)),
+                               "revenue": float('%0.2f' % (float(i.revenue))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        profit_list_all += [
                            {
-                               "profit": '%0.2f' % (float(i.profit)),
+                               "profit": float('%0.2f' % (float(i.profit))),
                                "date_start": date,
                                "date_stop": date
                            }
@@ -1476,7 +1476,7 @@ def faceReport():
                        ]
                        cost_list_all += [
                            {
-                               "spend": '%0.2f' % (float(i.cost)),
+                               "spend": float('%0.2f' % (float(i.cost))),
                                "date_start": date,
                                "date_stop": date
                            }
@@ -1497,42 +1497,42 @@ def faceReport():
                        ]
                        ctr_list_all += [
                            {
-                               "ctr": '%0.2f' % (float(i.ctr)),
+                               "ctr": float('%0.2f' % (float(i.ctr))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        cvr_list_all += [
                            {
-                               "cvr": '%0.2f' % (float(i.cvr)),
+                               "cvr": float('%0.2f' % (float(i.cvr))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        cpc_list_all += [
                            {
-                               "cpc": '%0.2f' % (float(i.cpc)),
+                               "cpc": float('%0.2f' % (float(i.cpc))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        cpi_list_all += [
                            {
-                               "cpi": '%0.2f' % (float(i.cpi)),
+                               "cpi": float('%0.2f' % (float(i.cpi))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        revenue_list_all += [
                            {
-                               "revenue": '%0.2f' % (float(i.revenue)),
+                               "revenue": float('%0.2f' % (float(i.revenue))),
                                "date_start": date,
                                "date_stop": date
                            }
                        ]
                        profit_list_all += [
                            {
-                               "profit": '%0.2f' % (float(i.profit)),
+                               "profit": float('%0.2f' % (float(i.profit))),
                                "date_start": date,
                                "date_stop": date
                            }
@@ -1556,7 +1556,7 @@ def faceReport():
                        ]
                        cost_list += [
                            {
-                               "spend": '%0.2f'%(float(cost_list_new[i])),
+                               "spend": float('%0.2f'%(float(cost_list_new[i]))),
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }
@@ -1577,42 +1577,42 @@ def faceReport():
                        ]
                        ctr_list += [
                            {
-                               "ctr": '%0.2f'%(float(clicks_list_new[i])/float(impressions_list_new[i])*100) if float(impressions_list_new[i]) !=0 else 0,
+                               "ctr": float('%0.2f'%(float(clicks_list_new[i])/float(impressions_list_new[i])*100)) if float(impressions_list_new[i]) !=0 else 0,
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }
                        ]
                        cvr_list += [
                            {
-                               "cvr": '%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100) if float(clicks_list_new[i]) !=0 else 0,
+                               "cvr": float('%0.2f' % (float(conversions_list_new[i]) / float(clicks_list_new[i]) * 100)) if float(clicks_list_new[i]) !=0 else 0,
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }
                        ]
                        cpc_list += [
                            {
-                               "cpc": '%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i])) if float(clicks_list_new[i]) != 0 else 0,
+                               "cpc": float('%0.2f' % (float(cost_list_new[i]) / float(clicks_list_new[i]))) if float(clicks_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }
                        ]
                        cpi_list += [
                            {
-                               "cpi": '%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i])) if float(conversions_list_new[i]) != 0 else 0,
+                               "cpi": float('%0.2f' % (float(cost_list_new[i]) / float(conversions_list_new[i]))) if float(conversions_list_new[i]) != 0 else 0,
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }
                        ]
                        revenue_list += [
                            {
-                               "revenue": '%0.2f'%(float(revenue_list_new[i])),
+                               "revenue": float('%0.2f'%(float(revenue_list_new[i]))),
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }
                        ]
                        profit_list += [
                            {
-                               "profit": '%0.2f'%(float(profit_list_new[i])),
+                               "profit": float('%0.2f'%(float(profit_list_new[i]))),
                                "date_start": date_new[i],
                                "date_stop": date_new[i]
                            }

@@ -182,18 +182,24 @@ var OfferDetail = React.createClass({
                 if (data.code == "200") {
                     var data_geo = [data.data_geo];
                     var data_geo_table =isEmptyObject(data.data_geo_table)?data.data_geo_table:data.data_date_table;
+                    var two = function (obj,key) {
+                        for (let ele in obj){
+                            obj[ele][key] = (obj[ele][key]).toFixed(2)
+                        }
+                        return obj;
+                    };
                     _this.setState({
                         "data_geo":data_geo,
                         "data_geo_table_head":data_geo_table.head,
                             "data_geo_table_clicks_list":data_geo_table.clicks_list,
                         "data_geo_table_conversions_list":data_geo_table.conversions_list,
-                            "data_geo_table_cost_list":data_geo_table.cost_list,
-                        "data_geo_table_cpc_list":data_geo_table.cpc_list,
-                            "data_geo_table_cpi_list":data_geo_table.cpi_list,
-                        "data_geo_table_ctr_list":data_geo_table.ctr_list,
-                            "data_geo_table_cvr_list":data_geo_table.cvr_list,
-                            "data_geo_table_profit_list":data_geo_table.profit_list,
-                        "data_geo_table_revenue_list":data_geo_table.revenue_list,
+                            "data_geo_table_cost_list":two(data_geo_table.cost_list,"cost"),
+                        "data_geo_table_cpc_list":two(data_geo_table.cpc_list,"cpc"),
+                            "data_geo_table_cpi_list":two(data_geo_table.cpi_list,"cpi"),
+                        "data_geo_table_ctr_list":two(data_geo_table.ctr_list,"ctr"),
+                            "data_geo_table_cvr_list":two(data_geo_table.cvr_list,"cvr"),
+                            "data_geo_table_profit_list":two(data_geo_table.profit_list,"profit"),
+                        "data_geo_table_revenue_list":two(data_geo_table.revenue_list,"revenue"),
                         "data_geo_table_impressions_list":data_geo_table.impressions_list
                     });
                 } else {

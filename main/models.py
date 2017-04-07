@@ -135,9 +135,12 @@ class Offer(db.Model):
     createdTime = db.Column(db.String(100), nullable=False)
     updateTime = db.Column(db.String(100), nullable=False)
     historys = db.relationship('History', backref='offer', lazy='dynamic')
+    emailaccount = db.Column(db.String(100), nullable=True)  #True
 
+    #邮件账户判断,在offer copy修改的时候不发送邮件，此时为空;创建offer时会包含邮件账户
     def __init__(self, user_id, customer_id, status="active", contract_num=None,os=None, package_name=None, app_name=None, app_type=None,
-                 preview_link=None, track_link=None,platform=None,email_time=None, email_users=None,email_template=None, createdTime=None, updateTime=None):
+                 preview_link=None, track_link=None,platform=None,email_time=None, email_users=None,email_template=None, createdTime=None,
+                 updateTime=None,emailaccount=None):
 
         self.user_id = user_id
         self.customer_id = customer_id
@@ -155,6 +158,7 @@ class Offer(db.Model):
         self.email_template = email_template
         self.createdTime = createdTime
         self.updateTime = updateTime
+        self.emailaccount = emailaccount
 
     def __repr__(self):
         return '<Offer {}>'.format(self.id)
@@ -631,17 +635,26 @@ class Rebate(db.Model):
     def __repr__(self):
         return '<Rebate {}>'.format(self.id)
 
+#Facebook中所有代理以及返点金额
+class AccountRebate(db.Model):
+    __tablename__ = "accountRebate"
+    id = db.Column(db.Integer, primary_key=True)
+    accountId = db.Column(db.String(100), nullable=True)
+    name = db.Column(db.String(200), nullable=True)     #account账户的名字
+    accountName = db.Column(db.String(100), nullable=True)   #代理的名字
+    cost = db.Column(db.Float, nullable=True)
+    rebate = db.Column(db.Float, nullable=True)
+    date = db.Column(db.String(100), nullable=True)
+    updateTime = db.Column(db.String(100), nullable=True)
 
-# 邮箱默认存储空间，注释的话，不需要添加到数据库，让web把默认抄送的账户也添加到邮件账户输入框中
-# class EmailAccounts(db.Model):
-#     __tablename__ = "emailaccounts"
-#     id = db.Column(db.Integer, primary_key=True)
-#     accountName = db.Column(db.String(100), nullable=True)
-#
-#     def __init__(self, emailAcounts, createdTime=None):
-#         createdTime = str(datetime.now() + timedelta(hours=8))[:10]
-#         self.accountName = emailAcounts
-#         self.createdTime = createdTime
-#
-#     def __repr__(self):
-#         return '<Rebate {}>'.format(self.id)
+    def __init__(self, accountId, name, accountName, cost, rebate, date, updateTime):
+        self.accountId = accountId
+        self.name = name
+        self.accountName = accountName
+        self.cost = cost
+        self.rebate = rebate,
+        self.date = date
+        self.updateTime = updateTime
+
+    def __repr__(self):
+        return '<AccountRebate {}>'.format(self.id)
