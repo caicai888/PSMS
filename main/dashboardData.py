@@ -477,7 +477,7 @@ def dbTable():
 
         elif flag == "PM-AG":
             all_data_list = []
-            account_rebate = AccountRebate.query.filter(AccountRebate.date >= start_date,AccountRebate <= end_date).all()
+            account_rebate = AccountRebate.query.filter(AccountRebate.date >= start_date,AccountRebate.date <= end_date).all()
             for i in account_rebate:
                 all_data_list += [
                     {
