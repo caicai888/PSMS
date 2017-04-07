@@ -184,7 +184,7 @@ var OfferDetail = React.createClass({
                     var data_geo_table =isEmptyObject(data.data_geo_table)?data.data_geo_table:data.data_date_table;
                     var two = function (obj,key) {
                         for (let ele in obj){
-                            obj[ele][key] = (obj[ele][key]).toFixed(2)
+                            obj[ele][key] = parseFloat(obj[ele][key]).toFixed(2)
                         }
                         return obj;
                     };
