@@ -193,7 +193,7 @@ var OfferDetail = React.createClass({
                         "data_geo_table_head":data_geo_table.head,
                             "data_geo_table_clicks_list":data_geo_table.clicks_list,
                         "data_geo_table_conversions_list":data_geo_table.conversions_list,
-                            "data_geo_table_cost_list":two(data_geo_table.cost_list,"cost"),
+                            "data_geo_table_cost_list":two(data_geo_table.cost_list,"spend"),
                         "data_geo_table_cpc_list":two(data_geo_table.cpc_list,"cpc"),
                             "data_geo_table_cpi_list":two(data_geo_table.cpi_list,"cpi"),
                         "data_geo_table_ctr_list":two(data_geo_table.ctr_list,"ctr"),
