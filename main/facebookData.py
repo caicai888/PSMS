@@ -373,7 +373,8 @@ def faceReport():
                         ]
                         cost_list_ad += [
                             {
-                                "spend": float('%0.2f' % (float(i.cost))),
+                                # "spend": float('%0.2f' % (float(i.cost))),
+                                "spend": round(float(i.cost),2),
                                 "country": country,
                                 "date_start": date,
                                 "source": "adwords"
