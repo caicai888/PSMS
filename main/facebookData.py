@@ -373,8 +373,7 @@ def faceReport():
                         ]
                         cost_list_ad += [
                             {
-                                # "spend": float('%0.2f' % (float(i.cost))),
-                                "spend": round(float(i.cost),4),
+                                "spend": '%0.2f'%(float('%0.2f' % (float(i.cost)))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "adwords"
@@ -398,7 +397,7 @@ def faceReport():
                         ]
                         revenue_list_ad += [
                             {
-                                "revenue": float('%0.4f' % (float(i.revenue))),
+                                "revenue": float('%0.2f' % (float(i.revenue))),
                                 "country": country,
                                 "date_start": date,
                                 "source": "adwords"
