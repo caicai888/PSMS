@@ -260,8 +260,8 @@ def offerShow():
         page = data["page"]
         limit = int(data["limit"])
 
-        offers = Offer.query.filter(Offer.status != "deleted", Offer.platform == platform).order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
-        platform_counts = Offer.query.filter(Offer.status != "deleted", Offer.platform == platform).count()
+        offers = Offer.query.filter(Offer.status != "deleted", Offer.platform.like("%" + platform + "%")).order_by(Offer.status, Offer.id.desc()).paginate(int(page), per_page=limit, error_out = False)
+        platform_counts = Offer.query.filter(Offer.status != "deleted", Offer.platform.like("%" + platform + "%")).count()
 
         result = []
         for item in offers.items:
